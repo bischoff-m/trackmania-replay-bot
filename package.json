@@ -3,12 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3333",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start -p 3333",
+    "lint": "next lint",
+    "remotion-preview": "remotion preview remotion/index.ts",
+    "remotion-render": "remotion render remotion/index.ts MyComp out.mp4"
   },
   "dependencies": {
+    "@remotion/cli": "^3.3.99",
+    "@remotion/eslint-plugin": "^3.3.99",
+    "@remotion/renderer": "^3.3.99",
     "@types/node": "20.2.5",
     "@types/react": "18.2.9",
     "@types/react-dom": "18.2.4",
@@ -19,6 +24,7 @@
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "remotion": "^3.3.99",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.3"
   }
