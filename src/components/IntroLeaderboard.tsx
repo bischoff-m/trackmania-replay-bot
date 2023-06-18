@@ -86,11 +86,14 @@ export const IntroLeaderboard = () => {
   const rowHeightSmall = 60;
   const colWidthNumber = 100;
   const colWidthFlag = 80;
+  // Gap between 1st <-> 2nd and 3rd <-> 4th
+  const verticalGap = 20;
   // Font sizes
   const fontSizeBig = 54;
   const fontSizeSmall = 40;
 
   // TODO: Add padding between 3rd and 4th place
+  // TODO: Use https://www.npmjs.com/package/twrnc
 
   const RowNumber = (props: { emphasized: boolean; number: number }) => (
     <span
@@ -138,7 +141,7 @@ export const IntroLeaderboard = () => {
       className="flex items-center justify-end"
       style={{
         height: props.emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: 0.9 * (props.emphasized ? fontSizeBig : 0.9 * fontSizeSmall),
+        fontSize: 0.8 * (props.emphasized ? 0.9 * fontSizeBig : fontSizeSmall),
         color: colors.textSecondary,
         fontFamily: "Century Gothic",
       }}
@@ -152,8 +155,9 @@ export const IntroLeaderboard = () => {
       className="flex items-center justify-end"
       style={{
         height: props.emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: props.emphasized ? fontSizeBig : fontSizeSmall,
+        fontSize: props.emphasized ? fontSizeBig : 1.2 * fontSizeSmall,
         fontFamily: "Century Gothic",
+        fontWeight: props.emphasized ? 700 : 400,
       }}
     >
       {props.time}
@@ -161,7 +165,7 @@ export const IntroLeaderboard = () => {
   );
 
   return (
-    <main className="flex h-full w-full flex-col" style={{ gap: 20 }}>
+    <main className="flex h-full w-full flex-col" style={{ gap: verticalGap }}>
       {/* World Record */}
       <div
         className="flex items-center gap-6 pl-6 pr-12"
@@ -213,39 +217,61 @@ export const IntroLeaderboard = () => {
       </div>
 
       {/* 2nd - 10th place */}
+      {/* NOTE: 2nd, 3rd and the lower places need to be siblings to make the
+          delta field line up.*/}
       <div className="flex flex-1 gap-6 pl-6 pr-12">
         {/* Numbers */}
         <div className={columnClasses} style={{ width: colWidthNumber }}>
-          {records.slice(1).map((_, index) => (
-            <RowNumber key={index} emphasized={index < 2} number={index + 2} />
+          {records.slice(1, 3).map((_, index) => (
+            <RowNumber key={index} emphasized={true} number={index + 2} />
+          ))}
+          <div style={{ height: verticalGap }} />
+          {records.slice(3).map((_, index) => (
+            <RowNumber key={index} emphasized={false} number={index + 4} />
           ))}
         </div>
 
         {/* Flags */}
         <div className={columnClasses} style={{ width: colWidthFlag }}>
-          {records.slice(1).map((record, index) => (
-            <RowFlag key={index} emphasized={index < 2} flag={record.flag} />
+          {records.slice(1, 3).map((record, index) => (
+            <RowFlag key={index} emphasized={true} flag={record.flag} />
+          ))}
+          <div style={{ height: verticalGap }} />
+          {records.slice(3).map((record, index) => (
+            <RowFlag key={index} emphasized={false} flag={record.flag} />
           ))}
         </div>
 
         {/* Names */}
         <div className={columnClasses + " flex-grow"}>
-          {records.slice(1).map((record, index) => (
-            <RowName key={index} emphasized={index < 2} name={record.name} />
+          {records.slice(1, 3).map((record, index) => (
+            <RowName key={index} emphasized={true} name={record.name} />
+          ))}
+          <div style={{ height: verticalGap }} />
+          {records.slice(3).map((record, index) => (
+            <RowName key={index} emphasized={false} name={record.name} />
           ))}
         </div>
 
         {/* Deltas */}
         <div className={columnClasses + " flex-shrink"}>
-          {records.slice(1).map((record, index) => (
-            <RowDelta key={index} emphasized={index < 2} delta={record.delta} />
+          {records.slice(1, 3).map((record, index) => (
+            <RowDelta key={index} emphasized={true} delta={record.delta} />
+          ))}
+          <div style={{ height: verticalGap }} />
+          {records.slice(3).map((record, index) => (
+            <RowDelta key={index} emphasized={false} delta={record.delta} />
           ))}
         </div>
 
         {/* Times */}
         <div className={columnClasses + " flex-shrink"}>
-          {records.slice(1).map((record, index) => (
-            <RowTime key={index} emphasized={index < 2} time={record.time} />
+          {records.slice(1, 3).map((record, index) => (
+            <RowTime key={index} emphasized={true} time={record.time} />
+          ))}
+          <div style={{ height: verticalGap }} />
+          {records.slice(3).map((record, index) => (
+            <RowTime key={index} emphasized={false} time={record.time} />
           ))}
         </div>
       </div>

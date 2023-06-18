@@ -8,6 +8,7 @@
     "start": "next start -p 3333",
     "lint": "next lint",
     "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "remotion:preview": "remotion preview src/index.ts",
     "remotion:render": "remotion render src/index.ts Testing out.mp4 --gl=angle"
   },
