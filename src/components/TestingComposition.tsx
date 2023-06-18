@@ -1,12 +1,10 @@
-import { AbsoluteFill, OffthreadVideo, Sequence, Video, staticFile, useCurrentFrame } from "remotion";
-import { ReplayIntro } from "./ReplayIntro";
-import type { ReplayInfo } from "./globalTypes";
-import { ReplayVideo } from "./ReplayVideo";
-import { use } from "react";
+import { AbsoluteFill, Sequence } from "remotion";
+import type { ReplayInfo } from "../globalTypes";
+import { Intro } from "./Intro";
 
 const videoInfo: ReplayInfo[] = [
   {
-    src: "/video-cache/Video1.webm",
+    src: "/remotion/video-cache/Video1.webm",
     durationInFrames: 450,
     startFrame: 0,
     tmioLink: "https://trackmania.io/#/leaderboard/olsKnq_qAghcVAnEkoeUnVHFZei",
@@ -31,24 +29,22 @@ export const TestingComposition = () => {
       <AbsoluteFill>
         {
           videoInfo.map((video, index) => (
-            <>
+            <AbsoluteFill key={index}>
               <Sequence
-                key={index}
                 name={"Intro " + (index + 1)}
                 from={video.startFrame}
                 durationInFrames={video.durationInFrames}
               >
-                <ReplayIntro replayInfo={video} />
+                <Intro replayInfo={video} />
               </Sequence>
               {/* <Sequence
-                key={index}
                 name={"Video " + (index + 1)}
                 from={video.startFrame}
                 durationInFrames={video.durationInFrames}
               >
                 <Video src={staticFile(video.src)} />
               </Sequence> */}
-            </>
+            </AbsoluteFill>
           ))
         }
       </AbsoluteFill>

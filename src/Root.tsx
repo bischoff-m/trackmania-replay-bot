@@ -1,6 +1,6 @@
 import React from "react";
 import { Composition } from "remotion";
-import { TestingComposition } from "./TestingComposition";
+import { TestingComposition } from "./components/TestingComposition";
 import "./style.css";
 
 export const RemotionRoot: React.FC = () => {

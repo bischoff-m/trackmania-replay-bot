@@ -2,5 +2,11 @@
     "files.associations": {
         "*.css": "tailwindcss"
     },
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnType": true,
+    "editor.rulers": [
+        80,
+    ]
 }
