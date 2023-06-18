@@ -2,7 +2,6 @@
 
 Fully automates selecting Trackmania replays, composing them into a video and uploading the video to YouTube.
 
-
 # Next.js + Tailwind CSS Starter
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).

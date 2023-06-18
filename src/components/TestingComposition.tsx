@@ -21,32 +21,30 @@ const videoInfo: ReplayInfo[] = [
   //   startFrame: 750,
   //   tmioLink: "https://trackmania.io/#/leaderboard/ho7WKyIBTV_dNmP9hFFadUvvtLd",
   // },
-]
+];
 
 export const TestingComposition = () => {
   return (
     <>
       <AbsoluteFill>
-        {
-          videoInfo.map((video, index) => (
-            <AbsoluteFill key={index}>
-              <Sequence
-                name={"Intro " + (index + 1)}
-                from={video.startFrame}
-                durationInFrames={video.durationInFrames}
-              >
-                <Intro replayInfo={video} />
-              </Sequence>
-              {/* <Sequence
+        {videoInfo.map((video, index) => (
+          <AbsoluteFill key={index}>
+            <Sequence
+              name={"Intro " + (index + 1)}
+              from={video.startFrame}
+              durationInFrames={video.durationInFrames}
+            >
+              <Intro replayInfo={video} />
+            </Sequence>
+            {/* <Sequence
                 name={"Video " + (index + 1)}
                 from={video.startFrame}
                 durationInFrames={video.durationInFrames}
               >
                 <Video src={staticFile(video.src)} />
               </Sequence> */}
-            </AbsoluteFill>
-          ))
-        }
+          </AbsoluteFill>
+        ))}
       </AbsoluteFill>
     </>
   );

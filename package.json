@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start -p 3333",
     "lint": "next lint",
-    "remotion-preview": "remotion preview src/index.ts",
-    "remotion-render": "remotion render src/index.ts Testing out.mp4 --gl=angle"
+    "prettier": "prettier --write .",
+    "remotion:preview": "remotion preview src/index.ts",
+    "remotion:render": "remotion render src/index.ts Testing out.mp4 --gl=angle"
   },
   "dependencies": {
     "@remotion/cli": "3.3.101",
