@@ -3,23 +3,25 @@ import { Intro } from "./Intro";
 import { ReplayVideo } from "./ReplayVideo";
 import { ClipData } from "../globalTypes";
 
-export const Clip = (props: { clipNumber: number; clipData: ClipData }) => {
-  let { startFrame, videoData } = props.clipData;
+export const Clip: React.FC<{
+  clipNumber: number;
+  clipData: ClipData;
+}> = ({ clipNumber, clipData }) => {
   return (
     <AbsoluteFill>
       <Sequence
-        name={"Intro " + props.clipNumber}
-        from={startFrame}
-        durationInFrames={videoData.durationInFrames}
+        name={"Intro " + clipNumber}
+        from={clipData.startFrame}
+        durationInFrames={clipData.videoData.durationInFrames}
       >
         <Intro />
       </Sequence>
       <Sequence
-        name={"Video " + props.clipNumber}
-        from={startFrame}
-        durationInFrames={videoData.durationInFrames}
+        name={"Video " + clipNumber}
+        from={clipData.startFrame}
+        durationInFrames={clipData.videoData.durationInFrames}
       >
-        <ReplayVideo videoFile={videoData.videoFile} />
+        <ReplayVideo videoFile={clipData.videoData.videoFile} />
       </Sequence>
     </AbsoluteFill>
   );

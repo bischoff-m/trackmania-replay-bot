@@ -1,6 +1,6 @@
 import { colors } from "../theme";
 
-export const IntroStatistics = () => {
+export const IntroStatistics: React.FC = () => {
   const titleStyle = {
     color: colors.textPrimary,
     fontFamily: "IBM Plex Mono",

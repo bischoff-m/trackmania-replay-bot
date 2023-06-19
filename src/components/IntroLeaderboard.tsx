@@ -1,7 +1,7 @@
 import { staticFile } from "remotion";
 import { colors, styles } from "../theme";
 
-export const IntroLeaderboard = () => {
+export const IntroLeaderboard: React.FC = () => {
   const records = [
     {
       name: "ASdaS-BLR",

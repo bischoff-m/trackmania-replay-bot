@@ -1,7 +1,7 @@
 import { staticFile } from "remotion";
 import { colors, styles } from "../theme";
 
-export const IntroHeader = () => {
+export const IntroHeader: React.FC = () => {
   const medals = [
     {
       icon: "remotion/medal_author.png",

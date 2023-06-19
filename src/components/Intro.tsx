@@ -6,7 +6,7 @@ import { IntroStatistics } from "./IntroStatistics";
 
 // TODO: https://www.npmjs.com/package/trackmania.io
 
-export const Intro = () => {
+export const Intro: React.FC = () => {
   return (
     <>
       <AbsoluteFill
