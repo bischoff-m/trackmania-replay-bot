@@ -4,8 +4,6 @@ import { IntroHeader } from "./IntroHeader";
 import { IntroLeaderboard } from "./IntroLeaderboard";
 import { IntroStatistics } from "./IntroStatistics";
 
-// TODO: https://www.npmjs.com/package/trackmania.io
-
 export const Intro: React.FC = () => {
   return (
     <>
@@ -28,7 +26,7 @@ export const Intro: React.FC = () => {
       >
         <div style={{ flex: "0 0 750px" }}>
           <img
-            src={staticFile("remotion/Thumbnail.jpg")}
+            src={staticFile("remotion/img/Thumbnail.jpg")}
             className="w-full"
             style={{
               borderRadius: styles.borderRadius,

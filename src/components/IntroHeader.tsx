@@ -4,19 +4,19 @@ import { colors, styles } from "../theme";
 export const IntroHeader: React.FC = () => {
   const medals = [
     {
-      icon: "remotion/medal_author.png",
+      icon: "remotion/img/medal_author.png",
       value: "0:07.528",
     },
     {
-      icon: "remotion/medal_gold.png",
+      icon: "remotion/img/medal_gold.png",
       value: "0:08:000",
     },
     {
-      icon: "remotion/medal_silver.png",
+      icon: "remotion/img/medal_silver.png",
       value: "0:11.000",
     },
     {
-      icon: "remotion/medal_bronze.png",
+      icon: "remotion/img/medal_bronze.png",
       value: "0:14.000",
     },
   ];
@@ -35,7 +35,7 @@ export const IntroHeader: React.FC = () => {
         <div className="flex w-full">
           <div className="flex items-center justify-center pr-8">
             <img
-              src={staticFile("remotion/FRA.jpg")}
+              src={staticFile("remotion/img/FRA.jpg")}
               style={{ height: 60, borderRadius: styles.flagBorderRadius }}
             />
           </div>

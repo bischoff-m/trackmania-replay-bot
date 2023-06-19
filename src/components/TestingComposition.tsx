@@ -1,9 +1,9 @@
 import { AbsoluteFill } from "remotion";
-import type { CompositionData } from "../globalTypes";
+import type { ReplayData } from "../global";
 import { Clip } from "./Clip";
 
 export const TestingComposition: React.FC<{
-  data: CompositionData;
+  data: ReplayData;
 }> = ({ data }) => {
   return (
     <>

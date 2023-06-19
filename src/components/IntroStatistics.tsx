@@ -1,10 +1,13 @@
 import { colors } from "../theme";
+import { loadFont } from "@remotion/google-fonts/IBMPlexMono";
+
+const { fontFamily } = loadFont();
 
 export const IntroStatistics: React.FC = () => {
   const titleStyle = {
     color: colors.textPrimary,
-    fontFamily: "IBM Plex Mono",
     fontSize: 36,
+    fontFamily,
   };
   const valueStyle = {
     fontSize: 48,

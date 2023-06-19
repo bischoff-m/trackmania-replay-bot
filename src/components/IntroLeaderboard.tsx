@@ -1,69 +1,16 @@
 import { staticFile } from "remotion";
 import { colors, styles } from "../theme";
+import type { Ranking } from "../global";
+import { useClipContext } from "./Clip";
+
+// TODO: End names with "..." if they are too long
+// TODO: Scale down map names if they are too long
+// TODO: Use https://www.npmjs.com/package/twrnc
 
 export const IntroLeaderboard: React.FC = () => {
-  const records = [
-    {
-      name: "ASdaS-BLR",
-      time: "0:07.428",
-      flag: "ITA",
-      delta: "+0:00.000",
-    },
-    {
-      name: "zzzzznot7_Harry",
-      time: "0:07.428",
-      flag: "ENG",
-      delta: "+0:00.002",
-    },
-    {
-      name: "Flechetas",
-      time: "0:07.428",
-      flag: "FRA",
-      delta: "+0:00.002",
-    },
-    {
-      name: "del2211261250015955839",
-      time: "0:07.428",
-      flag: "ITA",
-      delta: "+0:00.002",
-    },
-    {
-      name: "KarjeN",
-      time: "0:07.428",
-      flag: "SWE",
-      delta: "+0:00.002",
-    },
-    {
-      name: "poupipou.",
-      time: "0:07.428",
-      flag: "FRA",
-      delta: "+0:00.002",
-    },
-    {
-      name: "Perchignon",
-      time: "0:07.428",
-      flag: "FRA",
-      delta: "+0:00.002",
-    },
-    {
-      name: "KaarloKek",
-      time: "0:07.428",
-      flag: "FIN",
-      delta: "+0:00.002",
-    },
-    {
-      name: "ZedroXTM",
-      time: "0:07.428",
-      flag: "FRA",
-      delta: "+0:00.002",
-    },
-    {
-      name: "Stormyymate",
-      time: "0:07.428",
-      flag: "AUS",
-      delta: "+0:00.002",
-    },
-  ];
+  const clipData = useClipContext();
+  const { leaderboard } = clipData.introData;
+  let deltas = leaderboard.map((record) => record.time - leaderboard[0].time);
 
   const numberPrimaryStyle = {
     fontSize: 96,
@@ -92,9 +39,6 @@ export const IntroLeaderboard: React.FC = () => {
   const fontSizeBig = 54;
   const fontSizeSmall = 40;
 
-  // TODO: Add padding between 3rd and 4th place
-  // TODO: Use https://www.npmjs.com/package/twrnc
-
   const RowNumber: React.FC<{
     emphasized: boolean;
     number: number;
@@ -114,14 +58,14 @@ export const IntroLeaderboard: React.FC = () => {
 
   const RowFlag: React.FC<{
     emphasized: boolean;
-    flag: string;
-  }> = ({ emphasized, flag }) => (
+    nation: string;
+  }> = ({ emphasized, nation }) => (
     <div
       className="flex items-center justify-center"
       style={{ height: emphasized ? rowHeightBig : rowHeightSmall }}
     >
       <img
-        src={staticFile(`remotion/${flag}.jpg`)}
+        src={staticFile(`remotion/img/${nation}.jpg`)}
         style={{
           height: emphasized ? fontSizeBig : fontSizeSmall,
           borderRadius: styles.flagBorderRadius,
@@ -147,24 +91,25 @@ export const IntroLeaderboard: React.FC = () => {
 
   const RowDelta: React.FC<{
     emphasized: boolean;
-    delta: string;
+    delta: number;
   }> = ({ emphasized, delta }) => (
     <span
       className="flex items-center justify-end"
       style={{
         height: emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: 0.8 * (emphasized ? 0.9 * fontSizeBig : fontSizeSmall),
+        fontSize: 0.95 * (emphasized ? 0.85 * fontSizeBig : fontSizeSmall),
         color: colors.textSecondary,
         fontFamily: "Century Gothic",
       }}
     >
-      {delta}
+      {/* TODO: Convert millis to string */}
+      {"+0:00.003"}
     </span>
   );
 
   const RowTime: React.FC<{
     emphasized: boolean;
-    time: string;
+    time: number;
   }> = ({ emphasized, time }) => (
     <span
       className="flex items-center justify-end"
@@ -175,7 +120,8 @@ export const IntroLeaderboard: React.FC = () => {
         fontWeight: emphasized ? 700 : 400,
       }}
     >
-      {time}
+      {/* TODO: Convert millis to string */}
+      {"0:07.000"}
     </span>
   );
 
@@ -189,6 +135,7 @@ export const IntroLeaderboard: React.FC = () => {
           backgroundColor: colors.light,
           color: colors.darkPrimary,
           borderRadius: styles.borderRadius,
+          boxShadow: "10px 10px 20px rgba(0, 0, 0, 0.25)",
         }}
       >
         {/* Number */}
@@ -205,7 +152,7 @@ export const IntroLeaderboard: React.FC = () => {
           style={{ width: colWidthFlag }}
         >
           <img
-            src={staticFile(`remotion/${records[0].flag}.jpg`)}
+            src={staticFile(`remotion/img/${leaderboard[0].nation}.jpg`)}
             style={{ height: 48, borderRadius: styles.flagBorderRadius }}
           />
         </div>
@@ -215,7 +162,7 @@ export const IntroLeaderboard: React.FC = () => {
           className="flex flex-grow items-center"
           style={{ fontSize: 64, fontWeight: 700 }}
         >
-          {records[0].name}
+          {leaderboard[0].name}
         </span>
 
         {/* Time */}
@@ -227,7 +174,8 @@ export const IntroLeaderboard: React.FC = () => {
             fontFamily: "Century Gothic",
           }}
         >
-          {records[0].time}
+          {/* TODO: Format as 0.00:00.000 */}
+          {leaderboard[0].time}
         </span>
       </div>
 
@@ -237,55 +185,59 @@ export const IntroLeaderboard: React.FC = () => {
       <div className="flex flex-1 gap-6 pl-6 pr-12">
         {/* Numbers */}
         <div className={columnClasses} style={{ width: colWidthNumber }}>
-          {records.slice(1, 3).map((_, index) => (
+          {leaderboard.slice(1, 3).map((_, index) => (
             <RowNumber key={index} emphasized={true} number={index + 2} />
           ))}
           <div style={{ height: verticalGap }} />
-          {records.slice(3).map((_, index) => (
+          {leaderboard.slice(3).map((_, index) => (
             <RowNumber key={index} emphasized={false} number={index + 4} />
           ))}
         </div>
 
         {/* Flags */}
         <div className={columnClasses} style={{ width: colWidthFlag }}>
-          {records.slice(1, 3).map((record, index) => (
-            <RowFlag key={index} emphasized={true} flag={record.flag} />
+          {leaderboard.slice(1, 3).map((record, index) => (
+            <RowFlag key={index} emphasized={true} nation={record.nation} />
           ))}
           <div style={{ height: verticalGap }} />
-          {records.slice(3).map((record, index) => (
-            <RowFlag key={index} emphasized={false} flag={record.flag} />
+          {leaderboard.slice(3).map((record, index) => (
+            <RowFlag key={index} emphasized={false} nation={record.nation} />
           ))}
         </div>
 
         {/* Names */}
         <div className={columnClasses + " flex-grow"}>
-          {records.slice(1, 3).map((record, index) => (
+          {leaderboard.slice(1, 3).map((record, index) => (
             <RowName key={index} emphasized={true} name={record.name} />
           ))}
           <div style={{ height: verticalGap }} />
-          {records.slice(3).map((record, index) => (
+          {leaderboard.slice(3).map((record, index) => (
             <RowName key={index} emphasized={false} name={record.name} />
           ))}
         </div>
 
         {/* Deltas */}
         <div className={columnClasses + " flex-shrink"}>
-          {records.slice(1, 3).map((record, index) => (
-            <RowDelta key={index} emphasized={true} delta={record.delta} />
+          {leaderboard.slice(1, 3).map((record, index) => (
+            <RowDelta key={index} emphasized={true} delta={deltas[index + 1]} />
           ))}
           <div style={{ height: verticalGap }} />
-          {records.slice(3).map((record, index) => (
-            <RowDelta key={index} emphasized={false} delta={record.delta} />
+          {leaderboard.slice(3).map((record, index) => (
+            <RowDelta
+              key={index}
+              emphasized={false}
+              delta={deltas[index + 3]}
+            />
           ))}
         </div>
 
         {/* Times */}
         <div className={columnClasses + " flex-shrink"}>
-          {records.slice(1, 3).map((record, index) => (
+          {leaderboard.slice(1, 3).map((record, index) => (
             <RowTime key={index} emphasized={true} time={record.time} />
           ))}
           <div style={{ height: verticalGap }} />
-          {records.slice(3).map((record, index) => (
+          {leaderboard.slice(3).map((record, index) => (
             <RowTime key={index} emphasized={false} time={record.time} />
           ))}
         </div>
