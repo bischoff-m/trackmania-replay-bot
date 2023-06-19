@@ -95,72 +95,87 @@ export const IntroLeaderboard: React.FC = () => {
   // TODO: Add padding between 3rd and 4th place
   // TODO: Use https://www.npmjs.com/package/twrnc
 
-  const RowNumber = (props: { emphasized: boolean; number: number }) => (
+  const RowNumber: React.FC<{
+    emphasized: boolean;
+    number: number;
+  }> = ({ emphasized, number }) => (
     <span
       className="flex items-center justify-center"
       style={{
-        height: props.emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: props.emphasized ? 1.2 * fontSizeBig : fontSizeSmall,
+        height: emphasized ? rowHeightBig : rowHeightSmall,
+        fontSize: emphasized ? 1.2 * fontSizeBig : fontSizeSmall,
         fontFamily: "Century Gothic",
-        ...(props.emphasized && numberSecondaryStyle),
+        ...(emphasized && numberSecondaryStyle),
       }}
     >
-      {props.number}
+      {number}
     </span>
   );
 
-  const RowFlag = (props: { emphasized: boolean; flag: string }) => (
+  const RowFlag: React.FC<{
+    emphasized: boolean;
+    flag: string;
+  }> = ({ emphasized, flag }) => (
     <div
       className="flex items-center justify-center"
-      style={{ height: props.emphasized ? rowHeightBig : rowHeightSmall }}
+      style={{ height: emphasized ? rowHeightBig : rowHeightSmall }}
     >
       <img
-        src={staticFile(`remotion/${props.flag}.jpg`)}
+        src={staticFile(`remotion/${flag}.jpg`)}
         style={{
-          height: props.emphasized ? fontSizeBig : fontSizeSmall,
+          height: emphasized ? fontSizeBig : fontSizeSmall,
           borderRadius: styles.flagBorderRadius,
         }}
       />
     </div>
   );
 
-  const RowName = (props: { emphasized: boolean; name: string }) => (
+  const RowName: React.FC<{
+    emphasized: boolean;
+    name: string;
+  }> = ({ emphasized, name }) => (
     <span
       className="flex items-center"
       style={{
-        height: props.emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: props.emphasized ? fontSizeBig : fontSizeSmall,
+        height: emphasized ? rowHeightBig : rowHeightSmall,
+        fontSize: emphasized ? fontSizeBig : fontSizeSmall,
       }}
     >
-      {props.name}
+      {name}
     </span>
   );
 
-  const RowDelta = (props: { emphasized: boolean; delta: string }) => (
+  const RowDelta: React.FC<{
+    emphasized: boolean;
+    delta: string;
+  }> = ({ emphasized, delta }) => (
     <span
       className="flex items-center justify-end"
       style={{
-        height: props.emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: 0.8 * (props.emphasized ? 0.9 * fontSizeBig : fontSizeSmall),
+        height: emphasized ? rowHeightBig : rowHeightSmall,
+        fontSize: 0.8 * (emphasized ? 0.9 * fontSizeBig : fontSizeSmall),
         color: colors.textSecondary,
         fontFamily: "Century Gothic",
       }}
     >
-      {props.delta}
+      {delta}
     </span>
   );
 
-  const RowTime = (props: { emphasized: boolean; time: string }) => (
+  const RowTime: React.FC<{
+    emphasized: boolean;
+    time: string;
+  }> = ({ emphasized, time }) => (
     <span
       className="flex items-center justify-end"
       style={{
-        height: props.emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: props.emphasized ? fontSizeBig : 1.2 * fontSizeSmall,
+        height: emphasized ? rowHeightBig : rowHeightSmall,
+        fontSize: emphasized ? fontSizeBig : 1.2 * fontSizeSmall,
         fontFamily: "Century Gothic",
-        fontWeight: props.emphasized ? 700 : 400,
+        fontWeight: emphasized ? 700 : 400,
       }}
     >
-      {props.time}
+      {time}
     </span>
   );
 
