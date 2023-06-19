@@ -48,8 +48,12 @@ export const IntroHeader = () => {
       {/* Right column */}
       <div className="flex flex-col justify-between py-3">
         {medals.map((medal, index) => (
-          <div key={index} className="flex" style={{ gap: 20, height: 60 }}>
-            <span style={{ fontSize: 42, fontFamily: "Century Gothic" }}>
+          <div
+            key={index}
+            className="flex items-center justify-center"
+            style={{ gap: 20, height: 60 }}
+          >
+            <span style={{ fontSize: 48, fontFamily: "Century Gothic" }}>
               {medal.value}
             </span>
             <img src={staticFile(medal.icon)} style={{ height: 60 }} />

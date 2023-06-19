@@ -1,13 +1,12 @@
 import { AbsoluteFill, staticFile } from "remotion";
-import { ReplayInfo } from "../globalTypes";
 import { colors, styles } from "../theme";
-import { IntroStatistics } from "./IntroStatistics";
 import { IntroHeader } from "./IntroHeader";
 import { IntroLeaderboard } from "./IntroLeaderboard";
+import { IntroStatistics } from "./IntroStatistics";
 
 // TODO: https://www.npmjs.com/package/trackmania.io
 
-export const Intro = (props: { replayInfo: ReplayInfo }) => {
+export const Intro = () => {
   return (
     <>
       <AbsoluteFill
@@ -37,7 +36,7 @@ export const Intro = (props: { replayInfo: ReplayInfo }) => {
               marginBottom: 80,
             }}
           />
-          <IntroStatistics replayInfo={props.replayInfo} />
+          <IntroStatistics />
         </div>
         <div className="flex flex-1 flex-col" style={{ gap: 100 }}>
           <div style={{ flex: "0 0 300px" }}>

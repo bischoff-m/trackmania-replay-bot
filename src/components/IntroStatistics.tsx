@@ -1,7 +1,6 @@
-import { ReplayInfo } from "../globalTypes";
 import { colors } from "../theme";
 
-export const IntroStatistics = (props: { replayInfo: ReplayInfo }) => {
+export const IntroStatistics = () => {
   const titleStyle = {
     color: colors.textPrimary,
     fontFamily: "IBM Plex Mono",
