@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { Composition } from "remotion";
-import { TestingComposition } from "./components/TestingComposition";
-import { ReplayData, exampleCompData as exampleReplays } from "./global";
-import "./style.css";
+import React, { useEffect } from 'react'
+import { Composition } from 'remotion'
+import { TestingComposition } from '@@/components/TestingComposition'
+import { ReplayData, exampleCompData as exampleReplays } from '@/globals'
+import '@@/style.css'
 
 // TODO: https://www.npmjs.com/package/trackmania.io
 // TODO: Start here: https://tmio.greep.fr/#/docs/main/main/class/TMMap?scrollTo=subWR
@@ -13,7 +13,7 @@ import "./style.css";
 // tmioLink: "https://trackmania.io/#/leaderboard/ho7WKyIBTV_dNmP9hFFadUvvtLd",
 
 export const RemotionRoot: React.FC = () => {
-  const [replays, setReplays] = React.useState<ReplayData | null>(null);
+  const [replays, setReplays] = React.useState<ReplayData | null>(null)
 
   useEffect(() => {
     // const allClips: CompositionData = {
@@ -41,18 +41,18 @@ export const RemotionRoot: React.FC = () => {
     // };
 
     // TODO: maybe delayRender() is needed here?
-    fetch("/remotion/cache/ho7WKyIBTV_dNmP9hFFadUvvtLd.json").then((res) => {
-      console.log(res);
+    fetch('/remotion/cache/ho7WKyIBTV_dNmP9hFFadUvvtLd.json').then((res) => {
+      console.log(res)
       // TODO: Process composition data here
-      setReplays(exampleReplays);
-    });
-  }, []);
+      setReplays(exampleReplays)
+    })
+  }, [])
 
   return (
     <>
       {replays && (
         <Composition
-          id="Testing"
+          id='Testing'
           component={TestingComposition}
           durationInFrames={Object.values(replays).reduce(
             (sum, clip) => sum + clip.durationInFrames,
@@ -65,5 +65,5 @@ export const RemotionRoot: React.FC = () => {
         />
       )}
     </>
-  );
-};
+  )
+}

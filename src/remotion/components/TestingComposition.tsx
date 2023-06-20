@@ -1,9 +1,9 @@
-import { AbsoluteFill } from "remotion";
-import type { ReplayData } from "../global";
-import { Clip } from "./Clip";
+import { AbsoluteFill } from 'remotion'
+import type { ReplayData } from '@/globals'
+import { Clip } from '@@/components/Clip'
 
 export const TestingComposition: React.FC<{
-  data: ReplayData;
+  data: ReplayData
 }> = ({ data }) => {
   return (
     <>
@@ -13,5 +13,5 @@ export const TestingComposition: React.FC<{
         ))}
       </AbsoluteFill>
     </>
-  );
-};
+  )
+}
