@@ -8,7 +8,7 @@ import { useClipContext } from '@@/components/Clip'
 
 export const IntroLeaderboard: React.FC = () => {
   const clipData = useClipContext()
-  const { leaderboard } = clipData.introData
+  const { leaderboard } = clipData.map
   let deltas = leaderboard.map((record) => record.time - leaderboard[0].time)
 
   const numberPrimaryStyle = {

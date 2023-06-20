@@ -31,7 +31,7 @@ export const Clip: React.FC<{
         <Sequence
           name={'Video ' + clipNumber}
           from={clipData.startFrame + 60 * 5}
-          durationInFrames={clipData.videoData.durationInFrames}
+          durationInFrames={clipData.video.durationInFrames}
         >
           <ReplayVideo />
         </Sequence>

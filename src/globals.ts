@@ -3,14 +3,14 @@ export type ReplayData = { [clipID: string]: ClipData }
 export type ClipData = {
   startFrame: number
   durationInFrames: number
-  introData: IntroData
-  videoData: {
+  map: MapData
+  video: {
     videoFile: string
     durationInFrames: number
   }
 }
 
-export type IntroData = {
+export type MapData = {
   mapName: string
   mapAuthor: string
   mapAuthorNation: string
@@ -36,7 +36,7 @@ export const exampleCompData: ReplayData = {
   olsKnq_qAghcVAnEkoeUnVHFZei: {
     startFrame: 0,
     durationInFrames: 60 * 5 + 450,
-    introData: {
+    map: {
       mapName: 'Test Map',
       mapAuthor: 'Test Author',
       mapAuthorNation: 'FRA',
@@ -122,7 +122,7 @@ export const exampleCompData: ReplayData = {
       uploadedAt: new Date('2021-01-01T00:00:00.000Z'),
       playerCount: [3000000, 4000000],
     },
-    videoData: {
+    video: {
       videoFile: '/remotion/video-cache/Video1.webm',
       durationInFrames: 450,
     },
