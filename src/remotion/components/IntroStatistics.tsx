@@ -1,7 +1,9 @@
 import { colors } from '@@/theme'
 import { loadFont } from '@remotion/google-fonts/IBMPlexMono'
 
-// TODO: Add trackmania.io map ID at bottom left
+// TODO: Add trackmania.io map ID at bottom left(?)
+// TODO: Add badges like "COTD" or "Royal Rotation"
+// TODO: Add TMX Ratings (Awards, Map Value?)
 
 const { fontFamily } = loadFont()
 

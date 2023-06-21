@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Composition } from 'remotion'
-import { TestingComposition } from '@@/components/TestingComposition'
-import { ReplayData, exampleCompData as exampleReplays } from '@/globals'
+import { MainComposition } from '@/remotion/components/MainComposition'
+import { ReplayData, exampleReplays } from '@/globals'
 import '@@/style.css'
 
 // TODO: https://www.npmjs.com/package/trackmania.io
@@ -41,19 +41,20 @@ export const RemotionRoot: React.FC = () => {
     // };
 
     // TODO: maybe delayRender() is needed here?
-    fetch('/remotion/cache/ho7WKyIBTV_dNmP9hFFadUvvtLd.json').then((res) => {
-      console.log(res)
-      // TODO: Process composition data here
-      setReplays(exampleReplays)
-    })
+    // fetch('/remotion/cache/ho7WKyIBTV_dNmP9hFFadUvvtLd.json').then((res) => {
+    //   console.log(res)
+    //   // TODO: Process composition data here
+    //   setReplays(exampleReplays)
+    // })
+    setReplays(exampleReplays)
   }, [])
 
   return (
     <>
       {replays && (
         <Composition
-          id='Testing'
-          component={TestingComposition}
+          id='MainComposition'
+          component={MainComposition}
           durationInFrames={Object.values(replays).reduce(
             (sum, clip) => sum + clip.durationInFrames,
             0

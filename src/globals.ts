@@ -23,7 +23,7 @@ export type MapData = {
   leaderboard: Ranking[]
   thumbnailFile: string
   uploadedAt: Date
-  playerCount: number | [number, number]
+  // playerCount: number | [number, number] // TODO: Where to get this from?
 }
 
 export type Ranking = {
@@ -32,10 +32,10 @@ export type Ranking = {
   nation: string
 }
 
-export const exampleCompData: ReplayData = {
+export const exampleReplays: ReplayData = {
   olsKnq_qAghcVAnEkoeUnVHFZei: {
     startFrame: 0,
-    durationInFrames: 60 * 5 + 450,
+    durationInFrames: 60 * 5 + 450, // 5s Intro + Replay Video
     map: {
       mapName: 'Test Map',
       mapAuthor: 'Test Author',
@@ -46,6 +46,78 @@ export const exampleCompData: ReplayData = {
         silver: 11000,
         bronze: 14000,
       },
+      // leaderboard: {
+      //   1: {
+      //     name: 'ASdaS-BLR',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'ITA',
+      //     // delta: "+0:00.000",
+      //   },
+      //   2: {
+      //     name: 'zzzzznot7_Harry',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'ENG',
+      //     // delta: "+0:00.002",
+      //   },
+      //   3: {
+      //     name: 'Flechetas',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'FRA',
+      //     // delta: "+0:00.002",
+      //   },
+      //   4: {
+      //     name: 'del2211261250015955839',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'ITA',
+      //     // delta: "+0:00.002",
+      //   },
+      //   5: {
+      //     name: 'KarjeN',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'SWE',
+      //     // delta: "+0:00.002",
+      //   },
+      //   6: {
+      //     name: 'poupipou.',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'FRA',
+      //     // delta: "+0:00.002",
+      //   },
+      //   7: {
+      //     name: 'Perchignon',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'FRA',
+      //     // delta: "+0:00.002",
+      //   },
+      //   8: {
+      //     name: 'KaarloKek',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'FIN',
+      //     // delta: "+0:00.002",
+      //   },
+      //   9: {
+      //     name: 'ZedroXTM',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'FRA',
+      //     // delta: "+0:00.002",
+      //   },
+      //   10: {
+      //     name: 'Stormyymate',
+      //     // time: "0:07.428",
+      //     time: 7431,
+      //     nation: 'AUS',
+      //     // delta: "+0:00.002",
+      //   },
+      // },
       leaderboard: [
         {
           name: 'ASdaS-BLR',
@@ -120,7 +192,6 @@ export const exampleCompData: ReplayData = {
       ],
       thumbnailFile: '/remotion/Thumbnail.jpg',
       uploadedAt: new Date('2021-01-01T00:00:00.000Z'),
-      playerCount: [3000000, 4000000],
     },
     video: {
       videoFile: '/remotion/video-cache/Video1.webm',
