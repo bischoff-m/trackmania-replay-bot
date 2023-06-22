@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
+    "rootDir": "packages",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -14,18 +14,19 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./src/*"],
-      "@@/*": ["./src/remotion/*"]
-    },
-    "types": ["node"],
-    "outDir": "dist"
+    "types": ["node"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [],
+  "exclude": ["node_modules", "packages"],
+  "references": [
+    {
+      "path": "packages/express"
+    },
+    {
+      "path": "packages/next"
+    },
+    {
+      "path": "packages/remotion"
+    }
+  ]
 }

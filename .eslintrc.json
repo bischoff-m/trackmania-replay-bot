@@ -1,10 +1,10 @@
 {
+  // https://nextjs.org/docs/pages/building-your-application/configuring/eslint
+  "root": true,
   "extends": ["next/core-web-vitals", "prettier"],
-  "plugins": ["@remotion"],
-  "overrides": [
-    {
-      "files": ["src/*.{ts,tsx}"],
-      "extends": ["plugin:@remotion/recommended"]
+  "settings": {
+    "next": {
+      "rootDir": "packages/next/"
     }
-  ]
+  }
 }
