@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "echo \"TODO maybe concurrently?\" && exit 1",
+    "dev": "concurrently \"npm run express:dev\" \"npm run next:dev\"",
     "express:start": "npm run start --prefix packages/express",
     "express:dev": "npm run dev --prefix packages/express",
     "next:dev": "npm run dev --prefix packages/next",
@@ -19,6 +19,7 @@
     "@types/node": "^20.2.5",
     "@types/react": "18.2.9",
     "@types/react-dom": "18.2.4",
+    "concurrently": "^8.2.0",
     "encoding": "^0.1.13",
     "eslint": "8.42.0",
     "eslint-config-next": "^13.4.6",

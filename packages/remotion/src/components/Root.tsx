@@ -5,8 +5,7 @@ import type { ReplayData } from '@global/types'
 import { exampleReplays } from '@global/examples'
 import '@/style.css'
 
-// TODO: https://www.npmjs.com/package/trackmania.io
-// TODO: Start here: https://tmio.greep.fr/#/docs/main/main/class/TMMap?scrollTo=subWR
+// TODO: Define ports (3000, 4000, 5000) in global variable
 // TODO: Define base path /public/remotion in global variable
 
 // tmioLink: "https://trackmania.io/#/leaderboard/olsKnq_qAghcVAnEkoeUnVHFZei",
@@ -17,30 +16,6 @@ export const RemotionRoot: React.FC = () => {
   const [replays, setReplays] = React.useState<ReplayData | null>(null)
 
   useEffect(() => {
-    // const allClips: CompositionData = {
-    //   olsKnq_qAghcVAnEkoeUnVHFZei: {
-    //     startFrame: 0,
-    //     videoData: {
-    //       videoFile: "/remotion/video-cache/Video1.webm",
-    //       durationInFrames: 450,
-    //     },
-    //   },
-    //   PhJGvGjkCaw299rBhVsEhNJKX1: {
-    //     startFrame: 450,
-    //     videoData: {
-    //       videoFile: "/remotion/video-cache/Video2.webm",
-    //       durationInFrames: 300,
-    //     },
-    //   },
-    //   ho7WKyIBTV_dNmP9hFFadUvvtLd: {
-    //     startFrame: 750,
-    //     videoData: {
-    //       videoFile: "/remotion/video-cache/Video3.webm",
-    //       durationInFrames: 478,
-    //     },
-    //   },
-    // };
-
     // TODO: maybe delayRender() is needed here?
     // fetch('/remotion/cache/ho7WKyIBTV_dNmP9hFFadUvvtLd.json').then((res) => {
     //   console.log(res)

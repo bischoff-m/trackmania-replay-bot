@@ -23,6 +23,7 @@ export type MapData = {
   leaderboard: Ranking[]
   thumbnailFile: string
   uploadedAt: Date
+  timestamp: Date
   // playerCount: number | [number, number] // TODO: Where to get this from?
 }
 
@@ -30,4 +31,10 @@ export type Ranking = {
   name: string
   time: number
   nation: string
+}
+
+export type GetMapInfoResponse = {
+  success: boolean
+  data: MapData | {}
+  error: string
 }

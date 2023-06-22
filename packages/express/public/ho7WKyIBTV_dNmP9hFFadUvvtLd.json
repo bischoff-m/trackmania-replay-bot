@@ -1,0 +1,66 @@
+{
+  "mapName": "Forget-Me-Not (ft' agrabou)",
+  "mapAuthor": "ripfish_",
+  "mapAuthorNation": "GER",
+  "medals": {
+    "author": 58125,
+    "gold": 62000,
+    "silver": 70000,
+    "bronze": 88000
+  },
+  "leaderboard": [
+    {
+      "name": "mime.cut",
+      "time": 56928,
+      "nation": "POL"
+    },
+    {
+      "name": "Erizel",
+      "time": 56971,
+      "nation": "NOR"
+    },
+    {
+      "name": "JussyDr",
+      "time": 57014,
+      "nation": "NED"
+    },
+    {
+      "name": "bozbez",
+      "time": 57048,
+      "nation": "GBR"
+    },
+    {
+      "name": "Mawi._",
+      "time": 57058,
+      "nation": "POR"
+    },
+    {
+      "name": "Magorian0212",
+      "time": 57064,
+      "nation": "POL"
+    },
+    {
+      "name": "Hendo22_",
+      "time": 57138,
+      "nation": "GBR"
+    },
+    {
+      "name": "Mury99",
+      "time": 57146,
+      "nation": "CZE"
+    },
+    {
+      "name": "JanTM-",
+      "time": 57148,
+      "nation": "GER"
+    },
+    {
+      "name": "Zenyy",
+      "time": 57181,
+      "nation": "FRA"
+    }
+  ],
+  "thumbnailFile": "https://trackmania.io/api/download/jpg/9b91095b-4aab-4280-b2a7-d2ab661a89c6",
+  "uploadedAt": "2023-02-17T23:35:44.000Z",
+  "timestamp": "2023-06-22T22:06:02.019Z"
+}

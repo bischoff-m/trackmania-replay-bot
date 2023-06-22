@@ -54,7 +54,7 @@ export const IntroLeaderboard: React.FC = () => {
       {number}
     </span>
   )
-
+  // TODO: Handle UNKNOWN flag
   const RowFlag: React.FC<{
     emphasized: boolean
     nation: string
@@ -145,6 +145,7 @@ export const IntroLeaderboard: React.FC = () => {
           1
         </span>
 
+        {/* TODO: Handle UNKNOWN flag */}
         {/* Flag */}
         <div
           className='flex w-20 justify-center'
@@ -193,6 +194,7 @@ export const IntroLeaderboard: React.FC = () => {
           ))}
         </div>
 
+        {/* TODO: Handle UNKNOWN flag */}
         {/* Flags */}
         <div className={columnClasses} style={{ width: colWidthFlag }}>
           {leaderboard.slice(1, 3).map((record, index) => (
