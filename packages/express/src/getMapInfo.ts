@@ -1,4 +1,5 @@
-import type { GetMapInfoResponse, MapData, Ranking } from '@global/types'
+import type { MapData, Ranking } from '@global/types'
+import type { GetMapInfoResponse } from '@global/api'
 import type { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'

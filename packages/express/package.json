@@ -2,7 +2,7 @@
   "name": "replay-bot-express",
   "version": "0.1.0",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node -r ts-node/register -r src/env.ts src/index.ts",
     "dev": "nodemon"
   },
   "dependencies": {

@@ -3,27 +3,9 @@ import { colors, styles } from '@/theme'
 import { useClipContext } from '@/components/MainComposition'
 import { MapData } from '@global/types'
 import { formatTrackmaniaTime } from '@global/util'
+import { routes } from '@global/api'
 
 export const IntroHeader: React.FC = () => {
-  const medals = [
-    {
-      icon: 'img/medal_author.png',
-      value: '0:07.528',
-    },
-    {
-      icon: 'img/medal_gold.png',
-      value: '0:08:000',
-    },
-    {
-      icon: 'img/medal_silver.png',
-      value: '0:11.000',
-    },
-    {
-      icon: 'img/medal_bronze.png',
-      value: '0:14.000',
-    },
-  ]
-
   const mapData = useClipContext().map
 
   return (
@@ -41,7 +23,7 @@ export const IntroHeader: React.FC = () => {
           {mapData.authorNation !== 'UNKNOWN' && (
             <div className='flex items-center justify-center pr-8'>
               <Img
-                src={`http://localhost:3000/getFlag/${mapData.authorNation}`}
+                src={routes.getFlag.format(mapData.authorNation)}
                 style={{ height: 60, borderRadius: styles.flagBorderRadius }}
               />
             </div>

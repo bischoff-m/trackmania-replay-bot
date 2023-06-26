@@ -2,9 +2,9 @@
   "name": "replay-bot-next",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev -p 4000",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start -p 4000",
+    "start": "next start -p 3000",
     "lint": "next lint"
   },
   "dependencies": {

@@ -2,13 +2,12 @@ import { Config } from 'remotion'
 import { enableTailwind } from '@remotion/tailwind'
 import path from 'path'
 
-Config.setPort(5000)
-
 Config.setPublicDir('./public')
 Config.setEntryPoint('./src/index.ts')
 Config.setOutputLocation('../../output/output.mp4')
+Config.setDotEnvLocation('../../.env')
 
-Config.setShouldOpenBrowser(true)
+Config.setShouldOpenBrowser(false)
 Config.setChromiumHeadlessMode(false)
 
 Config.overrideWebpackConfig((config) => {

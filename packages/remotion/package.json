@@ -2,7 +2,7 @@
   "name": "replay-bot-remotion",
   "version": "0.1.0",
   "scripts": {
-    "preview": "remotion preview",
+    "preview": "remotion preview --port 5000",
     "render": "remotion render"
   },
   "dependencies": {

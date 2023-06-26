@@ -1,6 +1,9 @@
 import { handleGetFlag } from '@/getFlag'
 import { handleGetMapInfo } from '@/getMapInfo'
+import { routes } from '@global/api'
 import express from 'express'
+
+const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
 export const userAgent = `
 trackmania-replay-bot
@@ -14,20 +17,18 @@ const app = express()
 
 // TODO: Implement getCachedMaps route to display in nextjs
 
-app.get('/getMapInfo/:mapID', handleGetMapInfo)
-app.get('/getFlag/:flagID', handleGetFlag)
+app.get(routes.getMapInfo.path, handleGetMapInfo)
+app.get(routes.getFlag.path, handleGetFlag)
 
 app.get('/', (req, res) => {
-  res.send(`
-    <h1>Map Info API</h1>
-    Available routes:
-    <ul>
-      <li><a href="/getMapInfo/ho7WKyIBTV_dNmP9hFFadUvvtLd">/getMapInfo/:mapID</a></li>
-      <li><a href="/getFlag/FRA">/getFlag/:flagID</a></li>
-    </ul>
-  `)
+  res.send(
+    '<h1>Available routes:</h1>' +
+      Object.values(routes)
+        .map((route) => route.path)
+        .join('<br>')
+  )
 })
 
-app.listen(3000, () => {
-  console.log('Map Info API server started. URL: http://localhost:3000')
+app.listen(PORT, () => {
+  console.log(`Express server started. URL: http://localhost:${PORT}`)
 })

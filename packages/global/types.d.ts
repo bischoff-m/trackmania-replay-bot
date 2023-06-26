@@ -39,10 +39,3 @@ export type Ranking = {
   time: number
   nation: string
 }
-
-// Express API
-export type GetMapInfoResponse = {
-  success: boolean
-  data: MapData | {}
-  error: string
-}

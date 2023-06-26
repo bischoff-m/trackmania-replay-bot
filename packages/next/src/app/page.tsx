@@ -2,10 +2,12 @@
 /*
 TODO
 - Write function to open remotion preview
+Use this later
+const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 */
 
 import theme from '@/theme'
-import { GetMapInfoResponse } from '@global/types'
+import { routes, type GetMapInfoResponse } from '@global/api'
 import { AppShell, Button, MantineProvider } from '@mantine/core'
 import { Prism } from '@mantine/prism'
 import { useState } from 'react'
@@ -20,7 +22,7 @@ export default function Home() {
   async function onClick() {
     try {
       const fetchRes = await fetch(
-        'http://localhost:3000/getMapInfo/ho7WKyIBTV_dNmP9hFFadUvvtLd'
+        routes.getMapInfo.format('ho7WKyIBTV_dNmP9hFFadUvvtLd')
       )
       const response = (await fetchRes.json()) as GetMapInfoResponse
       setContent(response)

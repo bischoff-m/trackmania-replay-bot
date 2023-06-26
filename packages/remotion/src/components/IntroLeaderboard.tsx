@@ -1,8 +1,9 @@
-import { colors, styles } from '@/theme'
-import { Img, staticFile } from 'remotion'
 import { useClipContext } from '@/components/MainComposition'
-import { formatTrackmaniaDelta, formatTrackmaniaTime } from '@global/util'
+import { colors, styles } from '@/theme'
+import { routes } from '@global/api'
 import { Ranking } from '@global/types'
+import { formatTrackmaniaDelta, formatTrackmaniaTime } from '@global/util'
+import { Img } from 'remotion'
 
 // TODO: End names with "..." if they are too long
 // TODO: Scale down map names if they are too long
@@ -67,7 +68,7 @@ export const IntroLeaderboard: React.FC = () => {
       ranking.nation !== 'UNKNOWN' && (
         <Img
           key={index}
-          src={`http://localhost:3000/getFlag/${ranking.nation}`}
+          src={routes.getFlag.format(ranking.nation)}
           style={{
             height: emph ? fontSizeBig : fontSizeSmall,
             borderRadius: styles.flagBorderRadius,
@@ -182,7 +183,7 @@ export const IntroLeaderboard: React.FC = () => {
         >
           {leaderboard[0].nation !== 'UNKNOWN' && (
             <Img
-              src={`http://localhost:3000/getFlag/${leaderboard[0].nation}`}
+              src={routes.getFlag.format(leaderboard[0].nation)}
               style={{ height: 60, borderRadius: styles.flagBorderRadius }}
             />
           )}
