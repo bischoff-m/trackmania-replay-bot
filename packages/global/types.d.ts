@@ -1,3 +1,10 @@
+export type CompositionData = null | {
+  clips: { [clipID: string]: ClipData }
+  introDuration: number
+  framerate: number
+  resolution: [number, number]
+}
+
 export type ReplayData = { [clipID: string]: ClipData } // TODO: Replace this
 
 export type ClipData = {
@@ -33,10 +40,9 @@ export type Ranking = {
   nation: string
 }
 
+// Express API
 export type GetMapInfoResponse = {
   success: boolean
   data: MapData | {}
   error: string
 }
-
-export type CompositionProps = {}

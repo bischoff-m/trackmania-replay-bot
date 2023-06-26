@@ -4,14 +4,9 @@ import fs from 'fs'
 import path from 'path'
 import TrackmaniaIO from 'trackmania.io'
 import type Player from 'trackmania.io/typings/structures/Player'
+import { userAgent } from '@/index'
 
-const userAgent = `
-trackmania-replay-bot
-https://github.com/bischoff-m/trackmania-replay-bot
-Discord: bischoff.m
-`
-  .trim()
-  .replaceAll('\n', ' | ')
+const cacheRoot = path.join(process.cwd(), '/public/maps')
 
 async function fetchNewMapData(mapID: string): Promise<MapData> {
   // Initialize client
@@ -80,7 +75,7 @@ async function loadMapData(
   mapID: string,
   overwriteCache: boolean = false
 ): Promise<MapData> {
-  const filePath = path.join(process.cwd(), `/public/${mapID}.json`)
+  const filePath = path.join(cacheRoot, `/${mapID}.json`)
 
   // Check if file exists
   if (!overwriteCache && fs.existsSync(filePath)) {
