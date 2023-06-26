@@ -63,16 +63,17 @@ export const IntroLeaderboard: React.FC = () => {
     // Number
     (ranking, index, emph) => index + 2,
     // Flag
-    (ranking, index, emph) => (
-      <Img
-        key={index}
-        src={staticFile(`img/${ranking.nation}.jpg`)}
-        style={{
-          height: emph ? fontSizeBig : fontSizeSmall,
-          borderRadius: styles.flagBorderRadius,
-        }}
-      />
-    ),
+    (ranking, index, emph) =>
+      ranking.nation !== 'UNKNOWN' && (
+        <Img
+          key={index}
+          src={`http://localhost:3000/getFlag/${ranking.nation}`}
+          style={{
+            height: emph ? fontSizeBig : fontSizeSmall,
+            borderRadius: styles.flagBorderRadius,
+          }}
+        />
+      ),
     // Name
     (ranking, index, emph) => ranking.name,
     // Delta
@@ -174,16 +175,17 @@ export const IntroLeaderboard: React.FC = () => {
           1
         </span>
 
-        {/* TODO: Handle UNKNOWN flag */}
         {/* Flag */}
         <div
           className='flex w-20 justify-center'
           style={{ width: colWidthFlag }}
         >
-          <Img
-            src={staticFile(`img/${leaderboard[0].nation}.jpg`)}
-            style={{ height: 60, borderRadius: styles.flagBorderRadius }}
-          />
+          {leaderboard[0].nation !== 'UNKNOWN' && (
+            <Img
+              src={`http://localhost:3000/getFlag/${leaderboard[0].nation}`}
+              style={{ height: 60, borderRadius: styles.flagBorderRadius }}
+            />
+          )}
         </div>
 
         {/* Name */}

@@ -9,8 +9,8 @@
     "next:dev": "npm run dev --prefix packages/next",
     "next:build": "npm run build --prefix packages/next",
     "next:start": "npm run start --prefix packages/next",
-    "remotion:preview": "npm run preview --prefix packages/remotion",
-    "remotion:render": "npm run render --prefix packages/remotion",
+    "remotion:preview": "concurrently \"npm run express:dev\" \"npm run preview --prefix packages/remotion\"",
+    "remotion:render": "concurrently \"npm run express:dev\" \"npm run render --prefix packages/remotion\"",
     "prettier:write": "prettier --write .",
     "prettier:check": "prettier --check ."
   },

@@ -26,19 +26,6 @@ export const IntroHeader: React.FC = () => {
 
   const mapData = useClipContext().map
 
-  let flagComponent = null
-  if (mapData.authorNation !== 'UNKNOWN') {
-    // TODO: Fetch flag from API
-    flagComponent = (
-      <div className='flex items-center justify-center pr-8'>
-        <Img
-          src={staticFile(`img/${mapData.authorNation}.jpg`)}
-          style={{ height: 60, borderRadius: styles.flagBorderRadius }}
-        />
-      </div>
-    )
-  }
-
   return (
     <main
       className='flex h-full w-full'
@@ -51,7 +38,14 @@ export const IntroHeader: React.FC = () => {
 
         {/* Author flag and name */}
         <div className='flex w-full'>
-          {flagComponent}
+          {mapData.authorNation !== 'UNKNOWN' && (
+            <div className='flex items-center justify-center pr-8'>
+              <Img
+                src={`http://localhost:3000/getFlag/${mapData.authorNation}`}
+                style={{ height: 60, borderRadius: styles.flagBorderRadius }}
+              />
+            </div>
+          )}
           <span className='flex-1' style={{ fontSize: 64 }}>
             {mapData.authorName}
           </span>
