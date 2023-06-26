@@ -57,9 +57,9 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
   }
 
   const result: MapData = {
-    mapName: client.stripFormat(map.name),
-    mapAuthor: map.authorName,
-    mapAuthorNation: getNation(await map.author()),
+    name: client.stripFormat(map.name),
+    authorName: map.authorName,
+    authorNation: getNation(await map.author()),
     medals: {
       author: map.medalTimes.author,
       gold: map.medalTimes.gold,

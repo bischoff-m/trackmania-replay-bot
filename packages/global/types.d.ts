@@ -1,4 +1,4 @@
-export type ReplayData = { [clipID: string]: ClipData }
+export type ReplayData = { [clipID: string]: ClipData } // TODO: Replace this
 
 export type ClipData = {
   startFrame: number
@@ -11,9 +11,9 @@ export type ClipData = {
 }
 
 export type MapData = {
-  mapName: string
-  mapAuthor: string
-  mapAuthorNation: string
+  name: string
+  authorName: string
+  authorNation: string
   medals: {
     author: number
     gold: number
@@ -38,3 +38,5 @@ export type GetMapInfoResponse = {
   data: MapData | {}
   error: string
 }
+
+export type CompositionProps = {}

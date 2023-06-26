@@ -10,6 +10,7 @@
     "@remotion/google-fonts": "^3.3.101",
     "@remotion/renderer": "3.3.101",
     "@remotion/tailwind": "^3.3.101",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remotion": "3.3.101",

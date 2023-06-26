@@ -1,15 +1,15 @@
 import { colors, styles } from '@/theme'
 import { Img, staticFile } from 'remotion'
-import { useClipContext } from '@/components/Clip'
+import { useClipContext } from '@/components/MainComposition'
+import { formatTrackmaniaDelta, formatTrackmaniaTime } from '@global/util'
+import { Ranking } from '@global/types'
 
 // TODO: End names with "..." if they are too long
 // TODO: Scale down map names if they are too long
 // TODO: Use https://www.npmjs.com/package/twrnc
 
 export const IntroLeaderboard: React.FC = () => {
-  const clipData = useClipContext()
-  const { leaderboard } = clipData.map
-  let deltas = leaderboard.map((record) => record.time - leaderboard[0].time)
+  const { leaderboard } = useClipContext().map
 
   const numberPrimaryStyle = {
     fontSize: 96,
@@ -38,91 +38,120 @@ export const IntroLeaderboard: React.FC = () => {
   const fontSizeBig = 54
   const fontSizeSmall = 40
 
-  const RowNumber: React.FC<{
+  // const cellComponents = [
+  const CellWrapper: React.FC<{
     emphasized: boolean
-    number: number
-  }> = ({ emphasized, number }) => (
-    <span
-      className='flex items-center justify-center'
-      style={{
-        height: emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: emphasized ? 1.2 * fontSizeBig : fontSizeSmall,
-        fontFamily: 'Century Gothic',
-        ...(emphasized && numberSecondaryStyle),
-      }}
-    >
-      {number}
-    </span>
-  )
-  // TODO: Handle UNKNOWN flag
-  const RowFlag: React.FC<{
-    emphasized: boolean
-    nation: string
-  }> = ({ emphasized, nation }) => (
+    children: React.ReactNode
+    addStyles?: React.CSSProperties
+  }> = ({ emphasized, children, addStyles }) => (
     <div
-      className='flex items-center justify-center'
-      style={{ height: emphasized ? rowHeightBig : rowHeightSmall }}
-    >
-      <Img
-        src={staticFile(`img/${nation}.jpg`)}
-        style={{
-          height: emphasized ? fontSizeBig : fontSizeSmall,
-          borderRadius: styles.flagBorderRadius,
-        }}
-      />
-    </div>
-  )
-
-  const RowName: React.FC<{
-    emphasized: boolean
-    name: string
-  }> = ({ emphasized, name }) => (
-    <span
       className='flex items-center'
       style={{
         height: emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: emphasized ? fontSizeBig : fontSizeSmall,
+        ...addStyles,
       }}
     >
-      {name}
-    </span>
+      {children}
+    </div>
   )
 
-  const RowDelta: React.FC<{
+  const cellChildren: ((
+    ranking: Ranking,
+    rowIndex: number,
     emphasized: boolean
-    delta: number
-  }> = ({ emphasized, delta }) => (
-    <span
-      className='flex items-center justify-end'
-      style={{
-        height: emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: 0.95 * (emphasized ? 0.85 * fontSizeBig : fontSizeSmall),
-        color: colors.textSecondary,
-        fontFamily: 'Century Gothic',
-      }}
-    >
-      {/* TODO: Convert millis to string */}
-      {'+0:00.003'}
-    </span>
-  )
+  ) => any)[] = [
+    // Number
+    (ranking, index, emph) => index + 2,
+    // Flag
+    (ranking, index, emph) => (
+      <Img
+        key={index}
+        src={staticFile(`img/${ranking.nation}.jpg`)}
+        style={{
+          height: emph ? fontSizeBig : fontSizeSmall,
+          borderRadius: styles.flagBorderRadius,
+        }}
+      />
+    ),
+    // Name
+    (ranking, index, emph) => ranking.name,
+    // Delta
+    (ranking, index, emph) =>
+      formatTrackmaniaDelta(ranking.time, leaderboard[0].time),
+    // Time
+    (ranking, index, emph) => formatTrackmaniaTime(ranking.time),
+  ]
 
-  const RowTime: React.FC<{
-    emphasized: boolean
-    time: number
-  }> = ({ emphasized, time }) => (
-    <span
-      className='flex items-center justify-end'
-      style={{
-        height: emphasized ? rowHeightBig : rowHeightSmall,
-        fontSize: emphasized ? fontSizeBig : 1.2 * fontSizeSmall,
-        fontFamily: 'Century Gothic',
-        fontWeight: emphasized ? 700 : 400,
-      }}
-    >
-      {/* TODO: Convert millis to string */}
-      {'0:07.000'}
-    </span>
-  )
+  const columnStyles: React.CSSProperties[] = [
+    // Number
+    {
+      width: colWidthNumber,
+    },
+    // Flag
+    {
+      width: colWidthFlag,
+    },
+    // Name
+    {
+      flex: 1,
+    },
+    // Delta
+    {},
+    // Time
+    {},
+  ]
+
+  const cellStyles: ((emphasized: boolean) => React.CSSProperties)[] = [
+    // Number
+    (emphasized) => ({
+      justifyContent: 'center',
+      fontSize: emphasized ? 1.2 * fontSizeBig : fontSizeSmall,
+      fontFamily: 'Century Gothic',
+      ...(emphasized && numberSecondaryStyle),
+    }),
+    // Flag
+    (emphasized) => ({
+      justifyContent: 'center',
+    }),
+    // Name
+    (emphasized) => ({
+      justifyContent: 'flex-start',
+      fontSize: emphasized ? fontSizeBig : fontSizeSmall,
+    }),
+    // Delta
+    (emphasized) => ({
+      justifyContent: 'flex-end',
+      fontSize: 0.95 * (emphasized ? 0.85 * fontSizeBig : fontSizeSmall),
+      color: colors.textSecondary,
+      fontFamily: 'Century Gothic',
+    }),
+    // Time
+    (emphasized) => ({
+      justifyContent: 'flex-end',
+      fontSize: emphasized ? fontSizeBig : 1.2 * fontSizeSmall,
+      fontFamily: 'Century Gothic',
+      fontWeight: emphasized ? 700 : 400,
+    }),
+  ]
+
+  function buildColumn(colIndex: number): React.ReactNode[] {
+    const column = leaderboard.slice(1).map((ranking, rowIndex) => (
+      <CellWrapper
+        emphasized={rowIndex < 2}
+        key={rowIndex}
+        addStyles={cellStyles[colIndex](rowIndex < 2)}
+      >
+        {cellChildren[colIndex](ranking, rowIndex, rowIndex < 2)}
+      </CellWrapper>
+    ))
+    if (leaderboard.length <= 3) return column
+    else
+      return [
+        ...column.slice(0, 2),
+        <div key={'gap'} style={{ height: verticalGap }} />,
+        ...column.slice(2),
+      ]
+  }
 
   return (
     <main className='flex h-full w-full flex-col' style={{ gap: verticalGap }}>
@@ -153,7 +182,7 @@ export const IntroLeaderboard: React.FC = () => {
         >
           <Img
             src={staticFile(`img/${leaderboard[0].nation}.jpg`)}
-            style={{ height: 48, borderRadius: styles.flagBorderRadius }}
+            style={{ height: 60, borderRadius: styles.flagBorderRadius }}
           />
         </div>
 
@@ -175,73 +204,26 @@ export const IntroLeaderboard: React.FC = () => {
           }}
         >
           {/* TODO: Format as 0.00:00.000 */}
-          {leaderboard[0].time}
+          {formatTrackmaniaTime(leaderboard[0].time)}
         </span>
       </div>
 
       {/* 2nd - 10th place */}
       {/* NOTE: 2nd, 3rd and the lower places need to be siblings to make the
           delta field line up.*/}
-      <div className='flex flex-1 gap-6 pl-6 pr-12'>
-        {/* Numbers */}
-        <div className={columnClasses} style={{ width: colWidthNumber }}>
-          {leaderboard.slice(1, 3).map((_, index) => (
-            <RowNumber key={index} emphasized={true} number={index + 2} />
-          ))}
-          <div style={{ height: verticalGap }} />
-          {leaderboard.slice(3).map((_, index) => (
-            <RowNumber key={index} emphasized={false} number={index + 4} />
-          ))}
-        </div>
-
-        {/* TODO: Handle UNKNOWN flag */}
-        {/* Flags */}
-        <div className={columnClasses} style={{ width: colWidthFlag }}>
-          {leaderboard.slice(1, 3).map((record, index) => (
-            <RowFlag key={index} emphasized={true} nation={record.nation} />
-          ))}
-          <div style={{ height: verticalGap }} />
-          {leaderboard.slice(3).map((record, index) => (
-            <RowFlag key={index} emphasized={false} nation={record.nation} />
-          ))}
-        </div>
-
-        {/* Names */}
-        <div className={columnClasses + ' flex-grow'}>
-          {leaderboard.slice(1, 3).map((record, index) => (
-            <RowName key={index} emphasized={true} name={record.name} />
-          ))}
-          <div style={{ height: verticalGap }} />
-          {leaderboard.slice(3).map((record, index) => (
-            <RowName key={index} emphasized={false} name={record.name} />
-          ))}
-        </div>
-
-        {/* Deltas */}
-        <div className={columnClasses + ' flex-shrink'}>
-          {leaderboard.slice(1, 3).map((record, index) => (
-            <RowDelta key={index} emphasized={true} delta={deltas[index + 1]} />
-          ))}
-          <div style={{ height: verticalGap }} />
-          {leaderboard.slice(3).map((record, index) => (
-            <RowDelta
-              key={index}
-              emphasized={false}
-              delta={deltas[index + 3]}
-            />
-          ))}
-        </div>
-
-        {/* Times */}
-        <div className={columnClasses + ' flex-shrink'}>
-          {leaderboard.slice(1, 3).map((record, index) => (
-            <RowTime key={index} emphasized={true} time={record.time} />
-          ))}
-          <div style={{ height: verticalGap }} />
-          {leaderboard.slice(3).map((record, index) => (
-            <RowTime key={index} emphasized={false} time={record.time} />
-          ))}
-        </div>
+      <div className='flex flex-grow gap-6 pl-6 pr-12'>
+        {
+          // Iterate over the columns (Number, Flag, Name, Delta, Time)
+          Array.from({ length: 5 }, (_, colIndex) => (
+            <div
+              key={colIndex}
+              className={columnClasses}
+              style={columnStyles[colIndex]}
+            >
+              {buildColumn(colIndex)}
+            </div>
+          ))
+        }
       </div>
     </main>
   )

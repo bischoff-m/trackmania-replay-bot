@@ -17,8 +17,9 @@ export const RemotionRoot: React.FC = () => {
 
   useEffect(() => {
     // TODO: maybe delayRender() is needed here?
-    // fetch('/remotion/cache/ho7WKyIBTV_dNmP9hFFadUvvtLd.json').then((res) => {
+    // fetch('http://localhost:3000/getMapInfo/ho7WKyIBTV_dNmP9hFFadUvvtLd').then(async (res) => {
     //   console.log(res)
+    //   const data2 = fetch('http://localhost:3000/getMapInfo/bqADnHDhKOfimntdyJnyu_ltVhj')
     //   // TODO: Process composition data here
     //   setReplays(exampleReplays)
     // })

@@ -1,4 +1,4 @@
-import { useClipContext } from '@/components/Clip'
+import { useClipContext } from '@/components/MainComposition'
 import { Video, staticFile } from 'remotion'
 
 export const ReplayVideo: React.FC = () => {
