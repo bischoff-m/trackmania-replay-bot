@@ -1,8 +1,8 @@
-import { AbsoluteFill, Img, staticFile } from 'remotion'
-import { colors, styles } from '@/theme'
 import { IntroHeader } from '@/components/IntroHeader'
 import { IntroLeaderboard } from '@/components/IntroLeaderboard'
 import { IntroStatistics } from '@/components/IntroStatistics'
+import { colors, styles } from '@/theme'
+import { AbsoluteFill, Img, staticFile } from 'remotion'
 
 export const Intro: React.FC = () => {
   return (

@@ -1,9 +1,9 @@
-import { Img, staticFile } from 'remotion'
-import { colors, styles } from '@/theme'
 import { useClipContext } from '@/components/MainComposition'
+import { colors, styles } from '@/theme'
+import { routes } from '@global/api'
 import { MapData } from '@global/types'
 import { formatTrackmaniaTime } from '@global/util'
-import { routes } from '@global/api'
+import { Img, staticFile } from 'remotion'
 
 export const IntroHeader: React.FC = () => {
   const mapData = useClipContext().map

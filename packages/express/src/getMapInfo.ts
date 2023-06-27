@@ -1,11 +1,11 @@
-import type { MapData, Ranking } from '@global/types'
+import { userAgent } from '@/index'
 import type { GetMapInfoResponse } from '@global/api'
+import type { MapData, Ranking } from '@global/types'
 import type { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'
 import TrackmaniaIO from 'trackmania.io'
 import type Player from 'trackmania.io/typings/structures/Player'
-import { userAgent } from '@/index'
 
 const cacheRoot = path.join(process.cwd(), '/public/maps')
 

@@ -1,17 +1,15 @@
-import type { Request, Response } from 'express'
-import path from 'path'
-import fs from 'fs'
-import { MapData } from '@global/types'
 import { userAgent } from '@/index'
-import nodeFetch from 'node-fetch'
 import { type GetMapInfoResponse, routes } from '@global/api'
+import { MapData } from '@global/types'
+import type { Request, Response } from 'express'
+import fs from 'fs'
+import nodeFetch from 'node-fetch'
+import path from 'path'
 
 const cacheRoot = path.join(process.cwd(), '/public/maps')
 
 async function fetchNewThumbnail(mapID: string): Promise<string> {
-  // const infoPath = path.join(cacheRoot, `/${mapID}/info.json`)
-  // const map = JSON.parse(fs.readFileSync(infoPath, 'utf-8')) as MapData
-
+  // Get map info
   const fetchRes = await fetch(
     routes.getMapInfo.url('bqADnHDhKOfimntdyJnyu_ltVhj')
   )

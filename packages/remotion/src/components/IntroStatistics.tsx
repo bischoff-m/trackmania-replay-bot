@@ -1,6 +1,6 @@
+import { useClipContext } from '@/components/MainComposition'
 import { colors } from '@/theme'
 import { loadFont } from '@remotion/google-fonts/IBMPlexMono'
-import { useClipContext } from '@/components/MainComposition'
 import moment from 'moment'
 
 // TODO: Add trackmania.io map ID at bottom left(?)

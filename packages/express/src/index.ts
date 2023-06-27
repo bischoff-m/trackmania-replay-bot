@@ -1,9 +1,9 @@
+import { handleGetCachedMaps } from '@/getCachedMaps'
 import { handleGetFlag } from '@/getFlag'
 import { handleGetMapInfo } from '@/getMapInfo'
+import { handleGetThumbnail } from '@/getThumbnail'
 import { routes } from '@global/api'
 import express from 'express'
-import { handleGetCachedMaps } from '@/getCachedMaps'
-import { handleGetThumbnail } from '@/getThumbnail'
 
 const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 

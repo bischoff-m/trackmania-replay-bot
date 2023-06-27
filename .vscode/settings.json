@@ -8,6 +8,8 @@
   "editor.formatOnType": true,
   "editor.rulers": [80],
   "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true,
     "source.fixAll.eslint": true
   },
   "eslint.validate": [

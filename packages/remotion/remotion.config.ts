@@ -1,6 +1,6 @@
-import { Config } from 'remotion'
 import { enableTailwind } from '@remotion/tailwind'
 import path from 'path'
+import { Config } from 'remotion'
 
 Config.setPublicDir('./public')
 Config.setEntryPoint('./src/index.ts')

@@ -1,7 +1,7 @@
-import { AbsoluteFill, Sequence } from 'remotion'
 import { Intro } from '@/components/Intro'
-import { ReplayVideo } from '@/components/ReplayVideo'
 import { useClipContext } from '@/components/MainComposition'
+import { ReplayVideo } from '@/components/ReplayVideo'
+import { AbsoluteFill, Sequence } from 'remotion'
 
 export const Clip: React.FC<{
   clipNumber: number

@@ -1,9 +1,9 @@
+import { MainComposition } from '@/components/MainComposition'
+import '@/style.css'
+import { exampleReplays } from '@global/examples'
+import type { ReplayData } from '@global/types'
 import React, { useEffect } from 'react'
 import { Composition } from 'remotion'
-import { MainComposition } from '@/components/MainComposition'
-import type { ReplayData } from '@global/types'
-import { exampleReplays } from '@global/examples'
-import '@/style.css'
 
 // TODO: Define base path /public/remotion in global variable
 

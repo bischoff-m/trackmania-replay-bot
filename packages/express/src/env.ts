@@ -11,7 +11,7 @@ https://github.com/motdotla/dotenv/issues/133#issuecomment-255298822
 Alternative solution:
 node -r ts-node/register -r dotenv/config src/index.ts dotenv_config_path=../../.env
 */
-
 import dotenv from 'dotenv'
 import path from 'path'
+
 dotenv.config({ path: path.join(process.cwd(), '../../.env') })

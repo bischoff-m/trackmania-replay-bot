@@ -1,8 +1,8 @@
+import { userAgent } from '@/index'
 import type { Request, Response } from 'express'
-import path from 'path'
 import fs from 'fs'
 import nodeFetch from 'node-fetch'
-import { userAgent } from '@/index'
+import path from 'path'
 
 const cacheRoot = path.join(process.cwd(), '/public/flags')
 
