@@ -68,7 +68,7 @@ export const IntroLeaderboard: React.FC = () => {
       ranking.nation !== 'UNKNOWN' && (
         <Img
           key={index}
-          src={routes.getFlag.format(ranking.nation)}
+          src={routes.getFlag.url(ranking.nation)}
           style={{
             height: emph ? fontSizeBig : fontSizeSmall,
             borderRadius: styles.flagBorderRadius,
@@ -183,7 +183,7 @@ export const IntroLeaderboard: React.FC = () => {
         >
           {leaderboard[0].nation !== 'UNKNOWN' && (
             <Img
-              src={routes.getFlag.format(leaderboard[0].nation)}
+              src={routes.getFlag.url(leaderboard[0].nation)}
               style={{ height: 60, borderRadius: styles.flagBorderRadius }}
             />
           )}

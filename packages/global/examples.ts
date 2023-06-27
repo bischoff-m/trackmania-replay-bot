@@ -5,6 +5,7 @@ export const exampleReplays: ReplayData = {
     startFrame: 0,
     durationInFrames: 60 * 5 + 450, // 5s Intro + Replay Video
     map: {
+      id: 'olsKnq_qAghcVAnEkoeUnVHFZei',
       name: 'Test Map',
       authorName: 'Test Author',
       authorNation: 'FRA',
@@ -158,7 +159,8 @@ export const exampleReplays: ReplayData = {
           // delta: "+0:00.002",
         },
       ],
-      thumbnailFile: '/img/Thumbnail.jpg',
+      thumbnailUrl: '---',
+      mapUrl: '---',
       uploadedAt: new Date('2021-01-01T00:00:00.000Z'),
       timestamp: new Date('2021-01-01T00:00:00.000Z'),
     },
@@ -171,6 +173,7 @@ export const exampleReplays: ReplayData = {
     startFrame: 60 * 5 + 450,
     durationInFrames: 60 * 5 + 450, // 5s Intro + Replay Video
     map: {
+      id: 'ho7WKyIBTV_dNmP9hFFadUvvtLd',
       name: 'Test Map 2',
       authorName: 'Test Author 2',
       authorNation: 'UNKNOWN',
@@ -324,7 +327,8 @@ export const exampleReplays: ReplayData = {
           // delta: "+0:00.002",
         },
       ],
-      thumbnailFile: '/img/Thumbnail.jpg',
+      thumbnailUrl: '---',
+      mapUrl: '---',
       uploadedAt: new Date('2021-01-01T00:00:00.000Z'),
       timestamp: new Date('2021-01-01T00:00:00.000Z'),
     },

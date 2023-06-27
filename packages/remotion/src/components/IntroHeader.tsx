@@ -23,7 +23,7 @@ export const IntroHeader: React.FC = () => {
           {mapData.authorNation !== 'UNKNOWN' && (
             <div className='flex items-center justify-center pr-8'>
               <Img
-                src={routes.getFlag.format(mapData.authorNation)}
+                src={routes.getFlag.url(mapData.authorNation)}
                 style={{ height: 60, borderRadius: styles.flagBorderRadius }}
               />
             </div>

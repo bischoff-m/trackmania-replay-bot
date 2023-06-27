@@ -2,6 +2,8 @@ import { handleGetFlag } from '@/getFlag'
 import { handleGetMapInfo } from '@/getMapInfo'
 import { routes } from '@global/api'
 import express from 'express'
+import { handleGetCachedMaps } from '@/getCachedMaps'
+import { handleGetThumbnail } from '@/getThumbnail'
 
 const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
@@ -18,6 +20,8 @@ const app = express()
 // TODO: Implement getCachedMaps route to display in nextjs
 
 app.get(routes.getMapInfo.path, handleGetMapInfo)
+app.get(routes.getThumbnail.path, handleGetThumbnail)
+app.get(routes.getCachedMaps.path, handleGetCachedMaps)
 app.get(routes.getFlag.path, handleGetFlag)
 
 app.get('/', (req, res) => {

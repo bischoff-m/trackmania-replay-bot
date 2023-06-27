@@ -18,6 +18,7 @@ export type ClipData = {
 }
 
 export type MapData = {
+  id: string
   name: string
   authorName: string
   authorNation: string
@@ -28,7 +29,8 @@ export type MapData = {
     bronze: number
   }
   leaderboard: Ranking[]
-  thumbnailFile: string
+  thumbnailUrl: string
+  mapUrl: string
   uploadedAt: Date
   timestamp: Date
   // playerCount: number | [number, number] // TODO: Where to get this from?

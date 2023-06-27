@@ -2,36 +2,56 @@
 /*
 TODO
 - Write function to open remotion preview
-Use this later
-const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 */
 
 import theme from '@/theme'
-import { routes, type GetMapInfoResponse } from '@global/api'
+import {
+  routes,
+  type GetCachedMapsResponse,
+  type GetMapInfoResponse,
+} from '@global/api'
 import { AppShell, Button, MantineProvider } from '@mantine/core'
 import { Prism } from '@mantine/prism'
 import { useState } from 'react'
 
-export default function Home() {
-  const [content, setContent] = useState<GetMapInfoResponse>({
-    success: false,
-    data: {},
-    error: 'No data yet',
-  })
+// bqADnHDhKOfimntdyJnyu_ltVhj
+// FngQSpNTy0ONQre0XDU9oAdEK7b
+// ho7WKyIBTV_dNmP9hFFadUvvtLd
 
-  async function onClick() {
+export default function Home() {
+  const [content, setContent] = useState<any>({})
+
+  async function onClickMapInfo() {
     try {
       const fetchRes = await fetch(
-        routes.getMapInfo.format('ho7WKyIBTV_dNmP9hFFadUvvtLd')
+        routes.getMapInfo.url('bqADnHDhKOfimntdyJnyu_ltVhj')
       )
       const response = (await fetchRes.json()) as GetMapInfoResponse
       setContent(response)
-    } catch (error: any) {
-      setContent({
-        success: false,
-        data: {},
-        error: error.message,
-      })
+    } catch (error) {
+      setContent({ error: String(error) })
+    }
+  }
+
+  async function onClickCachedMaps() {
+    try {
+      const fetchRes = await fetch(routes.getCachedMaps.url())
+      const response = (await fetchRes.json()) as GetCachedMapsResponse
+      setContent(response)
+    } catch (error) {
+      setContent({ error: String(error) })
+    }
+  }
+
+  async function onClickThumbnail() {
+    try {
+      const fetchRes = await fetch(
+        routes.getThumbnail.url('bqADnHDhKOfimntdyJnyu_ltVhj')
+      )
+      const response = await fetchRes.text()
+      setContent(response)
+    } catch (error) {
+      setContent({ error: String(error) })
     }
   }
 
@@ -39,18 +59,20 @@ export default function Home() {
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <AppShell>
         <div className='flex h-full w-full flex-col items-center justify-center'>
-          <Button variant='outline' onClick={onClick}>
-            Test
-          </Button>
-          {content.success ? (
-            <Prism language='javascript' className='w-full'>
-              {JSON.stringify(content.data, null, 2)}
-            </Prism>
-          ) : (
-            <Prism language='markdown' className='w-full'>
-              {content.error}
-            </Prism>
-          )}
+          <div className='flex gap-10'>
+            <Button variant='outline' onClick={onClickMapInfo}>
+              Map Info
+            </Button>
+            <Button variant='outline' onClick={onClickCachedMaps}>
+              Cached Maps
+            </Button>
+            <Button variant='outline' onClick={onClickThumbnail}>
+              Thumbnail
+            </Button>
+          </div>
+          <Prism language='javascript' className='w-full'>
+            {JSON.stringify(content, null, 2)}
+          </Prism>
         </div>
       </AppShell>
     </MantineProvider>

@@ -1,7 +1,8 @@
 {
-  "mapName": "Spring 2023 - 01",
-  "mapAuthor": "Nadeo",
-  "mapAuthorNation": "UNKNOWN",
+  "id": "bqADnHDhKOfimntdyJnyu_ltVhj",
+  "name": "Spring 2023 - 01",
+  "authorName": "Nadeo",
+  "authorNation": "UNKNOWN",
   "medals": {
     "author": 28610,
     "gold": 31000,
@@ -45,6 +46,11 @@
       "nation": "GBR"
     },
     {
+      "name": "lukefast05",
+      "time": 27315,
+      "nation": "ITA"
+    },
+    {
       "name": "del587923490158",
       "time": 27318,
       "nation": "GER"
@@ -53,14 +59,10 @@
       "name": "ChaotiicTM",
       "time": 27323,
       "nation": "GBR"
-    },
-    {
-      "name": "Zap_pZ",
-      "time": 27327,
-      "nation": "GBR"
     }
   ],
-  "thumbnailFile": "https://trackmania.io/api/download/jpg/b2e1619f-b755-4d9e-975e-9551b2642b1d",
+  "thumbnailUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/b2e1619f-b755-4d9e-975e-9551b2642b1d.jpg",
+  "mapUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/72c848eb-f1dc-4605-8775-b6a383f6043c",
   "uploadedAt": "2023-03-23T11:12:14.000Z",
-  "timestamp": "2023-06-22T22:13:37.081Z"
+  "timestamp": "2023-06-27T16:27:49.895Z"
 }

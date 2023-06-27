@@ -1,7 +1,8 @@
 {
-  "mapName": "Forget-Me-Not (ft' agrabou)",
-  "mapAuthor": "ripfish_",
-  "mapAuthorNation": "GER",
+  "id": "ho7WKyIBTV_dNmP9hFFadUvvtLd",
+  "name": "Forget-Me-Not (ft' agrabou)",
+  "authorName": "ripfish_",
+  "authorNation": "GER",
   "medals": {
     "author": 58125,
     "gold": 62000,
@@ -60,7 +61,8 @@
       "nation": "FRA"
     }
   ],
-  "thumbnailFile": "https://trackmania.io/api/download/jpg/9b91095b-4aab-4280-b2a7-d2ab661a89c6",
+  "thumbnailUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/9b91095b-4aab-4280-b2a7-d2ab661a89c6.jpg",
+  "mapUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/fa91d545-aad5-4c5c-8b72-ce9b53fc385a",
   "uploadedAt": "2023-02-17T23:35:44.000Z",
-  "timestamp": "2023-06-22T22:06:02.019Z"
+  "timestamp": "2023-06-27T16:08:53.498Z"
 }

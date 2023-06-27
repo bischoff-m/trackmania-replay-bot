@@ -1,7 +1,8 @@
 {
-  "mapName": "Minas Morgul",
-  "mapAuthor": "Isirix",
-  "mapAuthorNation": "SUI",
+  "id": "FngQSpNTy0ONQre0XDU9oAdEK7b",
+  "name": "Minas Morgul",
+  "authorName": "Isirix",
+  "authorNation": "SUI",
   "medals": {
     "author": 48317,
     "gold": 52000,
@@ -60,7 +61,8 @@
       "nation": "FRA"
     }
   ],
-  "thumbnailFile": "https://trackmania.io/api/download/jpg/84ec34dd-2784-432d-81fe-af9500e08f68",
+  "thumbnailUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/84ec34dd-2784-432d-81fe-af9500e08f68.jpg",
+  "mapUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/a25987a9-4270-4a67-9954-621dd6686c2d",
   "uploadedAt": "2023-06-08T18:16:19.000Z",
-  "timestamp": "2023-06-22T22:04:09.495Z"
+  "timestamp": "2023-06-27T16:20:10.613Z"
 }

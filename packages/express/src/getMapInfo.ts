@@ -53,6 +53,7 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
   }
 
   const result: MapData = {
+    id: mapID,
     name: client.stripFormat(map.name),
     authorName: map.authorName,
     authorNation: getNation(await map.author()),
@@ -63,7 +64,8 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
       bronze: map.medalTimes.bronze,
     },
     leaderboard: await getLeaderboard(),
-    thumbnailFile: map.thumbnailCached,
+    thumbnailUrl: map.thumbnail,
+    mapUrl: map.url,
     uploadedAt: map.uploaded,
     timestamp: new Date(),
   }
@@ -76,13 +78,13 @@ async function loadMapData(
   mapID: string,
   overwriteCache: boolean = false
 ): Promise<MapData> {
-  const filePath = path.join(cacheRoot, `/${mapID}.json`)
+  const filePath = path.join(cacheRoot, `/${mapID}/info.json`)
 
   // Check if file exists
   if (!overwriteCache && fs.existsSync(filePath)) {
     console.log(`Loading cached data for map ${mapID}`)
     // Read file into MapData object
-    const file = fs.readFileSync(filePath, 'utf8')
+    const file = fs.readFileSync(filePath, 'utf-8')
     const mapData = JSON.parse(file) as MapData
     return mapData
   } else {
@@ -92,6 +94,8 @@ async function loadMapData(
     console.log('Fetch successful')
 
     // Write to file
+    if (!fs.existsSync(path.dirname(filePath)))
+      fs.mkdirSync(path.dirname(filePath))
     fs.writeFileSync(filePath, JSON.stringify(mapData, null, 2))
     return mapData
   }
@@ -118,9 +122,20 @@ export async function handleGetMapInfo(
     return
   }
 
+  // Check if map ID is valid
+  const mapID = req.params.mapID
+  if (!mapID.match(/^[a-zA-Z0-9_-]{27}$/)) {
+    res.send({
+      success: false,
+      data: {},
+      error: 'Invalid map ID',
+    })
+    return
+  }
+
   // Try to load map data
   try {
-    const data = await loadMapData(req.params.mapID)
+    const data = await loadMapData(mapID)
     res.send({
       success: true,
       data,
