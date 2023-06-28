@@ -16,9 +16,7 @@ TODO
 export default function Home() {
   return (
     <MantineProvider theme={mantineTheme} withGlobalStyles withNormalizeCSS>
-      {/* <AppShell m={0}> */}
       <App />
-      {/* </AppShell> */}
     </MantineProvider>
   )
 }

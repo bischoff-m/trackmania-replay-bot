@@ -1,6 +1,6 @@
 import { routes } from '@global/api'
 import { MapData } from '@global/types'
-import { Avatar, Group, Text } from '@mantine/core'
+import { Avatar, Group, Text, clsx } from '@mantine/core'
 import { Draggable } from 'react-beautiful-dnd'
 
 export default function MapListItem({
@@ -25,10 +25,13 @@ export default function MapListItem({
           <Group
             noWrap
             p='xs'
-            className={
-              (snapshot.isDragging ? 'bg-neutral-700 rounded-xl ' : '') +
-              'transition-all duration-300 hover:bg-neutral-700 hover:transition-none'
-            }
+            className={clsx(
+              snapshot.isDragging ? 'bg-neutral-700 rounded-xl ' : '',
+              'transition-all',
+              'duration-300',
+              'hover:bg-neutral-700',
+              'hover:transition-none'
+            )}
             style={{ width: width, height: itemHeight }}
           >
             <Avatar

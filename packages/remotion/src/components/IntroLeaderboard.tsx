@@ -7,7 +7,7 @@ import { Img } from 'remotion'
 
 // TODO: End names with "..." if they are too long
 // TODO: Scale down map names if they are too long
-// TODO: Use https://www.npmjs.com/package/twrnc
+// TODO: Use classix
 
 export const IntroLeaderboard: React.FC = () => {
   const { leaderboard } = useClipContext().map

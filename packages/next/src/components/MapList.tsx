@@ -1,5 +1,5 @@
 import { MapData } from '@global/types'
-import { Center, Text } from '@mantine/core'
+import { Center, Text, clsx } from '@mantine/core'
 import { Droppable } from 'react-beautiful-dnd'
 
 export default function MapList({
@@ -21,7 +21,7 @@ export default function MapList({
     <Droppable droppableId={droppableId} direction='vertical'>
       {(provided) => (
         <div
-          className={`bg-neutral-800 rounded-md ${grow ? 'flex-1' : ''}`}
+          className={clsx('bg-neutral-800', 'rounded-md', grow ? 'flex-1' : '')}
           {...provided.droppableProps}
           ref={provided.innerRef}
           style={{ minHeight: itemHeight, width: width }}
@@ -31,13 +31,20 @@ export default function MapList({
           ) : (
             <>
               <Center
-                className='p-2 absolute'
+                className={clsx('p-2', 'absolute')}
                 style={{ width: width, height: itemHeight }}
               >
                 <Center
                   p='xs'
-                  className='hover:border-dashed hover:border-neutral-600 border-transparent rounded-md w-full h-full'
                   style={{ borderWidth: 1 }}
+                  className={clsx(
+                    'hover:border-dashed',
+                    'hover:border-neutral-600',
+                    'border-transparent',
+                    'rounded-md',
+                    'w-full',
+                    'h-full'
+                  )}
                 >
                   <Text size='sm' color='dimmed' weight={400}>
                     Place maps here
