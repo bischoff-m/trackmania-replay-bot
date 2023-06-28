@@ -1,5 +1,5 @@
 import { MapData } from '@global/types'
-import { Center, Text, clsx } from '@mantine/core'
+import { Center, Text, clsx, useMantineTheme } from '@mantine/core'
 import { Droppable } from 'react-beautiful-dnd'
 
 export default function MapList({
@@ -17,18 +17,32 @@ export default function MapList({
   itemHeight: number
   grow?: boolean
 }) {
+  const theme = useMantineTheme()
+  const fixedStyles = {
+    background: theme.colors.dark[6],
+    placeholderHover: theme.colors.dark[3],
+  }
+
   return (
     <Droppable droppableId={droppableId} direction='vertical'>
       {(provided) => (
         <div
-          className={clsx('bg-neutral-800', 'rounded-md', grow ? 'flex-1' : '')}
+          className={clsx(grow ? 'flex-1' : '')}
           {...provided.droppableProps}
           ref={provided.innerRef}
-          style={{ minHeight: itemHeight, width: width }}
+          style={{
+            minHeight: itemHeight,
+            width: width,
+            backgroundColor: fixedStyles.background,
+          }}
         >
           {maps.length > 0 ? (
-            [children, provided.placeholder]
+            <>
+              {children}
+              {provided.placeholder}
+            </>
           ) : (
+            // Placeholder
             <>
               <Center
                 className={clsx('p-2', 'absolute')}
@@ -36,14 +50,18 @@ export default function MapList({
               >
                 <Center
                   p='xs'
-                  style={{ borderWidth: 1 }}
+                  sx={{
+                    borderWidth: 1,
+                    '&:hover': { borderColor: fixedStyles.placeholderHover },
+                  }}
                   className={clsx(
-                    'hover:border-dashed',
-                    'hover:border-neutral-600',
+                    'border-dashed',
                     'border-transparent',
                     'rounded-md',
                     'w-full',
-                    'h-full'
+                    'h-full',
+                    'transition-all',
+                    'duration-300'
                   )}
                 >
                   <Text size='sm' color='dimmed' weight={400}>

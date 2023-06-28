@@ -1,9 +1,16 @@
 import MapSelect from '@/components/MapSelect'
-import { Flex, clsx } from '@mantine/core'
+import { Flex, clsx, useMantineTheme } from '@mantine/core'
 
 export default function App() {
+  const theme = useMantineTheme()
+  const fixedStyles = {
+    background: theme.colors.dark[7],
+  }
   return (
-    <main className={clsx('h-full', 'w-full', 'top-0', 'left-0', 'absolute')}>
+    <main
+      className={clsx('h-full', 'w-full', 'top-0', 'left-0', 'absolute')}
+      style={{ backgroundColor: fixedStyles.background }}
+    >
       <Flex className='h-full'>
         <div className='flex-1'></div>
         <MapSelect />

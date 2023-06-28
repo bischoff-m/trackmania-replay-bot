@@ -1,6 +1,6 @@
 import { routes } from '@global/api'
 import { MapData } from '@global/types'
-import { Avatar, Group, Text, clsx } from '@mantine/core'
+import { Avatar, Group, Text, clsx, useMantineTheme } from '@mantine/core'
 import { Draggable } from 'react-beautiful-dnd'
 
 export default function MapListItem({
@@ -14,6 +14,11 @@ export default function MapListItem({
   width: number
   itemHeight: number
 }) {
+  const theme = useMantineTheme()
+  const fixedStyles = {
+    colorHover: theme.colors.dark[7],
+  }
+
   return (
     <Draggable key={map.id} index={index} draggableId={map.id}>
       {(provided, snapshot) => (
@@ -26,13 +31,19 @@ export default function MapListItem({
             noWrap
             p='xs'
             className={clsx(
-              snapshot.isDragging ? 'bg-neutral-700 rounded-xl ' : '',
               'transition-all',
               'duration-300',
-              'hover:bg-neutral-700',
               'hover:transition-none'
             )}
-            style={{ width: width, height: itemHeight }}
+            sx={{
+              width: width,
+              height: itemHeight,
+              '&:hover': { backgroundColor: fixedStyles.colorHover },
+              backgroundColor: snapshot.isDragging
+                ? fixedStyles.colorHover
+                : '',
+              borderRadius: snapshot.isDragging ? theme.radius.lg : '',
+            }}
           >
             <Avatar
               src={routes.getThumbnail.url(map.id)}
