@@ -1,4 +1,4 @@
-import MapSelect from '@/components/MapSelect'
+import MapSelection from '@/components/MapSelection'
 import { Flex, clsx, useMantineTheme } from '@mantine/core'
 
 export default function App() {
@@ -13,7 +13,7 @@ export default function App() {
     >
       <Flex className='h-full'>
         <div className='flex-1'></div>
-        <MapSelect />
+        <MapSelection />
       </Flex>
     </main>
   )

@@ -9,7 +9,7 @@ import { IconCaretUp } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
-export default function MapSelect() {
+export default function MapSelection() {
   const theme = useMantineTheme()
   const [mapsCached, handlersCached] = useListState<MapData>([])
   const [mapsActive, handlersActive] = useListState<MapData>([])
@@ -86,6 +86,7 @@ export default function MapSelect() {
                 index={index}
                 width={fixedStyles.width}
                 itemHeight={fixedStyles.itemHeight}
+                showIndex
               />
             ))}
           </MapList>

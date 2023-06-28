@@ -8,11 +8,13 @@ export default function MapListItem({
   index,
   width,
   itemHeight,
+  showIndex = false,
 }: {
   map: MapData
   index: number
   width: number
   itemHeight: number
+  showIndex?: boolean
 }) {
   const theme = useMantineTheme()
   const fixedStyles = {
@@ -46,6 +48,11 @@ export default function MapListItem({
                 : fixedStyles.background,
             }}
           >
+            {showIndex && (
+              <Text size='md' color='dimmed' weight={500}>
+                #{index + 1}
+              </Text>
+            )}
             <Avatar
               src={routes.getThumbnail.url(map.id)}
               radius='md'
