@@ -8,6 +8,11 @@ import { IconCaretUp } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 
+const layout = {
+  width: 700,
+  itemHeight: 70,
+}
+
 export default function MapSelect() {
   const theme = useMantineTheme()
   const [mapsCached, handlersCached] = useListState<MapData>([])
@@ -56,19 +61,42 @@ export default function MapSelect() {
       <Flex
         direction='column'
         className='bg-neutral-800'
-        style={{ boxShadow: '0 0 10px #0004' }}
+        style={{ width: layout.width, boxShadow: '0 0 10px #0004' }}
       >
-        <MapList maps={mapsActive} droppableId='listActive'>
+        <MapList
+          maps={mapsActive}
+          droppableId='listActive'
+          width={layout.width}
+          itemHeight={layout.itemHeight}
+        >
           {mapsActive.map((map, index) => (
-            <MapListItem key={map.id} map={map} index={index} />
+            <MapListItem
+              key={map.id}
+              map={map}
+              index={index}
+              width={layout.width}
+              itemHeight={layout.itemHeight}
+            />
           ))}
         </MapList>
         <Center style={{ height: 24, backgroundColor: theme.colors.dark[7] }}>
           <IconCaretUp />
         </Center>
-        <MapList maps={mapsCached} droppableId='listCache' grow>
+        <MapList
+          maps={mapsCached}
+          droppableId='listCache'
+          width={layout.width}
+          itemHeight={layout.itemHeight}
+          grow
+        >
           {mapsCached.map((map, index) => (
-            <MapListItem key={map.id} map={map} index={index} />
+            <MapListItem
+              key={map.id}
+              map={map}
+              index={index}
+              width={layout.width}
+              itemHeight={layout.itemHeight}
+            />
           ))}
         </MapList>
       </Flex>

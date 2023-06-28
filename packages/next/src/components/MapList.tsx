@@ -3,14 +3,18 @@ import { Center, Text } from '@mantine/core'
 import { Droppable } from 'react-beautiful-dnd'
 
 export default function MapList({
+  children,
   maps,
   droppableId,
-  children,
+  width,
+  itemHeight,
   grow = false,
 }: {
+  children?: React.ReactNode
   maps: MapData[]
   droppableId: string
-  children?: React.ReactNode
+  width: number
+  itemHeight: number
   grow?: boolean
 }) {
   return (
@@ -20,7 +24,7 @@ export default function MapList({
           className={`bg-neutral-800 rounded-md ${grow ? 'flex-1' : ''}`}
           {...provided.droppableProps}
           ref={provided.innerRef}
-          style={{ minHeight: 70 }}
+          style={{ minHeight: itemHeight, width: width }}
         >
           {maps.length > 0 ? (
             [children, provided.placeholder]
@@ -28,7 +32,7 @@ export default function MapList({
             <>
               <Center
                 className='p-2 absolute'
-                style={{ width: 400, height: 70 }}
+                style={{ width: width, height: itemHeight }}
               >
                 <Center
                   p='xs'

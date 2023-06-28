@@ -1,7 +1,7 @@
 'use client'
 
 import App from '@/components/App'
-import theme from '@/theme'
+import { mantineTheme } from '@/theme'
 import { MantineProvider } from '@mantine/core'
 
 /*
@@ -15,7 +15,7 @@ TODO
 
 export default function Home() {
   return (
-    <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
+    <MantineProvider theme={mantineTheme} withGlobalStyles withNormalizeCSS>
       {/* <AppShell m={0}> */}
       <App />
       {/* </AppShell> */}

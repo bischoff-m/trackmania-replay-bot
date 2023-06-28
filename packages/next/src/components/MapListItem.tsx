@@ -6,9 +6,13 @@ import { Draggable } from 'react-beautiful-dnd'
 export default function MapListItem({
   map,
   index,
+  width,
+  itemHeight,
 }: {
   map: MapData
   index: number
+  width: number
+  itemHeight: number
 }) {
   return (
     <Draggable key={map.id} index={index} draggableId={map.id}>
@@ -22,10 +26,10 @@ export default function MapListItem({
             noWrap
             p='xs'
             className={
-              (snapshot.isDragging ? 'bg-neutral-700 rounded-lg ' : '') +
+              (snapshot.isDragging ? 'bg-neutral-700 rounded-xl ' : '') +
               'transition-all duration-300 hover:bg-neutral-700 hover:transition-none'
             }
-            style={{ width: 400, height: 70 }}
+            style={{ width: width, height: itemHeight }}
           >
             <Avatar
               src={routes.getThumbnail.url(map.id)}
