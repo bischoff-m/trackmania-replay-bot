@@ -6,15 +6,15 @@ export default function AddMapInput({
   onSubmit,
   validate,
 }: {
-  onSubmit: (mapID: string) => Promise<void>
+  onSubmit: (mapID: string) => Promise<boolean>
   validate?: (value: string) => string | null
 }) {
   const [iconState, setIconState] = useState<'empty' | 'loading' | 'typing'>(
-    'typing'
+    'empty'
   )
   const form = useForm({
     initialValues: {
-      search: 'bqADnHDhKOfimntdyJnyu_ltVhj',
+      search: '',
     },
     validate: {
       search: validate,
@@ -25,9 +25,11 @@ export default function AddMapInput({
       onSubmit={form.onSubmit((values) => {
         if (iconState === 'loading') return
         setIconState('loading')
-        onSubmit(values.search).then(() => {
-          form.reset()
-          setIconState('empty')
+        onSubmit(values.search).then((success) => {
+          if (success) {
+            form.reset()
+            setIconState('empty')
+          } else setIconState('typing')
         })
       })}
     >
@@ -41,7 +43,7 @@ export default function AddMapInput({
         rightSection={
           <Button
             type='submit'
-            variant='light'
+            variant={iconState === 'empty' ? 'subtle' : 'filled'}
             size='sm'
             mr='0.3rem'
             compact

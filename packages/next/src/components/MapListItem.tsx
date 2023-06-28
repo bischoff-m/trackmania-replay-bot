@@ -33,7 +33,8 @@ export default function MapListItem({
             className={clsx(
               'transition-all',
               'duration-300',
-              'hover:transition-none'
+              'hover:transition-none',
+              snapshot.isDragging ? 'rounded-lg' : ''
             )}
             sx={{
               width: width,
@@ -42,7 +43,6 @@ export default function MapListItem({
               backgroundColor: snapshot.isDragging
                 ? fixedStyles.colorHover
                 : '',
-              borderRadius: snapshot.isDragging ? theme.radius.lg : '',
             }}
           >
             <Avatar

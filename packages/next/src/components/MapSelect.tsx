@@ -18,7 +18,7 @@ export default function MapSelect() {
     width: 700,
     itemHeight: 70,
     separatorHeight: 24,
-    separatorColor: theme.colors.dark[8],
+    separatorColor: theme.colors.dark[4],
     borderRadius: theme.radius.md,
   }
 
@@ -68,17 +68,16 @@ export default function MapSelect() {
         style={{ width: fixedStyles.width }}
         className='m-3 gap-3'
       >
-        <Flex direction='column' className='flex-1'>
+        <Flex
+          direction='column'
+          className='flex-1 rounded-lg overflow-hidden'
+          style={{ border: `0.0625rem solid ${theme.colors.dark[4]}` }}
+        >
           <MapList
             maps={mapsActive}
             droppableId='listActive'
             itemHeight={fixedStyles.itemHeight}
-            rootStyles={{
-              // The placeholder expects the width to be set
-              width: fixedStyles.width,
-              borderTopLeftRadius: fixedStyles.borderRadius,
-              borderTopRightRadius: fixedStyles.borderRadius,
-            }}
+            width={fixedStyles.width}
           >
             {mapsActive.map((map, index) => (
               <MapListItem
@@ -106,12 +105,7 @@ export default function MapSelect() {
             maps={mapsCached}
             droppableId='listCache'
             itemHeight={fixedStyles.itemHeight}
-            rootStyles={{
-              // The placeholder expects the width to be set
-              width: fixedStyles.width,
-              borderBottomLeftRadius: fixedStyles.borderRadius,
-              borderBottomRightRadius: fixedStyles.borderRadius,
-            }}
+            width={fixedStyles.width}
             grow
           >
             {mapsCached.map((map, index) => (
@@ -136,9 +130,11 @@ export default function MapSelect() {
               // TODO: This is unsafe
               handlersCached.append(response.data as MapData)
               console.log(response.data)
+              return true
             } catch (error) {
               // TODO: Show error in UI
               console.error(error)
+              return false
             }
           }}
           validate={(value) => {
