@@ -16,6 +16,7 @@ export default function MapListItem({
 }) {
   const theme = useMantineTheme()
   const fixedStyles = {
+    background: theme.colors.dark[6],
     colorHover: theme.colors.dark[7],
   }
 
@@ -42,7 +43,7 @@ export default function MapListItem({
               '&:hover': { backgroundColor: fixedStyles.colorHover },
               backgroundColor: snapshot.isDragging
                 ? fixedStyles.colorHover
-                : '',
+                : fixedStyles.background,
             }}
           >
             <Avatar
