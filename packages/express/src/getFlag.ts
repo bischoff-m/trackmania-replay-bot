@@ -41,7 +41,6 @@ export async function handleGetFlag(req: Request, res: Response) {
   // Try to load from cache
   const filePath = path.join(cacheRoot, `/${flagID}.jpg`)
   if (fs.existsSync(filePath)) {
-    console.log(`Loading cached flag ${flagID}`)
     res.sendFile(filePath)
     return
   }

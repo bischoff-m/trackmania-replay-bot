@@ -6,14 +6,14 @@ export default function MapList({
   children,
   maps,
   droppableId,
-  width,
+  rootStyles,
   itemHeight,
   grow = false,
 }: {
   children?: React.ReactNode
   maps: MapData[]
   droppableId: string
-  width: number
+  rootStyles?: React.CSSProperties
   itemHeight: number
   grow?: boolean
 }) {
@@ -32,8 +32,8 @@ export default function MapList({
           ref={provided.innerRef}
           style={{
             minHeight: itemHeight,
-            width: width,
             backgroundColor: fixedStyles.background,
+            ...rootStyles,
           }}
         >
           {maps.length > 0 ? (
@@ -46,7 +46,7 @@ export default function MapList({
             <>
               <Center
                 className={clsx('p-2', 'absolute')}
-                style={{ width: width, height: itemHeight }}
+                style={{ width: rootStyles?.width, height: itemHeight }}
               >
                 <Center
                   p='xs'

@@ -1,5 +1,5 @@
 import { userAgent } from '@/index'
-import { type GetMapInfoResponse, routes } from '@global/api'
+import { routes, type GetMapInfoResponse } from '@global/api'
 import { MapData } from '@global/types'
 import type { Request, Response } from 'express'
 import fs from 'fs'
@@ -10,9 +10,7 @@ const cacheRoot = path.join(process.cwd(), '/public/maps')
 
 async function fetchNewThumbnail(mapID: string): Promise<string> {
   // Get map info
-  const fetchRes = await fetch(
-    routes.getMapInfo.url('bqADnHDhKOfimntdyJnyu_ltVhj')
-  )
+  const fetchRes = await fetch(routes.getMapInfo.url(mapID))
   const infoResponse = (await fetchRes.json()) as GetMapInfoResponse
   if (!infoResponse.success) throw new Error(infoResponse.error)
   const map = infoResponse.data as MapData
@@ -59,8 +57,8 @@ export async function handleGetThumbnail(req: Request, res: Response) {
   if (fs.existsSync(dirPath))
     for (const file of fs.readdirSync(dirPath)) {
       if (!file.match(/^thumbnail\.(jpg|png|jpeg)$/)) continue
+
       const filePath = path.join(dirPath, `/${file}`)
-      console.log(`Loading cached thumbnail ${mapID}`)
       res.sendFile(filePath)
       return
     }

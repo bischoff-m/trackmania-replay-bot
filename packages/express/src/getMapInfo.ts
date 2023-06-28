@@ -82,7 +82,6 @@ async function loadMapData(
 
   // Check if file exists
   if (!overwriteCache && fs.existsSync(filePath)) {
-    console.log(`Loading cached data for map ${mapID}`)
     // Read file into MapData object
     const file = fs.readFileSync(filePath, 'utf-8')
     const mapData = JSON.parse(file) as MapData
