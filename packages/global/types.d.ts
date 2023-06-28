@@ -1,6 +1,6 @@
-export type CompositionData = null | {
+export type CompositionData = {
   clips: { [clipID: string]: ClipData }
-  introDuration: number
+  introDurationFrames: number
   framerate: number
   resolution: [number, number]
 }

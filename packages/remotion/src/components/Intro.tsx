@@ -1,10 +1,14 @@
 import { IntroHeader } from '@/components/IntroHeader'
 import { IntroLeaderboard } from '@/components/IntroLeaderboard'
 import { IntroStatistics } from '@/components/IntroStatistics'
+import { useClipContext } from '@/components/MainComposition'
 import { colors, styles } from '@/theme'
-import { AbsoluteFill, Img, staticFile } from 'remotion'
+import { routes } from '@global/api'
+import { AbsoluteFill, Img } from 'remotion'
 
 export const Intro: React.FC = () => {
+  const clipData = useClipContext()
+
   return (
     <>
       <AbsoluteFill
@@ -26,7 +30,7 @@ export const Intro: React.FC = () => {
       >
         <div style={{ flex: '0 0 750px' }}>
           <Img
-            src={staticFile('img/Thumbnail.jpg')}
+            src={routes.getThumbnail.url(clipData.map.id)}
             className='w-full'
             style={{
               borderRadius: styles.borderRadius,

@@ -1,0 +1,68 @@
+{
+  "id": "olsKnq_qAghcVAnEkoeUnVHFZei",
+  "name": "Training - 01",
+  "authorName": "Nadeo",
+  "authorNation": "UNKNOWN",
+  "medals": {
+    "author": 7528,
+    "gold": 8000,
+    "silver": 11000,
+    "bronze": 14000
+  },
+  "leaderboard": [
+    {
+      "name": "ASdaS-BLR",
+      "time": 7428,
+      "nation": "UNKNOWN"
+    },
+    {
+      "name": "zzzzznot7_Harry",
+      "time": 7428,
+      "nation": "GBR"
+    },
+    {
+      "name": "Flechetas",
+      "time": 7428,
+      "nation": "FRA"
+    },
+    {
+      "name": "del2211261250015955839",
+      "time": 7430,
+      "nation": "ITA"
+    },
+    {
+      "name": "KarjeN",
+      "time": 7430,
+      "nation": "SWE"
+    },
+    {
+      "name": "poupipou.",
+      "time": 7431,
+      "nation": "FRA"
+    },
+    {
+      "name": "Perchignon",
+      "time": 7432,
+      "nation": "FRA"
+    },
+    {
+      "name": "KaarloKek",
+      "time": 7432,
+      "nation": "FIN"
+    },
+    {
+      "name": "ZedroXTM",
+      "time": 7432,
+      "nation": "FRA"
+    },
+    {
+      "name": "Stormyymate",
+      "time": 7432,
+      "nation": "AUS"
+    }
+  ],
+  "thumbnailUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/28f3107a-bdd6-4a48-aa9e-90676007add8.jpg",
+  "mapUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/ffa40da5-614c-43f8-9341-aa847e1b43f5",
+  "uploadedAt": "2021-09-14T01:23:33.000Z",
+  "timestamp": "2023-06-28T21:29:32.728Z"
+}

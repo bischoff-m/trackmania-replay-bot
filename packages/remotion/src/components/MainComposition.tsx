@@ -1,5 +1,5 @@
 import { Clip } from '@/components/Clip'
-import type { ClipData, ReplayData } from '@global/types'
+import type { ClipData, CompositionData } from '@global/types'
 import { createContext, useContext } from 'react'
 import { AbsoluteFill } from 'remotion'
 
@@ -13,13 +13,11 @@ export const useClipContext = () => {
   return clipData
 }
 
-export const MainComposition: React.FC<{
-  data: ReplayData
-}> = ({ data }) => {
+export const MainComposition: React.FC<CompositionData> = (data) => {
   return (
     <>
       <AbsoluteFill>
-        {Object.values(data).map((clipData, index) => (
+        {Object.values(data.clips).map((clipData, index) => (
           <ClipContext.Provider key={index} value={clipData}>
             <Clip clipNumber={index + 1} />
           </ClipContext.Provider>

@@ -1,5 +1,5 @@
 import MapSelection from '@/components/MapSelection'
-import { Flex, clsx, useMantineTheme } from '@mantine/core'
+import { Center, Flex, clsx, useMantineTheme } from '@mantine/core'
 
 export default function App() {
   const theme = useMantineTheme()
@@ -12,7 +12,7 @@ export default function App() {
       style={{ backgroundColor: fixedStyles.background }}
     >
       <Flex className='h-full'>
-        <div className='flex-1'></div>
+        <Center className='flex-1'>{}</Center>
         <MapSelection />
       </Flex>
     </main>
