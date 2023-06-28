@@ -23,5 +23,5 @@ export async function handleGetCachedMaps(
     cachedMaps[mapID] = mapData
   }
 
-  res.send(cachedMaps)
+  res.status(200).send(cachedMaps)
 }

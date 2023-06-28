@@ -41,7 +41,7 @@ export async function handleGetFlag(req: Request, res: Response) {
   // Try to load from cache
   const filePath = path.join(cacheRoot, `/${flagID}.jpg`)
   if (fs.existsSync(filePath)) {
-    res.sendFile(filePath)
+    res.status(200).sendFile(filePath)
     return
   }
 

@@ -25,12 +25,6 @@ export const routes = {
 }
 
 // Express API
-export type GetMapInfoResponse = {
-  success: boolean
-  data: MapData | {}
-  error: string
-}
-
 export type GetCachedMapsResponse = {
   [mapID: string]: MapData
 }

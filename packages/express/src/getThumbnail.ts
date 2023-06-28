@@ -1,5 +1,5 @@
 import { userAgent } from '@/index'
-import { routes, type GetMapInfoResponse } from '@global/api'
+import { routes } from '@global/api'
 import { MapData } from '@global/types'
 import type { Request, Response } from 'express'
 import fs from 'fs'
@@ -11,23 +11,26 @@ const cacheRoot = path.join(process.cwd(), '/public/maps')
 async function fetchNewThumbnail(mapID: string): Promise<string> {
   // Get map info
   const fetchRes = await fetch(routes.getMapInfo.url(mapID))
-  const infoResponse = (await fetchRes.json()) as GetMapInfoResponse
-  if (!infoResponse.success) throw new Error(infoResponse.error)
-  const map = infoResponse.data as MapData
+  if (!fetchRes.ok) throw new Error(fetchRes.statusText)
+
+  const mapData = (await fetchRes.json()) as MapData
+  if (!Object.hasOwn(mapData, 'thumbnailUrl'))
+    throw new Error('Invalid map data')
+  const url = mapData.thumbnailUrl
 
   // Fetch thumbnail image from website
-  const response = await nodeFetch(map.thumbnailUrl, {
+  const response = await nodeFetch(url, {
     headers: { 'User-Agent': userAgent },
   })
   if (!response.ok || response.body === null)
-    throw new Error(`Failed to fetch ${map.thumbnailUrl}`)
+    throw new Error(`Failed to fetch ${url}`)
 
   // Create cache directory if it doesn't exist
   if (!fs.existsSync(path.join(cacheRoot, `/${mapID}`)))
     fs.mkdirSync(path.join(cacheRoot, `/${mapID}`))
 
   // Write to cache
-  const extension = path.extname(map.thumbnailUrl)
+  const extension = path.extname(url)
   const filePath = path.join(cacheRoot, `/${mapID}/thumbnail${extension}`)
   await fs.promises.writeFile(filePath, response.body)
 

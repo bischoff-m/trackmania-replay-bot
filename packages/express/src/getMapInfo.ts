@@ -1,5 +1,4 @@
 import { userAgent } from '@/index'
-import type { GetMapInfoResponse } from '@global/api'
 import type { MapData, Ranking } from '@global/types'
 import type { Request, Response } from 'express'
 import fs from 'fs'
@@ -100,51 +99,28 @@ async function loadMapData(
   }
 }
 
-export async function handleGetMapInfo(
-  req: Request,
-  res: Response<GetMapInfoResponse>
-) {
+export async function handleGetMapInfo(req: Request, res: Response) {
   // Set header Access-Control-Allow-Origin to allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*')
 
-  // const data = await loadMapData('FngQSpNTy0ONQre0XDU9oAdEK7b') // Minas Morgul
-  // const data = await loadMapData('ho7WKyIBTV_dNmP9hFFadUvvtLd') // Forget me not
-  // const data = await loadMapData('bqADnHDhKOfimntdyJnyu_ltVhj') // Campaign
-
   // Check if map ID is provided
   if (!Object.hasOwn(req.params, 'mapID')) {
-    res.send({
-      success: false,
-      data: {},
-      error: 'No map ID provided',
-    })
+    res.status(400).send('No map ID provided')
     return
   }
 
   // Check if map ID is valid
   const mapID = req.params.mapID
   if (!mapID.match(/^[a-zA-Z0-9_-]{27}$/)) {
-    res.send({
-      success: false,
-      data: {},
-      error: 'Invalid map ID',
-    })
+    res.status(400).send('Invalid map ID')
     return
   }
 
   // Try to load map data
   try {
-    const data = await loadMapData(mapID)
-    res.send({
-      success: true,
-      data,
-      error: '',
-    })
-  } catch (error: any) {
-    res.send({
-      success: false,
-      data: {},
-      error: `${error}`,
-    })
+    const mapData = await loadMapData(mapID)
+    res.status(200).send(JSON.stringify(mapData))
+  } catch (error) {
+    res.status(500).send(String(error))
   }
 }

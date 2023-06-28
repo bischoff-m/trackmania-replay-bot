@@ -1,7 +1,7 @@
 import AddMapInput from '@/components/AddMapInput'
 import MapList from '@/components/MapList'
 import MapListItem from '@/components/MapListItem'
-import { GetCachedMapsResponse, GetMapInfoResponse, routes } from '@global/api'
+import { GetCachedMapsResponse, routes } from '@global/api'
 import { CompositionData, MapData } from '@global/types'
 import { Button, Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
@@ -182,13 +182,15 @@ export default function MapSelection() {
           onSubmit={async (mapID) => {
             // Fetch new map
             try {
-              // TODO: Turn {success: false, data: null, error: string} into just returning data
               const fetchRes = await fetch(routes.getMapInfo.url(mapID))
-              const response = (await fetchRes.json()) as GetMapInfoResponse
-              if (!response.success) throw new Error(response.error)
-              // TODO: This is unsafe
-              handlersCached.append(response.data as MapData)
-              console.log(response.data)
+              if (!fetchRes.ok) throw new Error(fetchRes.statusText)
+              const mapData = (await fetchRes.json()) as MapData
+
+              if (!Object.hasOwn(mapData, 'id'))
+                throw new Error('Invalid map data')
+
+              handlersCached.append(mapData)
+              console.log(mapData)
               return true
             } catch (error) {
               // TODO: Show error in UI
