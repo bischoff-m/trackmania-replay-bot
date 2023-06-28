@@ -12,6 +12,7 @@
     "@mantine/core": "^6.0.13",
     "@mantine/hooks": "^6.0.13",
     "@mantine/prism": "^6.0.14",
+    "@tabler/icons-react": "^2.23.0",
     "@types/react-beautiful-dnd": "^13.1.4",
     "autoprefixer": "10.4.14",
     "next": "^13.4.6",
