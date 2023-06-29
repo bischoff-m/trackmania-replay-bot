@@ -9,7 +9,7 @@ export function formatTrackmaniaTime(millis: number): string {
   const seconds = Math.floor(millis / 1000) % 60
   const milliseconds = Math.floor(millis % 1000)
   const hoursString = hours ? `${hours}:` : ''
-  const minutesString = minutes ? `${minutes}`.padStart(2, '0') : '0'
+  const minutesString = minutes
   const secondsString = `${seconds}`.padStart(2, '0')
   const millisecondsString = `${milliseconds}`.padStart(3, '0')
   return `${hoursString}${minutesString}:${secondsString}.${millisecondsString}`

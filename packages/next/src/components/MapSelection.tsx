@@ -24,10 +24,10 @@ export default function MapSelection() {
   }
 
   const onClickSave = async () => {
-    const curFrame = 0
     const fps = 60
     const introDuration = 5 * fps
     const replayDuration = 450
+    let curFrame = 0
     const body: CompositionData = {
       // Reduce mapsActive to an object with the map IDs as keys
       clips: mapsActive.reduce((acc, map) => {
@@ -40,6 +40,7 @@ export default function MapSelection() {
             durationInFrames: 450,
           },
         }
+        curFrame += introDuration + replayDuration
         return acc
       }, {} as CompositionData['clips']),
       introDurationFrames: introDuration,
@@ -47,7 +48,20 @@ export default function MapSelection() {
       resolution: [2560, 1440],
     }
 
-    // TODO: Send body to express server
+    try {
+      const res = await fetch(routes.setActiveComposition.url(), {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          Accept: 'text/plain',
+          'Content-Type': 'application/json',
+        },
+      })
+      if (!res.ok) throw new Error('Failed to save composition')
+      // setUnsavedChanges(false)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const onDragEnd: OnDragEndResponder = ({ destination, source }) => {
@@ -71,22 +85,32 @@ export default function MapSelection() {
   }
 
   useEffect(() => {
-    fetch(routes.getCachedMaps.url()).then(async (res) => {
-      const newMaps = (await res.json()) as GetCachedMapsResponse
-
-      // Append new maps
-      const cachedIDs = mapsCached
-        .map((map) => map.id)
-        .concat(mapsActive.map((map) => map.id))
-      handlersCached.append(
-        ...Object.values(newMaps).filter((map) => !cachedIDs.includes(map.id))
-      )
-
-      // Remove deleted maps
-      const newIDs = Object.keys(newMaps)
-      handlersCached.filter((map) => newIDs.includes(map.id))
-      handlersActive.filter((map) => newIDs.includes(map.id))
+    fetch(routes.getCachedMaps.url(), {
+      headers: { Accept: 'application/json' },
     })
+      .then(async (resCached) => {
+        if (!resCached.ok) throw new Error(await resCached.text())
+
+        const resActive = await fetch(routes.getActiveComposition.url(), {
+          headers: { Accept: 'application/json' },
+        })
+        const compData = (await resActive.json()) as CompositionData
+
+        handlersCached.setState([])
+        handlersActive.setState([])
+
+        const loadedMaps = (await resCached.json()) as GetCachedMapsResponse
+        const activeIDs = Object.keys(compData.clips)
+
+        // Append new maps
+        Object.values(loadedMaps).forEach((map) => {
+          if (activeIDs.includes(map.id)) handlersActive.append(map)
+          else handlersCached.append(map)
+        })
+      })
+      .catch((err) => {
+        console.error(err)
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -182,7 +206,9 @@ export default function MapSelection() {
           onSubmit={async (mapID) => {
             // Fetch new map
             try {
-              const fetchRes = await fetch(routes.getMapInfo.url(mapID))
+              const fetchRes = await fetch(routes.getMapInfo.url(mapID), {
+                headers: { Accept: 'application/json' },
+              })
               if (!fetchRes.ok) throw new Error(fetchRes.statusText)
               const mapData = (await fetchRes.json()) as MapData
 

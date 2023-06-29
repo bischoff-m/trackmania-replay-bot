@@ -12,7 +12,7 @@ async function fetchNewFlag(flagID: string) {
 
   // Fetch flag image from trackmania.io website
   const response = await nodeFetch(url, {
-    headers: { 'User-Agent': userAgent },
+    headers: { 'User-Agent': userAgent, Accept: 'image/jpeg, image/png' },
   })
   if (!response.ok || response.body === null)
     throw new Error(`Failed to fetch ${url}`)

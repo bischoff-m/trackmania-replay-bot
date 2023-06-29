@@ -2,7 +2,7 @@
   "name": "replay-bot-remotion",
   "version": "0.1.0",
   "scripts": {
-    "preview": "remotion preview --port 5000 --props public/activeComposition.json",
+    "preview": "remotion preview --port 5000",
     "render": "remotion render"
   },
   "dependencies": {

@@ -119,7 +119,8 @@ export async function handleGetMapInfo(req: Request, res: Response) {
   // Try to load map data
   try {
     const mapData = await loadMapData(mapID)
-    res.status(200).send(JSON.stringify(mapData))
+    res.setHeader('Content-Type', 'application/json')
+    res.status(200).send(mapData)
   } catch (error) {
     res.status(500).send(String(error))
   }

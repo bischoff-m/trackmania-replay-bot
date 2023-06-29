@@ -23,5 +23,6 @@ export async function handleGetCachedMaps(
     cachedMaps[mapID] = mapData
   }
 
+  res.setHeader('Content-Type', 'application/json')
   res.status(200).send(cachedMaps)
 }

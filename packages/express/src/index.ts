@@ -1,8 +1,11 @@
-import { handleGetCachedMaps } from '@/getCachedMaps'
-import { handleGetFlag } from '@/getFlag'
-import { handleGetMapInfo } from '@/getMapInfo'
-import { handleGetThumbnail } from '@/getThumbnail'
+import { handleGetActive } from '@/routes/getActive'
+import { handleGetCachedMaps } from '@/routes/getCachedMaps'
+import { handleGetFlag } from '@/routes/getFlag'
+import { handleGetMapInfo } from '@/routes/getMapInfo'
+import { handleGetThumbnail } from '@/routes/getThumbnail'
+import { handleSetActive } from '@/routes/setActive'
 import { routes } from '@global/api'
+import cors from 'cors'
 import express from 'express'
 
 const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
@@ -17,15 +20,19 @@ Discord: bischoff.m
 
 const app = express()
 
-// TODO: Implement getCachedMaps route to display in nextjs
+app.use(express.json())
+app.use(cors())
 
 app.get(routes.getMapInfo.path, handleGetMapInfo)
 app.get(routes.getThumbnail.path, handleGetThumbnail)
 app.get(routes.getCachedMaps.path, handleGetCachedMaps)
 app.get(routes.getFlag.path, handleGetFlag)
+app.get(routes.getActiveComposition.path, handleGetActive)
+app.post(routes.setActiveComposition.path, handleSetActive)
 
 app.get('/', (req, res) => {
-  res.send(
+  res.setHeader('Content-Type', 'text/html')
+  res.status(200).send(
     '<h1>Available routes:</h1>' +
       Object.values(routes)
         .map((route) => route.path)

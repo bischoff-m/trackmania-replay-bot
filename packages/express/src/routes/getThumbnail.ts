@@ -10,8 +10,10 @@ const cacheRoot = path.join(process.cwd(), '/public/maps')
 
 async function fetchNewThumbnail(mapID: string): Promise<string> {
   // Get map info
-  const fetchRes = await fetch(routes.getMapInfo.url(mapID))
-  if (!fetchRes.ok) throw new Error(fetchRes.statusText)
+  const fetchRes = await fetch(routes.getMapInfo.url(mapID), {
+    headers: { Accept: 'application/json' },
+  })
+  if (!fetchRes.ok) throw new Error(await fetchRes.text())
 
   const mapData = (await fetchRes.json()) as MapData
   if (!Object.hasOwn(mapData, 'thumbnailUrl'))
@@ -20,7 +22,7 @@ async function fetchNewThumbnail(mapID: string): Promise<string> {
 
   // Fetch thumbnail image from website
   const response = await nodeFetch(url, {
-    headers: { 'User-Agent': userAgent },
+    headers: { 'User-Agent': userAgent, Accept: 'image/jpeg, image/png' },
   })
   if (!response.ok || response.body === null)
     throw new Error(`Failed to fetch ${url}`)
