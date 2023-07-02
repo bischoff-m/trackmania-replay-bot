@@ -7,9 +7,6 @@ Config.setEntryPoint('./src/index.ts')
 Config.setOutputLocation('../../output/output.mp4')
 Config.setDotEnvLocation('../../.env')
 
-Config.setShouldOpenBrowser(false)
-Config.setChromiumHeadlessMode(false)
-
 Config.overrideWebpackConfig((config) => {
   const newConfig = enableTailwind(config)
   return {

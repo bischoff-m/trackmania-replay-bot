@@ -49,7 +49,13 @@ export default function MapListItem({
             }}
           >
             {showIndex && (
-              <Text size='md' color='dimmed' weight={500}>
+              <Text
+                size='md'
+                color='dimmed'
+                weight={500}
+                w='1.4rem'
+                align='center'
+              >
                 #{index + 1}
               </Text>
             )}

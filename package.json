@@ -12,7 +12,7 @@
     "dev-remotion": "npm run preview --prefix packages/remotion",
     "build-next": "npm run build --prefix packages/next",
     "remotion:preview": "concurrently \"npm:dev-*(!next)\"",
-    "remotion:render": "concurrently \"npm run express:dev\" \"npm run render --prefix packages/remotion\"",
+    "remotion:render": "concurrently \"npm run dev-express\" \"npm run render --prefix packages/remotion\"",
     "prettier:write": "prettier --write .",
     "prettier:check": "prettier --check ."
   },

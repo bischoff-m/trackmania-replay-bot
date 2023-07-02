@@ -13,16 +13,18 @@ export const useClipContext = () => {
   return clipData
 }
 
-export const MainComposition: React.FC<CompositionData> = (data) => {
+export const MainComposition: React.FC<{
+  data: CompositionData | null
+}> = (props) => {
+  if (props.data === null) return <AbsoluteFill>Nothing to render</AbsoluteFill>
+
   return (
-    <>
-      <AbsoluteFill>
-        {Object.values(data.clips).map((clipData, index) => (
-          <ClipContext.Provider key={index} value={clipData}>
-            <Clip clipNumber={index + 1} />
-          </ClipContext.Provider>
-        ))}
-      </AbsoluteFill>
-    </>
+    <AbsoluteFill>
+      {Object.values(props.data.clips).map((clipData, index) => (
+        <ClipContext.Provider key={index} value={clipData}>
+          <Clip clipNumber={index + 1} />
+        </ClipContext.Provider>
+      ))}
+    </AbsoluteFill>
   )
 }

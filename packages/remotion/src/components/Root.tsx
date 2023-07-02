@@ -2,59 +2,70 @@ import { MainComposition } from '@/components/MainComposition'
 import '@/style.css'
 import { routes } from '@global/api'
 import type { CompositionData } from '@global/types'
-import React, { useEffect } from 'react'
-import { Composition, getInputProps } from 'remotion'
-
-// TODO: Define base path /public/remotion in global variable
+import React, { useEffect, useState } from 'react'
+import {
+  Composition,
+  cancelRender,
+  continueRender,
+  delayRender,
+  getInputProps,
+} from 'remotion'
 
 // tmioLink: "https://trackmania.io/#/leaderboard/olsKnq_qAghcVAnEkoeUnVHFZei",
 // tmioLink: "https://trackmania.io/#/leaderboard/PhJGvGjkCaw299rBhVsEhNJKX1",
 // tmioLink: "https://trackmania.io/#/leaderboard/ho7WKyIBTV_dNmP9hFFadUvvtLd",
 
-export const RemotionRoot: React.FC = () => {
-  const [compData, setCompData] = React.useState<CompositionData | null>(null)
-  const inputPropsCLI = getInputProps() as CompositionData
+// Though it is recommended to load data in the Composition component, instead
+// of the Root component, I am loading the data here because I need to know the
+// duration of the composition before rendering it.
+// https://www.remotion.dev/docs/troubleshooting/defaultprops-too-big#how-to-fix-the-error
 
-  /*
-  Idea:
-  If CLI props are given, use them
-  Otherwise try to read from file to have live reload
-  Else don't render anything and show error message
-  */
+export const RemotionRoot: React.FC = () => {
+  const [compData, setCompData] = useState<CompositionData | null>(null)
+  const [handle] = useState(() => delayRender())
+
+  const inputPropsCLI = getInputProps() as CompositionData
 
   useEffect(() => {
     if (Object.keys(inputPropsCLI).length > 0) setCompData(inputPropsCLI)
     else {
       fetch(routes.getActiveComposition.url(), {
         headers: { Accept: 'application/json' },
-      }).then(async (res) => {
-        if (!res.ok) {
-          console.error(await res.text())
-          return
-        }
-
-        const compData = (await res.json()) as CompositionData
-        setCompData(compData)
       })
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error(await res.text())
+          }
+
+          const compData = (await res.json()) as CompositionData
+          setCompData(compData)
+          continueRender(handle)
+        })
+        .catch((err) => {
+          console.error(err)
+          cancelRender(err)
+        })
     }
-  }, [inputPropsCLI])
+  }, [inputPropsCLI, handle])
+
+  const duration = compData
+    ? Object.values(compData.clips).reduce(
+        (sum, clip) => sum + clip.durationInFrames,
+        0
+      )
+    : 1
 
   return (
     <>
-      {compData && (
-        <Composition
-          id='MainComposition'
-          component={MainComposition}
-          durationInFrames={Object.values(compData.clips).reduce(
-            (sum, clip) => sum + clip.durationInFrames,
-            0
-          )}
-          fps={60}
-          width={2560}
-          height={1440}
-          defaultProps={compData}
-        />
-      )}
+      <Composition
+        id='MainComposition'
+        component={MainComposition}
+        durationInFrames={duration}
+        fps={60}
+        width={2560}
+        height={1440}
+        defaultProps={{ data: compData }}
+      />
     </>
   )
 }

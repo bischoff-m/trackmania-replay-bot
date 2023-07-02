@@ -1,9 +1,10 @@
 import AddMapInput from '@/components/AddMapInput'
 import MapList from '@/components/MapList'
 import MapListItem from '@/components/MapListItem'
+import SaveActiveMapsButton from '@/components/SaveActiveMapsButton'
 import { GetCachedMapsResponse, routes } from '@global/api'
 import { CompositionData, MapData } from '@global/types'
-import { Button, Center, Flex, Text, useMantineTheme } from '@mantine/core'
+import { Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
 import { IconCaretUp } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
@@ -21,47 +22,6 @@ export default function MapSelection() {
     separatorHeight: 24,
     separatorColor: theme.colors.dark[4],
     borderRadius: theme.radius.md,
-  }
-
-  const onClickSave = async () => {
-    const fps = 60
-    const introDuration = 5 * fps
-    const replayDuration = 450
-    let curFrame = 0
-    const body: CompositionData = {
-      // Reduce mapsActive to an object with the map IDs as keys
-      clips: mapsActive.reduce((acc, map) => {
-        acc[map.id] = {
-          startFrame: curFrame,
-          durationInFrames: introDuration + replayDuration,
-          map: map,
-          video: {
-            videoFile: '/video-cache/Video1.webm',
-            durationInFrames: 450,
-          },
-        }
-        curFrame += introDuration + replayDuration
-        return acc
-      }, {} as CompositionData['clips']),
-      introDurationFrames: introDuration,
-      framerate: fps,
-      resolution: [2560, 1440],
-    }
-
-    try {
-      const res = await fetch(routes.setActiveComposition.url(), {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          Accept: 'text/plain',
-          'Content-Type': 'application/json',
-        },
-      })
-      if (!res.ok) throw new Error('Failed to save composition')
-      // setUnsavedChanges(false)
-    } catch (err) {
-      console.error(err)
-    }
   }
 
   const onDragEnd: OnDragEndResponder = ({ destination, source }) => {
@@ -95,18 +55,19 @@ export default function MapSelection() {
           headers: { Accept: 'application/json' },
         })
         const compData = (await resActive.json()) as CompositionData
-
-        handlersCached.setState([])
-        handlersActive.setState([])
-
         const loadedMaps = (await resCached.json()) as GetCachedMapsResponse
         const activeIDs = Object.keys(compData.clips)
 
+        let newCached: MapData[] = []
+        let newActive: MapData[] = []
+
         // Append new maps
         Object.values(loadedMaps).forEach((map) => {
-          if (activeIDs.includes(map.id)) handlersActive.append(map)
-          else handlersCached.append(map)
+          if (activeIDs.includes(map.id)) newActive.push(map)
+          else newCached.push(map)
         })
+        handlersCached.setState(newCached)
+        handlersActive.setState(newActive)
       })
       .catch((err) => {
         console.error(err)
@@ -181,24 +142,11 @@ export default function MapSelection() {
               />
             ))}
           </MapList>
-
-          {/* Save button */}
-          <Button
-            variant='filled'
-            style={{
-              position: 'absolute',
-              transform: unsavedChanges
-                ? 'translateY(-30%)'
-                : 'translateY(150%)',
-              transition: 'transform 0.2s ease',
-            }}
-            onClick={() => {
-              onClickSave()
-              setUnsavedChanges(true)
-            }}
-          >
-            Save
-          </Button>
+          <SaveActiveMapsButton
+            mapsActive={mapsActive}
+            isActive={unsavedChanges}
+            setIsActive={setUnsavedChanges}
+          />
         </Flex>
 
         {/* Input field for new maps */}

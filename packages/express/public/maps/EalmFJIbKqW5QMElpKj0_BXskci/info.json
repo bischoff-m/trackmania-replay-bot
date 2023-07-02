@@ -1,0 +1,68 @@
+{
+  "id": "EalmFJIbKqW5QMElpKj0_BXskci",
+  "name": "SOFTCORE",
+  "authorName": "DD0LLA",
+  "authorNation": "RUS",
+  "medals": {
+    "author": 41701,
+    "gold": 45000,
+    "silver": 51000,
+    "bronze": 63000
+  },
+  "leaderboard": [
+    {
+      "name": "JakeRay",
+      "time": 40040,
+      "nation": "DEN"
+    },
+    {
+      "name": "twelfth-tm",
+      "time": 40104,
+      "nation": "NCA"
+    },
+    {
+      "name": "Razii.",
+      "time": 40112,
+      "nation": "CRO"
+    },
+    {
+      "name": "NotSandels",
+      "time": 40264,
+      "nation": "FIN"
+    },
+    {
+      "name": "Az0xTM",
+      "time": 40321,
+      "nation": "GER"
+    },
+    {
+      "name": "Quentin43",
+      "time": 40334,
+      "nation": "FRA"
+    },
+    {
+      "name": "Erizel",
+      "time": 40336,
+      "nation": "NOR"
+    },
+    {
+      "name": "F9.Marius89",
+      "time": 40351,
+      "nation": "GER"
+    },
+    {
+      "name": "fishoo1",
+      "time": 40378,
+      "nation": "FIN"
+    },
+    {
+      "name": "Angelow_",
+      "time": 40384,
+      "nation": "FRA"
+    }
+  ],
+  "thumbnailUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/492d7704-1b0d-4070-9dea-824ebfe15e0e.jpg",
+  "mapUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/3e279628-8618-469e-bcfa-399f3bee9e4b",
+  "uploadedAt": "2023-06-27T14:28:47.000Z",
+  "timestamp": "2023-07-02T18:57:51.850Z"
+}
