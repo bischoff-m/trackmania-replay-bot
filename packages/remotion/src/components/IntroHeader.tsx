@@ -24,7 +24,8 @@ export const IntroHeader: React.FC = () => {
             mode='single'
             forceSingleModeWidth={false}
             max={96}
-            // Height is expected to be set
+            // Height is expected to be set (I don't know why it still shows a
+            // warning in the console though)
             // https://github.com/malte-wessel/react-textfit/issues/35
             style={{ height: 150 }}
           >

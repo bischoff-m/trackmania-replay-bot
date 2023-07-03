@@ -3,6 +3,7 @@ import { MapData } from './types'
 const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
 export const routes = {
+  // GET
   getMapInfo: {
     // Expects: { mapID: string }
     // Returns: MapData
@@ -36,6 +37,15 @@ export const routes = {
     path: '/getActive',
     url: () => `http://localhost:${PORT_EXPRESS}/getActive`,
   },
+  getVideo: {
+    // Expects: { fileName: string }
+    // Returns: Content-Type video/webm
+    path: '/getVideo/:videoName',
+    url: (fileName: string) =>
+      `http://localhost:${PORT_EXPRESS}/getVideo/${fileName}`,
+  },
+
+  // POST
   setActiveComposition: {
     // Expects: CompositionData
     // Returns: nothing

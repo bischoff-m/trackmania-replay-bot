@@ -11,7 +11,7 @@ export type ClipData = {
   startFrame: number
   durationInFrames: number
   map: MapData
-  video: {
+  video?: {
     videoFile: string
     durationInFrames: number
   }

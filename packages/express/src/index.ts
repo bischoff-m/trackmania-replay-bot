@@ -3,6 +3,7 @@ import { handleGetCachedMaps } from '@/routes/getCachedMaps'
 import { handleGetFlag } from '@/routes/getFlag'
 import { handleGetMapInfo } from '@/routes/getMapInfo'
 import { handleGetThumbnail } from '@/routes/getThumbnail'
+import { handleGetVideo } from '@/routes/getVideo'
 import { handleSetActive } from '@/routes/setActive'
 import { routes } from '@global/api'
 import cors from 'cors'
@@ -28,6 +29,8 @@ app.get(routes.getThumbnail.path, handleGetThumbnail)
 app.get(routes.getCachedMaps.path, handleGetCachedMaps)
 app.get(routes.getFlag.path, handleGetFlag)
 app.get(routes.getActiveComposition.path, handleGetActive)
+app.get(routes.getVideo.path, handleGetVideo)
+
 app.post(routes.setActiveComposition.path, handleSetActive)
 
 app.get('/', (req, res) => {

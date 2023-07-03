@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react'
 import { AbsoluteFill } from 'remotion'
 
 export const ClipContext = createContext<ClipData | null>(null)
+export const CompositionContext = createContext<CompositionData | null>(null)
 
 // Custom useContext hook to handle null check
 // Use this to access the data fetched from trackmania.io
@@ -13,6 +14,14 @@ export const useClipContext = () => {
   return clipData
 }
 
+// Custom useContext hook to handle null check
+// Use this to access additional data not contained in the clip data
+export const useCompositionContext = () => {
+  const compData = useContext(CompositionContext)
+  if (!compData) throw new Error('Composition data not found')
+  return compData
+}
+
 export const MainComposition: React.FC<{
   data: CompositionData | null
 }> = (props) => {
@@ -20,11 +29,13 @@ export const MainComposition: React.FC<{
 
   return (
     <AbsoluteFill>
-      {Object.values(props.data.clips).map((clipData, index) => (
-        <ClipContext.Provider key={index} value={clipData}>
-          <Clip clipNumber={index + 1} />
-        </ClipContext.Provider>
-      ))}
+      <CompositionContext.Provider value={props.data}>
+        {Object.values(props.data.clips).map((clipData, index) => (
+          <ClipContext.Provider key={index} value={clipData}>
+            <Clip />
+          </ClipContext.Provider>
+        ))}
+      </CompositionContext.Provider>
     </AbsoluteFill>
   )
 }

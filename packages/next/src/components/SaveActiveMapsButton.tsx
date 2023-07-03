@@ -24,7 +24,7 @@ export default function SaveActiveMapsButton({
           durationInFrames: introDuration + replayDuration,
           map: map,
           video: {
-            videoFile: '/video-cache/Video1.webm',
+            videoFile: 'olsKnq_qAghcVAnEkoeUnVHFZei.webm',
             durationInFrames: 450,
           },
         }

@@ -20,8 +20,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# custom
-video-cache
+###################### CUSTOM ######################
 TODO
 /output
 dist
+
+# express public files
+**/public/videos/*
+!**/public/videos/.gitkeep
