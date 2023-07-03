@@ -12,21 +12,21 @@ the replay of the world record on some popular maps.
 
 1. Choose maps that were popular last week and download the world record replays. _(Not started yet)_
 1. Batch-render the replays using Trackmania. _(Only tested manually so far)_
-1. Fetch map name, author, medals, leaderboard, etc. from [Trackmania.io](https://www.npmjs.com/package/trackmania.io). _(Started)_
-1. Compose the replays into a video using Remotion. _(Base layout done)_
+1. Fetch map name, author, medals, leaderboard, etc. from [Trackmania.io](https://www.npmjs.com/package/trackmania.io). _(Mostly done)_
+1. Compose the replays into a video using Remotion. _(Mostly done)_
 1. Upload the video to YouTube. _(Not started yet)_
 
 ## Getting Started
 
-Run the development server and open [http://localhost:3333](http://localhost:3333):
+Run the development server and open [http://localhost:3000](http://localhost:3000):
 
 ```bash
 npm run dev
 ```
 
 The page serves as management interface for the bot. You will be able to start
-the Remotion preview and render process from there, view the cached data,
-selected replays and other things I might find helpful.
+the Remotion render process from there, view the cached data, selected replays
+and other things I might find helpful.
 
 ## Thanks
 
