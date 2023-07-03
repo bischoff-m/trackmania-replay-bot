@@ -3,6 +3,7 @@ import { colors, styles } from '@/theme'
 import { routes } from '@global/api'
 import { MapData } from '@global/types'
 import { formatTrackmaniaTime } from '@global/util'
+import { Textfit } from 'react-textfit'
 import { Img, staticFile } from 'remotion'
 
 export const IntroHeader: React.FC = () => {
@@ -11,12 +12,25 @@ export const IntroHeader: React.FC = () => {
   return (
     <main
       className='flex h-full w-full'
-      style={{ gap: 40, color: colors.darkPrimary }}
+      // Gap would normally be ~50px, but the <Textfit> component calculates the
+      // font size too large
+      style={{ gap: 100, color: colors.darkPrimary }}
     >
       {/* Left column */}
       <div className='flex h-full flex-1 flex-col justify-between py-5'>
         {/* Map title */}
-        <span style={{ fontSize: 96, fontWeight: 700 }}>{mapData.name}</span>
+        <div className='font-bold'>
+          <Textfit
+            mode='single'
+            forceSingleModeWidth={false}
+            max={96}
+            // Height is expected to be set
+            // https://github.com/malte-wessel/react-textfit/issues/35
+            style={{ height: 150 }}
+          >
+            {mapData.name}
+          </Textfit>
+        </div>
 
         {/* Author flag and name */}
         <div className='flex w-full'>

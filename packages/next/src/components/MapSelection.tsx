@@ -4,9 +4,9 @@ import MapListItem from '@/components/MapListItem'
 import SaveActiveMapsButton from '@/components/SaveActiveMapsButton'
 import { GetCachedMapsResponse, routes } from '@global/api'
 import { CompositionData, MapData } from '@global/types'
-import { Center, Flex, Text, useMantineTheme } from '@mantine/core'
+import { ActionIcon, Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
-import { IconCaretUp } from '@tabler/icons-react'
+import { IconCaretUp, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
@@ -22,6 +22,7 @@ export default function MapSelection() {
     separatorHeight: 24,
     separatorColor: theme.colors.dark[4],
     borderRadius: theme.radius.md,
+    background: theme.colors.dark[6],
   }
 
   const onDragEnd: OnDragEndResponder = ({ destination, source }) => {
@@ -82,14 +83,33 @@ export default function MapSelection() {
         style={{ width: fixedStyles.width }}
         className='m-3 gap-3'
       >
+        {/* Map lists and separator */}
         <Flex
           direction='column'
           className='flex-1 rounded-lg justify-end items-center overflow-hidden'
           style={{
             border: `0.0625rem solid ${theme.colors.dark[4]}`,
             clipPath: 'inset(0 0 0 0)',
+            backgroundColor: fixedStyles.background,
           }}
         >
+          <Flex className='w-full p-1 justify-end'>
+            <ActionIcon
+              size='lg'
+              title='Set all inactive'
+              color='primary'
+              onClick={() => {
+                if (mapsActive.length === 0) return
+                const newCached = [...mapsActive, ...mapsCached]
+                handlersActive.setState([])
+                handlersCached.setState(newCached)
+                setUnsavedChanges(true)
+              }}
+            >
+              <IconTrash size='1.2rem' />
+            </ActionIcon>
+          </Flex>
+
           {/* Active map list */}
           <MapList
             maps={mapsActive}

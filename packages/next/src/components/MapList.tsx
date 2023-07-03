@@ -19,7 +19,6 @@ export default function MapList({
 }) {
   const theme = useMantineTheme()
   const fixedStyles = {
-    background: theme.colors.dark[6],
     placeholderBorder: theme.colors.dark[3],
   }
 
@@ -32,7 +31,6 @@ export default function MapList({
           ref={provided.innerRef}
           style={{
             minHeight: itemHeight,
-            backgroundColor: fixedStyles.background,
             width: width,
           }}
         >
