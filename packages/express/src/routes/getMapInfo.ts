@@ -105,6 +105,7 @@ export async function handleGetMapInfo(req: Request, res: Response) {
 
   // Check if map ID is provided
   if (!Object.hasOwn(req.params, 'mapID')) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('No map ID provided')
     return
   }
@@ -112,6 +113,7 @@ export async function handleGetMapInfo(req: Request, res: Response) {
   // Check if map ID is valid
   const mapID = req.params.mapID
   if (!mapID.match(/^[a-zA-Z0-9_-]{27}$/)) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('Invalid map ID')
     return
   }
@@ -122,6 +124,7 @@ export async function handleGetMapInfo(req: Request, res: Response) {
     res.setHeader('Content-Type', 'application/json')
     res.status(200).send(mapData)
   } catch (error) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(500).send(String(error))
   }
 }

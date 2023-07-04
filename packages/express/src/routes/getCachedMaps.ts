@@ -15,8 +15,9 @@ export async function handleGetCachedMaps(
 
   // Build object of type { [mapID: string]: MapData } from cache
   const cachedMaps: GetCachedMapsResponse = {}
-  const maps = fs.readdirSync(cacheRoot)
-  for (const mapID of maps) {
+  const cacheDirs = fs.readdirSync(cacheRoot)
+  const mapDirs = cacheDirs.filter((dir) => dir.match(/^[a-zA-Z0-9_-]{27}$/))
+  for (const mapID of mapDirs) {
     const filePath = path.join(cacheRoot, `/${mapID}/info.json`)
     const file = fs.readFileSync(filePath, 'utf-8')
     const mapData = JSON.parse(file) as MapData

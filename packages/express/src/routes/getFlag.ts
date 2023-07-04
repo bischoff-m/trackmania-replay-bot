@@ -27,6 +27,7 @@ export async function handleGetFlag(req: Request, res: Response) {
 
   // Check if flag ID is provided
   if (!Object.hasOwn(req.params, 'flagID')) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('No flag ID provided')
     return
   }
@@ -34,6 +35,7 @@ export async function handleGetFlag(req: Request, res: Response) {
 
   // Check if flag ID is valid
   if (flagID.length !== 3 || !flagID.match(/^[a-zA-Z]+$/)) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('Invalid flag ID')
     return
   }
@@ -52,6 +54,7 @@ export async function handleGetFlag(req: Request, res: Response) {
     res.status(200).sendFile(filePath)
   } catch (err) {
     console.error(err)
+    res.setHeader('Content-Type', 'text/plain')
     res.status(500).send('Failed to fetch flag')
   }
 }

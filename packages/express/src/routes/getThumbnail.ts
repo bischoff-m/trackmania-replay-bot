@@ -45,6 +45,7 @@ export async function handleGetThumbnail(req: Request, res: Response) {
 
   // Check if map ID is provided
   if (!Object.hasOwn(req.params, 'mapID')) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('No map ID provided')
     return
   }
@@ -52,6 +53,7 @@ export async function handleGetThumbnail(req: Request, res: Response) {
   // Check if map ID is valid
   const mapID = req.params.mapID
   if (!mapID.match(/^[a-zA-Z0-9_-]{27}$/)) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('Invalid map ID')
     return
   }
@@ -59,7 +61,7 @@ export async function handleGetThumbnail(req: Request, res: Response) {
   // Try to load from cache
   // Find thumbnail file in cache (could be .jpg, .png, ...)
   const dirPath = path.join(cacheRoot, `/${mapID}`)
-  if (fs.existsSync(dirPath))
+  if (fs.existsSync(dirPath)) {
     for (const file of fs.readdirSync(dirPath)) {
       if (!file.match(/^thumbnail\.(jpg|png|jpeg)$/)) continue
 
@@ -67,6 +69,7 @@ export async function handleGetThumbnail(req: Request, res: Response) {
       res.sendFile(filePath)
       return
     }
+  }
 
   // Fetch new thumbnail
   console.log(`Fetching new thumbnail ${mapID}`)
@@ -76,6 +79,7 @@ export async function handleGetThumbnail(req: Request, res: Response) {
     console.log('Fetch successful')
   } catch (error) {
     console.error(error)
+    res.setHeader('Content-Type', 'text/plain')
     res.status(500).send('Failed to fetch thumbnail')
   }
 }

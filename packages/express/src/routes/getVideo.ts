@@ -10,6 +10,7 @@ export async function handleGetVideo(req: Request, res: Response) {
 
   // Check if map ID is provided
   if (!Object.hasOwn(req.params, 'videoName')) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('No video file name provided')
     return
   }
@@ -17,6 +18,7 @@ export async function handleGetVideo(req: Request, res: Response) {
   // Check if map ID is valid
   const videoName = req.params.videoName
   if (!videoName.match(/^[a-zA-Z0-9_-]{27}.webm$/)) {
+    res.setHeader('Content-Type', 'text/plain')
     res.status(400).send('Invalid video file name')
     return
   }
