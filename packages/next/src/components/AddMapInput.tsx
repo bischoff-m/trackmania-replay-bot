@@ -6,7 +6,7 @@ export default function AddMapInput({
   onSubmit,
   validate,
 }: {
-  onSubmit: (mapID: string) => Promise<boolean>
+  onSubmit: (mapID: string) => Promise<void>
   validate?: (value: string) => string | null
 }) {
   const [iconState, setIconState] = useState<'empty' | 'loading' | 'typing'>(
@@ -25,12 +25,14 @@ export default function AddMapInput({
       onSubmit={form.onSubmit((values) => {
         if (iconState === 'loading') return
         setIconState('loading')
-        onSubmit(values.search).then((success) => {
-          if (success) {
+        onSubmit(values.search)
+          .then(() => {
             form.reset()
             setIconState('empty')
-          } else setIconState('typing')
-        })
+          })
+          .catch(() => {
+            setIconState('typing')
+          })
       })}
     >
       <TextInput

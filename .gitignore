@@ -26,5 +26,4 @@ TODO
 dist
 
 # express public files
-**/public/videos/*
-!**/public/videos/.gitkeep
+**/public/maps/*/*.webm

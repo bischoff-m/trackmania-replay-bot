@@ -4,9 +4,7 @@ import path from 'path'
 
 const rootFile = path.join(process.cwd(), 'public/activeComposition.json')
 
-export async function handleSetActive(req: Request, res: Response) {
-  // Set header Access-Control-Allow-Origin to allow CORS
-  res.setHeader('Access-Control-Allow-Origin', '*')
+export async function handleSetComposition(req: Request, res: Response) {
   res.setHeader('Content-Type', 'text/plain')
 
   if (!req.body) {

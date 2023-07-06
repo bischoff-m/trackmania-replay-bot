@@ -1,6 +1,6 @@
 import { MainComposition } from '@/components/MainComposition'
 import '@/style.css'
-import { routes } from '@global/api'
+import { api } from '@global/api'
 import type { CompositionData } from '@global/types'
 import React, { useEffect, useState } from 'react'
 import {
@@ -29,15 +29,9 @@ export const RemotionRoot: React.FC = () => {
   useEffect(() => {
     if (Object.keys(inputPropsCLI).length > 0) setCompData(inputPropsCLI)
     else {
-      fetch(routes.getActiveComposition.url(), {
-        headers: { Accept: 'application/json' },
-      })
-        .then(async (res) => {
-          if (!res.ok) {
-            throw new Error(await res.text())
-          }
-
-          const compData = (await res.json()) as CompositionData
+      api
+        .getComposition()
+        .then((compData) => {
           setCompData(compData)
           continueRender(handle)
         })

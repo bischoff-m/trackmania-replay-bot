@@ -1,4 +1,4 @@
-import { routes } from '@global/api'
+import { formatStaticUrl } from '@global/api'
 import { MapData } from '@global/types'
 import { Avatar, Group, Text, clsx, useMantineTheme } from '@mantine/core'
 import { Draggable } from 'react-beautiful-dnd'
@@ -60,7 +60,7 @@ export default function MapListItem({
               </Text>
             )}
             <Avatar
-              src={routes.getThumbnail.url(map.id)}
+              src={formatStaticUrl(map.thumbnailUrl)}
               radius='md'
               size='lg'
             />

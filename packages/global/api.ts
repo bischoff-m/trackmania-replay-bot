@@ -1,60 +1,50 @@
-import { MapData } from './types'
+import { CompositionData, MapData } from './types'
 
 const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
-export const routes = {
-  // GET
-  getMapInfo: {
-    // Expects: { mapID: string }
-    // Returns: MapData
-    path: '/getMapInfo/:mapID',
-    url: (mapID: string) =>
-      `http://localhost:${PORT_EXPRESS}/getMapInfo/${mapID}`,
-  },
-  getThumbnail: {
-    // Expects: { mapID: string }
-    // Returns: Content-Type image/jpeg or image/png
-    path: '/getThumbnail/:mapID',
-    url: (mapID: string) =>
-      `http://localhost:${PORT_EXPRESS}/getThumbnail/${mapID}`,
-  },
-  getCachedMaps: {
-    // Expects: nothing
-    // Returns: GetCachedMapsResponse
-    path: '/getCachedMaps',
-    url: () => `http://localhost:${PORT_EXPRESS}/getCachedMaps`,
-  },
-  getFlag: {
-    // Expects: { flagID: string }
-    // Returns: Content-Type image/jpeg or image/png
-    path: '/getFlag/:flagID',
-    url: (flagID: string) =>
-      `http://localhost:${PORT_EXPRESS}/getFlag/${flagID}`,
-  },
-  getActiveComposition: {
-    // Expects: nothing
-    // Returns: CompositionData
-    path: '/getActive',
-    url: () => `http://localhost:${PORT_EXPRESS}/getActive`,
-  },
-  getVideo: {
-    // Expects: { fileName: string }
-    // Returns: Content-Type video/webm
-    path: '/getVideo/:videoName',
-    url: (fileName: string) =>
-      `http://localhost:${PORT_EXPRESS}/getVideo/${fileName}`,
-  },
-
-  // POST
-  setActiveComposition: {
-    // Expects: CompositionData
-    // Returns: nothing
-    path: '/setActive',
-    url: () => `http://localhost:${PORT_EXPRESS}/setActive`,
-  },
+export const api = {
+  getMapIndex: (): Promise<string[]> =>
+    genericGetRoute<string[]>(
+      `http://localhost:${PORT_EXPRESS}/public/mapIndex.json`
+    ),
+  getComposition: (): Promise<CompositionData> =>
+    genericGetRoute<CompositionData>(
+      `http://localhost:${PORT_EXPRESS}/public/activeComposition.json`
+    ),
+  getMap: (mapID: string): Promise<MapData> =>
+    genericGetRoute<MapData>(
+      `http://localhost:${PORT_EXPRESS}/public/maps/${mapID}/info.json`
+    ),
+  setComposition: (compData: CompositionData): Promise<void> =>
+    genericPostRoute(
+      `http://localhost:${PORT_EXPRESS}/setComposition`,
+      compData
+    ),
 }
 
-// Express API
-export type GetCachedMapsResponse = {
-  [mapID: string]: MapData
+async function genericGetRoute<T>(url: string) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(await response.text())
+  return (await response.json()) as T
+}
+
+async function genericPostRoute(url: string, body: any) {
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  if (!response.ok) throw new Error(await response.text())
+}
+
+// Used for when fetching is not done manually (e.g. <img src="...">)
+export function formatStaticUrl(subPath: string) {
+  // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL
+  return new URL(subPath, `http://localhost:${PORT_EXPRESS}/`).href
+}
+
+export function formatFlagUrl(nation: string) {
+  return formatStaticUrl(`public/flags/${nation}.jpg`)
 }

@@ -1,6 +1,6 @@
 import { useClipContext } from '@/components/MainComposition'
 import { colors, styles } from '@/theme'
-import { routes } from '@global/api'
+import { formatFlagUrl } from '@global/api'
 import { Ranking } from '@global/types'
 import { formatTrackmaniaDelta, formatTrackmaniaTime } from '@global/util'
 import { Img } from 'remotion'
@@ -68,7 +68,7 @@ export const IntroLeaderboard: React.FC = () => {
       ranking.nation !== 'UNKNOWN' && (
         <Img
           key={index}
-          src={routes.getFlag.url(ranking.nation)}
+          src={formatFlagUrl(ranking.nation)}
           style={{
             height: emph ? fontSizeBig : fontSizeSmall,
             borderRadius: styles.flagBorderRadius,
@@ -183,7 +183,7 @@ export const IntroLeaderboard: React.FC = () => {
         >
           {leaderboard[0].nation !== 'UNKNOWN' && (
             <Img
-              src={routes.getFlag.url(leaderboard[0].nation)}
+              src={formatFlagUrl(leaderboard[0].nation)}
               style={{ height: 60, borderRadius: styles.flagBorderRadius }}
             />
           )}

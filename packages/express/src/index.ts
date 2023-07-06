@@ -1,46 +1,33 @@
-import { handleGetActive } from '@/routes/getActive'
-import { handleGetCachedMaps } from '@/routes/getCachedMaps'
-import { handleGetFlag } from '@/routes/getFlag'
-import { handleGetMapInfo } from '@/routes/getMapInfo'
-import { handleGetThumbnail } from '@/routes/getThumbnail'
-import { handleGetVideo } from '@/routes/getVideo'
-import { handleSetActive } from '@/routes/setActive'
-import { routes } from '@global/api'
+import { handleFetchNewFlag } from '@/routes/fetchNewFlag'
+import { handleFetchNewMap } from '@/routes/fetchNewMap'
+import { handleSetComposition } from '@/routes/setComposition'
 import cors from 'cors'
 import express from 'express'
+import serveIndex from 'serve-index'
 
 const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
-export const userAgent = `
-trackmania-replay-bot
-https://github.com/bischoff-m/trackmania-replay-bot
-Discord: bischoff.m
-`
-  .trim()
-  .replaceAll('\n', ' | ')
-
 const app = express()
-
-app.use(express.json())
 app.use(cors())
+app.use(express.json())
 
-app.get(routes.getMapInfo.path, handleGetMapInfo)
-app.get(routes.getThumbnail.path, handleGetThumbnail)
-app.get(routes.getCachedMaps.path, handleGetCachedMaps)
-app.get(routes.getFlag.path, handleGetFlag)
-app.get(routes.getActiveComposition.path, handleGetActive)
-app.get(routes.getVideo.path, handleGetVideo)
+// Serve static files
+app.use(
+  '/public',
+  express.static('public'),
+  serveIndex('public', { icons: true, view: 'details' })
+)
 
-app.post(routes.setActiveComposition.path, handleSetActive)
+// Routes
+app.post('/setComposition', handleSetComposition)
+app.get('/', (req, res) => res.redirect('/public'))
 
-app.get('/', (req, res) => {
-  res.setHeader('Content-Type', 'text/html')
-  res.status(200).send(
-    '<h1>Available routes:</h1>' +
-      Object.values(routes)
-        .map((route) => route.path)
-        .join('<br>')
-  )
+// Fall-through if static data is not available
+app.get('/public/flags/:flagID.jpg', handleFetchNewFlag)
+app.get('/public/maps/:mapID/info.json', handleFetchNewMap)
+app.get('/public/maps/:mapID/thumbnail.(png|jpg|jpeg)', (req, res) => {
+  res.setHeader('Content-Type', 'text/plain')
+  res.status(400).send('No thumbnail available. Please fetch the map first.')
 })
 
 app.listen(PORT, () => {

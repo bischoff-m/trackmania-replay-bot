@@ -3,11 +3,11 @@ import { IntroLeaderboard } from '@/components/IntroLeaderboard'
 import { IntroStatistics } from '@/components/IntroStatistics'
 import { useClipContext } from '@/components/MainComposition'
 import { colors, styles } from '@/theme'
-import { routes } from '@global/api'
+import { formatStaticUrl } from '@global/api'
 import { AbsoluteFill, Img } from 'remotion'
 
 export const Intro: React.FC = () => {
-  const clipData = useClipContext()
+  const { map } = useClipContext()
 
   return (
     <>
@@ -35,7 +35,7 @@ export const Intro: React.FC = () => {
         <div style={{ width: 750 }}>
           {/* TODO: If image has aspect ratio != 1, show the cropped regions in animation. */}
           <Img
-            src={routes.getThumbnail.url(clipData.map.id)}
+            src={formatStaticUrl(map.thumbnailUrl)}
             className='w-full object-cover object-left'
             style={{
               borderRadius: styles.borderRadius,

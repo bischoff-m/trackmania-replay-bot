@@ -1,5 +1,5 @@
-import { routes } from '@global/api'
-import type { CompositionData, MapData } from '@global/types'
+import { api } from '@global/api'
+import type { ClipData, CompositionData, MapData } from '@global/types'
 import { Button } from '@mantine/core'
 
 export default function SaveActiveMapsButton({
@@ -12,44 +12,41 @@ export default function SaveActiveMapsButton({
   mapsActive: MapData[]
 }) {
   const onClickSave = async () => {
+    // Build CompositionData
     const fps = 60
     const introDuration = 5 * fps
     const replayDuration = 450
     let curFrame = 0
     const body: CompositionData = {
       // Reduce mapsActive to an object with the map IDs as keys
-      clips: mapsActive.reduce((acc, map) => {
-        acc[map.id] = {
+      clips: mapsActive.map((mapData) => {
+        const clipData: ClipData = {
+          mapID: mapData.id,
           startFrame: curFrame,
           durationInFrames: introDuration + replayDuration,
-          map: map,
           video: {
-            videoFile: 'olsKnq_qAghcVAnEkoeUnVHFZei.webm',
+            // TODO: This placeholder should be replaced by output of render
+            url: `/public/maps/${mapData.id}/replay.webm`,
             durationInFrames: 450,
           },
         }
         curFrame += introDuration + replayDuration
-        return acc
-      }, {} as CompositionData['clips']),
+        return clipData
+      }),
       introDurationFrames: introDuration,
       framerate: fps,
       resolution: [2560, 1440],
     }
 
-    try {
-      const res = await fetch(routes.setActiveComposition.url(), {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          Accept: 'text/plain',
-          'Content-Type': 'application/json',
-        },
+    // Send CompositionData to server
+    api
+      .setComposition(body)
+      .then(() => {
+        setIsActive(false)
       })
-      if (!res.ok) throw new Error('Failed to save composition')
-      setIsActive(false)
-    } catch (err) {
-      console.error(err)
-    }
+      .catch((err) => {
+        console.error(err)
+      })
   }
 
   return (

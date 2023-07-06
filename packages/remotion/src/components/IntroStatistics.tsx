@@ -10,7 +10,7 @@ import moment from 'moment'
 const { fontFamily } = loadFont()
 
 export const IntroStatistics: React.FC = () => {
-  const mapData = useClipContext().map
+  const { map } = useClipContext()
   const titleStyle = {
     color: colors.textPrimary,
     fontSize: 36,
@@ -27,7 +27,7 @@ export const IntroStatistics: React.FC = () => {
         <span style={titleStyle}>{'> UPLOADED'}</span>
         <br />
         <span style={valueStyle}>
-          {moment(mapData.uploadedAt).format('DD.MM.YYYY')}
+          {moment(map.uploadedAt).format('DD.MM.YYYY')}
         </span>
       </div>
       {/* <div>

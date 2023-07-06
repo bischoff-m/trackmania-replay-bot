@@ -1,18 +1,16 @@
 export type CompositionData = {
-  clips: { [clipID: string]: ClipData }
+  clips: ClipData[]
   introDurationFrames: number
   framerate: number
   resolution: [number, number]
 }
 
-export type ReplayData = { [clipID: string]: ClipData } // TODO: Replace this
-
 export type ClipData = {
+  mapID: string
   startFrame: number
   durationInFrames: number
-  map: MapData
   video?: {
-    videoFile: string
+    url: string
     durationInFrames: number
   }
 }
@@ -30,7 +28,6 @@ export type MapData = {
   }
   leaderboard: Ranking[]
   thumbnailUrl: string
-  mapUrl: string
   uploadedAt: Date
   timestamp: Date
   // playerCount: number | [number, number] // TODO: Where to get this from?

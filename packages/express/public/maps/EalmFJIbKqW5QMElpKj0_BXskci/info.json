@@ -9,16 +9,34 @@
     "silver": 51000,
     "bronze": 63000
   },
+  "uploadedAt": "2023-06-27T14:28:47.000Z",
+  "timestamp": "2023-07-06T00:02:18.747Z",
+  "thumbnailUrl": "/public/maps/EalmFJIbKqW5QMElpKj0_BXskci/thumbnail.jpg",
   "leaderboard": [
+    {
+      "name": "Mawi._",
+      "time": 39914,
+      "nation": "POR"
+    },
+    {
+      "name": "twelfth-tm",
+      "time": 39988,
+      "nation": "NCA"
+    },
+    {
+      "name": "Nazgor.tm",
+      "time": 40035,
+      "nation": "GER"
+    },
     {
       "name": "JakeRay",
       "time": 40040,
       "nation": "DEN"
     },
     {
-      "name": "twelfth-tm",
-      "time": 40104,
-      "nation": "NCA"
+      "name": "SKY.V2",
+      "time": 40101,
+      "nation": "CRO"
     },
     {
       "name": "Razii.",
@@ -26,43 +44,24 @@
       "nation": "CRO"
     },
     {
-      "name": "NotSandels",
-      "time": 40264,
-      "nation": "FIN"
+      "name": "Walten_TM",
+      "time": 40118,
+      "nation": "RUS"
     },
     {
-      "name": "Az0xTM",
-      "time": 40321,
-      "nation": "GER"
+      "name": "Intimacy.",
+      "time": 40140,
+      "nation": "USA"
     },
     {
-      "name": "Quentin43",
-      "time": 40334,
-      "nation": "FRA"
-    },
-    {
-      "name": "Erizel",
-      "time": 40336,
-      "nation": "NOR"
+      "name": "Nico_TM",
+      "time": 40140,
+      "nation": "AUT"
     },
     {
       "name": "F9.Marius89",
-      "time": 40351,
+      "time": 40184,
       "nation": "GER"
-    },
-    {
-      "name": "fishoo1",
-      "time": 40378,
-      "nation": "FIN"
-    },
-    {
-      "name": "Angelow_",
-      "time": 40384,
-      "nation": "FRA"
     }
-  ],
-  "thumbnailUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/492d7704-1b0d-4070-9dea-824ebfe15e0e.jpg",
-  "mapUrl": "https://prod.trackmania.core.nadeo.online/storageObjects/3e279628-8618-469e-bcfa-399f3bee9e4b",
-  "uploadedAt": "2023-06-27T14:28:47.000Z",
-  "timestamp": "2023-07-02T18:57:51.850Z"
+  ]
 }

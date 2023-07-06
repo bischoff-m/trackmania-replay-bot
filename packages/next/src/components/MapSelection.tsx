@@ -2,8 +2,8 @@ import AddMapInput from '@/components/AddMapInput'
 import MapList from '@/components/MapList'
 import MapListItem from '@/components/MapListItem'
 import SaveActiveMapsButton from '@/components/SaveActiveMapsButton'
-import { GetCachedMapsResponse, routes } from '@global/api'
-import { CompositionData, MapData } from '@global/types'
+import { api } from '@global/api'
+import { MapData } from '@global/types'
 import { ActionIcon, Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
 import { IconCaretUp, IconTrash } from '@tabler/icons-react'
@@ -46,33 +46,29 @@ export default function MapSelection() {
   }
 
   useEffect(() => {
-    fetch(routes.getCachedMaps.url(), {
-      headers: { Accept: 'application/json' },
-    })
-      .then(async (resCached) => {
-        if (!resCached.ok) throw new Error(await resCached.text())
-
-        const resActive = await fetch(routes.getActiveComposition.url(), {
-          headers: { Accept: 'application/json' },
-        })
-        const compData = (await resActive.json()) as CompositionData
-        const loadedMaps = (await resCached.json()) as GetCachedMapsResponse
-        const activeIDs = Object.keys(compData.clips)
-
-        let newCached: MapData[] = []
-        let newActive: MapData[] = []
-
-        // Append new maps
-        Object.values(loadedMaps).forEach((map) => {
-          if (activeIDs.includes(map.id)) newActive.push(map)
-          else newCached.push(map)
-        })
-        handlersCached.setState(newCached)
-        handlersActive.setState(newActive)
+    api
+      .getMapIndex()
+      .then(async (mapIDs) => {
+        // Get MapData for all maps
+        const maps = await Promise.all(mapIDs.map((id) => api.getMap(id)))
+        // Get CompositionData for active maps
+        const compData = await api.getComposition()
+        const activeIDs = compData.clips.map((clip) => clip.mapID)
+        // Split maps into cached and active
+        handlersCached.setState(
+          maps.filter((map) => !activeIDs.includes(map.id))
+        )
+        handlersActive.setState(
+          maps.filter((map) => activeIDs.includes(map.id))
+        )
       })
       .catch((err) => {
         console.error(err)
       })
+
+    // I think this is a false positive because eslint doesn't recognize
+    // useListState as a state hook, otherwise it would not complain(?)
+    // TODO: Check if I can safely put 'reloadMaps' in the dependency array
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -172,25 +168,11 @@ export default function MapSelection() {
         {/* Input field for new maps */}
         <AddMapInput
           onSubmit={async (mapID) => {
-            // Fetch new map
-            try {
-              const fetchRes = await fetch(routes.getMapInfo.url(mapID), {
-                headers: { Accept: 'application/json' },
-              })
-              if (!fetchRes.ok) throw new Error(fetchRes.statusText)
-              const mapData = (await fetchRes.json()) as MapData
+            // Fetch new map data
+            const map = await api.getMap(mapID)
+            if (!Object.hasOwn(map, 'id')) throw new Error('Invalid map data')
 
-              if (!Object.hasOwn(mapData, 'id'))
-                throw new Error('Invalid map data')
-
-              handlersCached.append(mapData)
-              console.log(mapData)
-              return true
-            } catch (error) {
-              // TODO: Show error in UI
-              console.error(error)
-              return false
-            }
+            handlersCached.append(map)
           }}
           validate={(value) => {
             if (!value.match(/^[a-zA-Z0-9_-]{27}$/)) return 'Invalid map ID'

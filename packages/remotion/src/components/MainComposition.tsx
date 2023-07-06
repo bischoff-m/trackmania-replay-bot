@@ -1,41 +1,70 @@
 import { Clip } from '@/components/Clip'
-import type { ClipData, CompositionData } from '@global/types'
-import { createContext, useContext } from 'react'
-import { AbsoluteFill } from 'remotion'
+import { api } from '@global/api'
+import type { ClipData, CompositionData, MapData } from '@global/types'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { AbsoluteFill, continueRender, delayRender } from 'remotion'
 
-export const ClipContext = createContext<ClipData | null>(null)
-export const CompositionContext = createContext<CompositionData | null>(null)
+export const ClipContext = createContext<ClipContextType | null>(null)
+
+export type ClipContextType = {
+  composition: CompositionData
+  clip: ClipData
+  map: MapData
+} | null
 
 // Custom useContext hook to handle null check
 // Use this to access the data fetched from trackmania.io
 export const useClipContext = () => {
-  const clipData = useContext(ClipContext)
-  if (!clipData) throw new Error('Clip data not found')
-  return clipData
-}
-
-// Custom useContext hook to handle null check
-// Use this to access additional data not contained in the clip data
-export const useCompositionContext = () => {
-  const compData = useContext(CompositionContext)
-  if (!compData) throw new Error('Composition data not found')
-  return compData
+  const context = useContext(ClipContext)
+  if (!context) throw new Error('Clip context data not found')
+  return context
 }
 
 export const MainComposition: React.FC<{
   data: CompositionData | null
-}> = (props) => {
-  if (props.data === null) return <AbsoluteFill>Nothing to render</AbsoluteFill>
+}> = ({ data }) => {
+  const [maps, setMaps] = useState<MapData[] | null>(null) // One map per clip
+  const [handle] = useState(() => delayRender())
+
+  useEffect(() => {
+    if (data === null) return
+    const mapIDs = Object.values(data.clips).map((clipData) => clipData.mapID)
+    Promise.all(mapIDs.map((id) => api.getMap(id)))
+      .then((maps) => {
+        setMaps(maps)
+        continueRender(handle)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+    // False positive because its not given in the example for delayRender
+    // https://www.remotion.dev/docs/delay-render#example
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
+
+  // TODO: Check if delayRender is suitable here
+  // https://www.remotion.dev/docs/delay-render
+  if (data === null || maps === null) {
+    console.error(
+      '##### If you see this, this can likely be done in a better way. #####'
+    )
+    return <AbsoluteFill>Nothing to render</AbsoluteFill>
+  }
 
   return (
     <AbsoluteFill>
-      <CompositionContext.Provider value={props.data}>
-        {Object.values(props.data.clips).map((clipData, index) => (
-          <ClipContext.Provider key={index} value={clipData}>
-            <Clip />
-          </ClipContext.Provider>
-        ))}
-      </CompositionContext.Provider>
+      {Object.values(data.clips).map((clipData, index) => (
+        <ClipContext.Provider
+          key={index}
+          value={{
+            composition: data,
+            clip: clipData,
+            map: maps[index],
+          }}
+        >
+          <Clip />
+        </ClipContext.Provider>
+      ))}
     </AbsoluteFill>
   )
 }
