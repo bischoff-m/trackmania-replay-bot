@@ -1,5 +1,6 @@
 import { handleFetchNewFlag } from '@/routes/fetchNewFlag'
 import { handleFetchNewMap } from '@/routes/fetchNewMap'
+import { handleMapIndex } from '@/routes/mapIndex'
 import { handleSetComposition } from '@/routes/setComposition'
 import cors from 'cors'
 import express from 'express'
@@ -14,13 +15,14 @@ app.use(express.json())
 // Serve static files
 app.use(
   '/public',
-  express.static('public'),
+  express.static('public', { fallthrough: true }),
   serveIndex('public', { icons: true, view: 'details' })
 )
 
 // Routes
-app.post('/setComposition', handleSetComposition)
 app.get('/', (req, res) => res.redirect('/public'))
+app.post('/setComposition', handleSetComposition)
+app.get('/mapIndex', handleMapIndex)
 
 // Fall-through if static data is not available
 app.get('/public/flags/:flagID.jpg', handleFetchNewFlag)

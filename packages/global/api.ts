@@ -4,9 +4,13 @@ const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
 export const api = {
   getMapIndex: (): Promise<string[]> =>
-    genericGetRoute<string[]>(
-      `http://localhost:${PORT_EXPRESS}/public/mapIndex.json`
+    genericGetRoute<string[]>(`http://localhost:${PORT_EXPRESS}/mapIndex`),
+  setComposition: (compData: CompositionData): Promise<void> =>
+    genericPostRoute(
+      `http://localhost:${PORT_EXPRESS}/setComposition`,
+      compData
     ),
+  // Static data
   getComposition: (): Promise<CompositionData> =>
     genericGetRoute<CompositionData>(
       `http://localhost:${PORT_EXPRESS}/public/activeComposition.json`
@@ -14,11 +18,6 @@ export const api = {
   getMap: (mapID: string): Promise<MapData> =>
     genericGetRoute<MapData>(
       `http://localhost:${PORT_EXPRESS}/public/maps/${mapID}/info.json`
-    ),
-  setComposition: (compData: CompositionData): Promise<void> =>
-    genericPostRoute(
-      `http://localhost:${PORT_EXPRESS}/setComposition`,
-      compData
     ),
 }
 

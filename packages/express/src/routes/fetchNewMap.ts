@@ -100,18 +100,7 @@ export async function handleFetchNewMap(req: Request, res: Response) {
     const filePath = path.join(publicRoot, `/maps/${mapData.id}/info.json`)
     fs.writeFileSync(filePath, JSON.stringify(mapData, null, 2))
 
-    // Update map index
-    const indexFilePath = path.join(publicRoot, '/mapIndex.json')
-    if (!fs.existsSync(indexFilePath)) {
-      fs.writeFileSync(indexFilePath, JSON.stringify([mapID], null, 2))
-    } else {
-      const index = JSON.parse(fs.readFileSync(indexFilePath, 'utf-8'))
-      if (!index.includes(mapID)) {
-        index.push(mapID)
-        fs.writeFileSync(indexFilePath, JSON.stringify(index, null, 2))
-      }
-    }
-
+    // Send map data to client
     res.setHeader('Content-Type', 'application/json')
     res.status(200).send(mapData)
   } catch (error) {
