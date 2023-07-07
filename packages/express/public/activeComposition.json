@@ -1,35 +1,23 @@
 {
   "clips": [
     {
-      "mapID": "UrYrsO47r3OeDnsQVGZQobyJked",
-      "startFrame": 0,
-      "durationInFrames": 750,
-      "video": {
-        "url": "/public/maps/UrYrsO47r3OeDnsQVGZQobyJked/replay.webm",
-        "durationInFrames": 450
-      }
-    },
-    {
-      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
-      "startFrame": 750,
-      "durationInFrames": 750,
-      "video": {
-        "url": "/public/maps/T7ErD2akYso4jwK9WkmB6Y_DqN2/replay.webm",
-        "durationInFrames": 450
-      }
-    },
-    {
       "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
-      "startFrame": 1500,
-      "durationInFrames": 750,
-      "video": {
-        "url": "/public/maps/EalmFJIbKqW5QMElpKj0_BXskci/replay.webm",
-        "durationInFrames": 450
-      }
+      "startFrame": 0,
+      "durationInFrames": 750
     },
     {
       "mapID": "pgufNZ2qxXQcbaI_fkm0QRqPEK7",
-      "startFrame": 2250,
+      "startFrame": 750,
+      "durationInFrames": 360
+    },
+    {
+      "mapID": "UrYrsO47r3OeDnsQVGZQobyJked",
+      "startFrame": 1110,
+      "durationInFrames": 750
+    },
+    {
+      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
+      "startFrame": 1860,
       "durationInFrames": 750
     }
   ],

@@ -9,10 +9,6 @@ export type ClipData = {
   mapID: string
   startFrame: number
   durationInFrames: number
-  video?: {
-    url: string
-    durationInFrames: number
-  }
 }
 
 export type MapData = {
@@ -30,6 +26,10 @@ export type MapData = {
   thumbnailUrl: string
   uploadedAt: Date
   timestamp: Date
+  video?: {
+    url: string
+    durationInFrames: number
+  }
   // playerCount: number | [number, number] // TODO: Where to get this from?
 }
 

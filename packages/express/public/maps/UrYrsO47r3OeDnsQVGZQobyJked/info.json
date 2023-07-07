@@ -63,5 +63,9 @@
       "time": 35745,
       "nation": "CZE"
     }
-  ]
+  ],
+  "video": {
+    "url": "/public/maps/UrYrsO47r3OeDnsQVGZQobyJked/replay.webm",
+    "durationInFrames": 450
+  }
 }

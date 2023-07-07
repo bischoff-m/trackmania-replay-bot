@@ -63,5 +63,9 @@
       "time": 40184,
       "nation": "GER"
     }
-  ]
+  ],
+  "video": {
+    "url": "/public/maps/EalmFJIbKqW5QMElpKj0_BXskci/replay.webm",
+    "durationInFrames": 450
+  }
 }

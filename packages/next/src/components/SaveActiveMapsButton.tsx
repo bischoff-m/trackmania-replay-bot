@@ -15,20 +15,15 @@ export default function SaveActiveMapsButton({
     // Build CompositionData
     const fps = 60
     const introDuration = 5 * fps
-    const replayDuration = 450
     let curFrame = 0
     const body: CompositionData = {
       // Reduce mapsActive to an object with the map IDs as keys
       clips: mapsActive.map((mapData) => {
+        const replayDuration = mapData.video?.durationInFrames ?? fps
         const clipData: ClipData = {
           mapID: mapData.id,
           startFrame: curFrame,
           durationInFrames: introDuration + replayDuration,
-          video: {
-            // TODO: This placeholder should be replaced by output of render
-            url: `/public/maps/${mapData.id}/replay.webm`,
-            durationInFrames: 450,
-          },
         }
         curFrame += introDuration + replayDuration
         return clipData

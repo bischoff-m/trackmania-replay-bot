@@ -63,5 +63,9 @@
       "time": 38686,
       "nation": "FRA"
     }
-  ]
+  ],
+  "video": {
+    "url": "/public/maps/T7ErD2akYso4jwK9WkmB6Y_DqN2/replay.webm",
+    "durationInFrames": 450
+  }
 }
