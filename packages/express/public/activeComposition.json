@@ -1,23 +1,18 @@
 {
   "clips": [
     {
-      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
+      "mapID": "UrYrsO47r3OeDnsQVGZQobyJked",
       "startFrame": 0,
       "durationInFrames": 750
     },
     {
-      "mapID": "pgufNZ2qxXQcbaI_fkm0QRqPEK7",
+      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
       "startFrame": 750,
-      "durationInFrames": 360
-    },
-    {
-      "mapID": "UrYrsO47r3OeDnsQVGZQobyJked",
-      "startFrame": 1110,
       "durationInFrames": 750
     },
     {
-      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
-      "startFrame": 1860,
+      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
+      "startFrame": 1500,
       "durationInFrames": 750
     }
   ],

@@ -24,15 +24,18 @@ export const RemotionRoot: React.FC = () => {
   const [compData, setCompData] = useState<CompositionData | null>(null)
   const [handle] = useState(() => delayRender())
 
-  const inputPropsCLI = getInputProps() as CompositionData
+  const inputPropsCLI = getInputProps() as { data: CompositionData }
 
+  // If props are given from CLI, use them
+  // Else, fetch the active composition that is set in the database
   useEffect(() => {
-    if (Object.keys(inputPropsCLI).length > 0) setCompData(inputPropsCLI)
+    if (Object.keys(inputPropsCLI).length > 0) setCompData(inputPropsCLI.data)
     else {
       api
         .getComposition()
-        .then((compData) => {
-          setCompData(compData)
+        .then((newCompData) => {
+          setCompData(newCompData)
+
           continueRender(handle)
         })
         .catch((err) => {
@@ -40,7 +43,8 @@ export const RemotionRoot: React.FC = () => {
           cancelRender(err)
         })
     }
-  }, [inputPropsCLI, handle])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const duration = compData
     ? Object.values(compData.clips).reduce(

@@ -42,29 +42,22 @@ export const MainComposition: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
-  // TODO: Check if delayRender is suitable here
-  // https://www.remotion.dev/docs/delay-render
-  if (data === null || maps === null) {
-    console.error(
-      '##### If you see this, this can likely be done in a better way. #####'
-    )
-    return <AbsoluteFill>Nothing to render</AbsoluteFill>
-  }
-
   return (
     <AbsoluteFill>
-      {Object.values(data.clips).map((clipData, index) => (
-        <ClipContext.Provider
-          key={index}
-          value={{
-            composition: data,
-            clip: clipData,
-            map: maps[index],
-          }}
-        >
-          <Clip />
-        </ClipContext.Provider>
-      ))}
+      {data !== null && maps !== null
+        ? Object.values(data.clips).map((clipData, index) => (
+            <ClipContext.Provider
+              key={index}
+              value={{
+                composition: data,
+                clip: clipData,
+                map: maps[index],
+              }}
+            >
+              <Clip />
+            </ClipContext.Provider>
+          ))
+        : null}
     </AbsoluteFill>
   )
 }
