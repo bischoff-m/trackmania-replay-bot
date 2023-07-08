@@ -1,22 +1,19 @@
-import { useFormContext } from '@/components/AppRoot'
+import { useCompositionFormContext } from '@/components/AppRoot'
 import AddMapInput from '@/components/MapView/AddMapInput'
 import MapList from '@/components/MapView/MapList'
 import MapListItem from '@/components/MapView/MapListItem'
 import { api } from '@global/api'
-import { MapData } from '@global/types'
+import { ClipData, MapData } from '@global/types'
 import { ActionIcon, Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
 import { IconCaretUp, IconTrash } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
-export default function MapView({
-  onChange,
-}: {
-  onChange: (activeMaps: MapData[]) => void
-}) {
+export default function MapView() {
   const theme = useMantineTheme()
-  const form = useFormContext()
+  const form = useCompositionFormContext()
+  const [isDirty, setDirty] = useState(false)
   const [mapsCached, handlersCached] = useListState<MapData>([])
   const [mapsActive, handlersActive] = useListState<MapData>([])
 
@@ -46,28 +43,47 @@ export default function MapView({
     const draggedItem = srcState.maps[source.index]
     srcState.handlers.remove(source.index)
     desState.handlers.insert(destination.index, draggedItem)
+    setDirty(true)
   }
 
-  function reloadMaps() {
-    api
-      .getMapIndex()
-      .then(async (mapIDs) => {
-        // Get MapData for all maps
-        const maps = await Promise.all(mapIDs.map((id) => api.getMap(id)))
-        // Get CompositionData for active maps
-        const compData = await api.getComposition()
-        const activeIDs = compData.clips.map((clip) => clip.mapID)
-        // Split maps into cached and active
-        handlersCached.setState(
-          maps.filter((map) => !activeIDs.includes(map.id))
-        )
-        handlersActive.setState(
-          maps.filter((map) => activeIDs.includes(map.id))
-        )
-      })
-      .catch((err) => {
-        console.error(err)
-      })
+  async function updateForm(setDirty = true) {
+    // Calculate clips from activeMaps
+    let curFrame = 0
+    const introDuration = form.values.introDurationFrames
+    const selectedClips = mapsActive.map((mapData) => {
+      const fps = form.values.framerate
+      const replayDuration = mapData.video?.durationInFrames ?? fps // 1 second
+      const clipData: ClipData = {
+        mapID: mapData.id,
+        startFrame: curFrame,
+        durationInFrames: introDuration + replayDuration,
+      }
+      curFrame += introDuration + replayDuration
+      return clipData
+    })
+
+    // Compare clips from form with clips from activeMaps
+    if (JSON.stringify(form.values.clips) !== JSON.stringify(selectedClips)) {
+      form.setFieldValue('clips', selectedClips)
+      form.setDirty({ clips: setDirty })
+    }
+  }
+
+  async function reloadMaps() {
+    try {
+      // Fetch map index
+      const mapIDs = await api.getMapIndex()
+      // Get MapData for all maps
+      const maps = await Promise.all(mapIDs.map((id) => api.getMap(id)))
+      // Get CompositionData for active maps
+      const compData = await api.getComposition()
+      const activeIDs = compData.clips.map((clip) => clip.mapID)
+      // Split maps into cached and active and update state
+      handlersCached.setState(maps.filter((map) => !activeIDs.includes(map.id)))
+      handlersActive.setState(maps.filter((map) => activeIDs.includes(map.id)))
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   useEffect(() => {
@@ -84,9 +100,12 @@ export default function MapView({
   }, [])
 
   useEffect(() => {
-    // Update form data to reflect changes
-    onChange(mapsActive)
-  }, [mapsActive])
+    // Update form to reflect changes
+    if (isDirty) {
+      updateForm()
+      setDirty(false)
+    }
+  }, [isDirty])
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -115,7 +134,7 @@ export default function MapView({
                 const newCached = [...mapsActive, ...mapsCached]
                 handlersActive.setState([])
                 handlersCached.setState(newCached)
-                onChange([])
+                setDirty(true)
               }}
             >
               <IconTrash size='1.2rem' />
