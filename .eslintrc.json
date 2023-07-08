@@ -6,5 +6,8 @@
     "next": {
       "rootDir": "packages/next/"
     }
+  },
+  "rules": {
+    "react-hooks/exhaustive-deps": "off"
   }
 }

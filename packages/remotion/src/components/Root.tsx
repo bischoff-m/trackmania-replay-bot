@@ -43,7 +43,6 @@ export const RemotionRoot: React.FC = () => {
           cancelRender(err)
         })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const duration = compData

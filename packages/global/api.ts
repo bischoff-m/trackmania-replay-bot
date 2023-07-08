@@ -19,6 +19,15 @@ export const api = {
     genericGetRoute<MapData>(
       `http://localhost:${PORT_EXPRESS}/public/maps/${mapID}/info.json`
     ),
+  onMapsUpdate: (callback: (event: MessageEvent) => void) => {
+    const eventSource = new EventSource(
+      `http://localhost:${PORT_EXPRESS}/events`
+    )
+    eventSource.onmessage = (event) => {
+      if (event.data === 'MAPUPDATE') callback(event)
+    }
+    return () => eventSource.close()
+  },
 }
 
 async function genericGetRoute<T>(url: string) {

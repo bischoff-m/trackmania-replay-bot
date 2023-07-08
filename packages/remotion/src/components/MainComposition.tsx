@@ -37,9 +37,6 @@ export const MainComposition: React.FC<{
       .catch((err) => {
         console.error(err)
       })
-    // False positive because its not given in the example for delayRender
-    // https://www.remotion.dev/docs/delay-render#example
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   return (

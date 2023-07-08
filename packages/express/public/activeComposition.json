@@ -1,19 +1,19 @@
 {
   "clips": [
     {
-      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
+      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
       "startFrame": 0,
       "durationInFrames": 750
     },
     {
-      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
+      "mapID": "pgufNZ2qxXQcbaI_fkm0QRqPEK7",
       "startFrame": 750,
-      "durationInFrames": 750
+      "durationInFrames": 360
     },
     {
-      "mapID": "pgufNZ2qxXQcbaI_fkm0QRqPEK7",
-      "startFrame": 1500,
-      "durationInFrames": 360
+      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
+      "startFrame": 1110,
+      "durationInFrames": 750
     }
   ],
   "framerate": 60,

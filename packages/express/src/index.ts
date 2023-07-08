@@ -1,9 +1,10 @@
 import { handleFetchNewFlag } from '@/routes/fetchNewFlag'
 import { handleFetchNewMap } from '@/routes/fetchNewMap'
 import { handleMapIndex } from '@/routes/mapIndex'
+import { onEvent } from '@/routes/onEvent'
 import { handleSetComposition } from '@/routes/setComposition'
 import cors from 'cors'
-import express from 'express'
+import express, { Response } from 'express'
 import serveIndex from 'serve-index'
 
 const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
@@ -11,6 +12,14 @@ const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+export type Clients = {
+  [id: string]: Response
+}
+
+// Server-Sent Events
+let clients: Clients = {}
+app.get('/events', (req, res) => onEvent(req, res, clients))
 
 // Serve static files
 app.use(
@@ -23,6 +32,15 @@ app.use(
 app.get('/', (req, res) => res.redirect('/public'))
 app.post('/setComposition', handleSetComposition)
 app.get('/mapIndex', handleMapIndex)
+app.get('/renderReplay', (req, res) => {
+  // TODO: Implement render process here
+
+  Object.values(clients).forEach((client) =>
+    client.write(`data: MAPUPDATE\n\n`)
+  )
+  res.setHeader('Content-Type', 'text/plain')
+  res.status(200).send('OK')
+})
 
 // Fall-through if static data is not available
 app.get('/public/flags/:flagID.jpg', handleFetchNewFlag)

@@ -48,7 +48,7 @@ export default function MapView({
     desState.handlers.insert(destination.index, draggedItem)
   }
 
-  useEffect(() => {
+  function reloadMaps() {
     api
       .getMapIndex()
       .then(async (mapIDs) => {
@@ -68,17 +68,24 @@ export default function MapView({
       .catch((err) => {
         console.error(err)
       })
+  }
 
-    // I think this is a false positive because eslint doesn't recognize
-    // useListState as a state hook, otherwise it would not complain(?)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    // Initial load
+    reloadMaps()
+
+    // Subscribe to map updates
+    const closeHandle = api.onMapsUpdate(reloadMaps)
+
+    return () => {
+      // Unsubscribe from map updates
+      closeHandle()
+    }
   }, [])
 
   useEffect(() => {
     // Update form data to reflect changes
     onChange(mapsActive)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapsActive])
 
   return (
