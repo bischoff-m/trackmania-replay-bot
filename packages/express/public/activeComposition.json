@@ -1,25 +1,25 @@
 {
   "clips": [
     {
-      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
+      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
       "startFrame": 0,
       "durationInFrames": 750
     },
     {
-      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
+      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
       "startFrame": 750,
       "durationInFrames": 750
     },
     {
-      "mapID": "UrYrsO47r3OeDnsQVGZQobyJked",
+      "mapID": "pgufNZ2qxXQcbaI_fkm0QRqPEK7",
       "startFrame": 1500,
-      "durationInFrames": 750
+      "durationInFrames": 360
     }
   ],
-  "introDurationFrames": 300,
   "framerate": 60,
   "resolution": [
     2560,
     1440
-  ]
+  ],
+  "introDurationFrames": 300
 }

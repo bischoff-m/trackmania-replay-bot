@@ -1,20 +1,24 @@
+import { useFormContext } from '@/components/AppRoot'
 import AddMapInput from '@/components/MapView/AddMapInput'
 import MapList from '@/components/MapView/MapList'
 import MapListItem from '@/components/MapView/MapListItem'
-import SaveActiveMapsButton from '@/components/MapView/SaveButton'
 import { api } from '@global/api'
 import { MapData } from '@global/types'
 import { ActionIcon, Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
 import { IconCaretUp, IconTrash } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
-export default function MapView() {
+export default function MapView({
+  onChange,
+}: {
+  onChange: (activeMaps: MapData[]) => void
+}) {
   const theme = useMantineTheme()
+  const form = useFormContext()
   const [mapsCached, handlersCached] = useListState<MapData>([])
   const [mapsActive, handlersActive] = useListState<MapData>([])
-  const [unsavedChanges, setUnsavedChanges] = useState(false)
 
   const fixedStyles = {
     width: 700,
@@ -42,7 +46,6 @@ export default function MapView() {
     const draggedItem = srcState.maps[source.index]
     srcState.handlers.remove(source.index)
     desState.handlers.insert(destination.index, draggedItem)
-    setUnsavedChanges(true)
   }
 
   useEffect(() => {
@@ -71,6 +74,13 @@ export default function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    // Update form data to reflect changes
+    onChange(mapsActive)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapsActive])
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Flex
@@ -98,7 +108,7 @@ export default function MapView() {
                 const newCached = [...mapsActive, ...mapsCached]
                 handlersActive.setState([])
                 handlersCached.setState(newCached)
-                setUnsavedChanges(true)
+                onChange([])
               }}
             >
               <IconTrash size='1.2rem' />
@@ -157,11 +167,6 @@ export default function MapView() {
               />
             ))}
           </MapList>
-          <SaveActiveMapsButton
-            mapsActive={mapsActive}
-            isActive={unsavedChanges}
-            setIsActive={setUnsavedChanges}
-          />
         </Flex>
 
         {/* Input field for new maps */}
