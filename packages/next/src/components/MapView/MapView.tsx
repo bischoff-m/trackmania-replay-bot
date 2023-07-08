@@ -4,11 +4,22 @@ import MapList from '@/components/MapView/MapList'
 import MapListItem from '@/components/MapView/MapListItem'
 import { api } from '@global/api'
 import { ClipData, MapData } from '@global/types'
-import { ActionIcon, Center, Flex, Text, useMantineTheme } from '@mantine/core'
+import {
+  ActionIcon,
+  Button,
+  Center,
+  Flex,
+  Text,
+  useMantineTheme,
+} from '@mantine/core'
 import { useListState } from '@mantine/hooks'
 import { IconCaretUp, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Draggable,
+  OnDragEndResponder,
+} from 'react-beautiful-dnd'
 
 export default function MapView() {
   const theme = useMantineTheme()
@@ -19,7 +30,8 @@ export default function MapView() {
 
   const fixedStyles = {
     width: 700,
-    itemHeight: 70,
+    listItemHeight: 70,
+    headerItemHeight: 36,
     separatorHeight: 24,
     separatorColor: theme.colors.dark[4],
     borderRadius: theme.radius.md,
@@ -78,10 +90,15 @@ export default function MapView() {
       // Get CompositionData for active maps
       const compData = await api.getComposition()
       const activeIDs = compData.clips.map((clip) => clip.mapID)
-      // Split maps into cached and active and update state
+      // Preserve order of active maps saved in composition
+      const activeMaps = activeIDs.map((id) =>
+        maps.find((map) => map.id === id)
+      )
+      // Update state
       handlersCached.setState(maps.filter((map) => !activeIDs.includes(map.id)))
-      handlersActive.setState(maps.filter((map) => activeIDs.includes(map.id)))
+      handlersActive.setState(activeMaps as MapData[])
     } catch (err) {
+      console.error('Failed to load maps')
       console.error(err)
     }
   }
@@ -124,9 +141,20 @@ export default function MapView() {
             backgroundColor: fixedStyles.background,
           }}
         >
-          <Flex className='w-full p-1 justify-end'>
+          {/* Header */}
+          <Flex className='w-full p-1 gap-2 justify-end items-center'>
+            <Button
+              variant='subtle'
+              compact
+              onClick={() => {
+                // TODO
+              }}
+              style={{ height: fixedStyles.headerItemHeight }}
+            >
+              Render
+            </Button>
             <ActionIcon
-              size='lg'
+              size={fixedStyles.headerItemHeight}
               title='Set all inactive'
               color='primary'
               onClick={() => {
@@ -137,7 +165,7 @@ export default function MapView() {
                 setDirty(true)
               }}
             >
-              <IconTrash size='1.2rem' />
+              <IconTrash size='1.1rem' />
             </ActionIcon>
           </Flex>
 
@@ -145,18 +173,28 @@ export default function MapView() {
           <MapList
             maps={mapsActive}
             droppableId='listActive'
-            itemHeight={fixedStyles.itemHeight}
+            itemHeight={fixedStyles.listItemHeight}
             width={fixedStyles.width}
           >
             {mapsActive.map((map, index) => (
-              <MapListItem
-                key={map.id}
-                map={map}
-                index={index}
-                width={fixedStyles.width}
-                itemHeight={fixedStyles.itemHeight}
-                showIndex
-              />
+              <Draggable key={map.id} index={index} draggableId={map.id}>
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                  >
+                    <MapListItem
+                      key={map.id}
+                      map={map}
+                      index={index}
+                      width={fixedStyles.width}
+                      height={fixedStyles.listItemHeight}
+                      draggableSnapshot={snapshot}
+                    />
+                  </div>
+                )}
+              </Draggable>
             ))}
           </MapList>
 
@@ -179,18 +217,28 @@ export default function MapView() {
           <MapList
             maps={mapsCached}
             droppableId='listCache'
-            itemHeight={fixedStyles.itemHeight}
+            itemHeight={fixedStyles.listItemHeight}
             width={fixedStyles.width}
             grow
           >
             {mapsCached.map((map, index) => (
-              <MapListItem
-                key={map.id}
-                map={map}
-                index={index}
-                width={fixedStyles.width}
-                itemHeight={fixedStyles.itemHeight}
-              />
+              <Draggable key={map.id} index={index} draggableId={map.id}>
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                  >
+                    <MapListItem
+                      key={map.id}
+                      map={map}
+                      width={fixedStyles.width}
+                      height={fixedStyles.listItemHeight}
+                      draggableSnapshot={snapshot}
+                    />
+                  </div>
+                )}
+              </Draggable>
             ))}
           </MapList>
         </Flex>

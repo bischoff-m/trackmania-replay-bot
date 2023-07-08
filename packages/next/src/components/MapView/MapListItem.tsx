@@ -9,20 +9,20 @@ import {
   clsx,
   useMantineTheme,
 } from '@mantine/core'
-import { Draggable } from 'react-beautiful-dnd'
+import { DraggableStateSnapshot } from 'react-beautiful-dnd'
 
 export default function MapListItem({
   map,
   index,
   width,
-  itemHeight,
-  showIndex = false,
+  height,
+  draggableSnapshot,
 }: {
   map: MapData
-  index: number
+  index?: number
   width: number
-  itemHeight: number
-  showIndex?: boolean
+  height: number
+  draggableSnapshot?: DraggableStateSnapshot
 }) {
   const theme = useMantineTheme()
   const fixedStyles = {
@@ -31,66 +31,46 @@ export default function MapListItem({
   }
 
   return (
-    <Draggable key={map.id} index={index} draggableId={map.id}>
-      {(provided, snapshot) => (
-        <div
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-        >
-          <Group
-            noWrap
-            p='xs'
-            className={clsx(
-              'transition-all',
-              'duration-300',
-              'hover:transition-none',
-              snapshot.isDragging ? 'rounded-lg' : ''
-            )}
-            sx={{
-              width: width,
-              height: itemHeight,
-              '&:hover': { backgroundColor: fixedStyles.colorHover },
-              backgroundColor: snapshot.isDragging
-                ? fixedStyles.colorHover
-                : fixedStyles.background,
-            }}
-          >
-            {/* Index */}
-            {showIndex && (
-              <Text
-                size='md'
-                color='dimmed'
-                weight={500}
-                w='1.4rem'
-                align='center'
-              >
-                #{index + 1}
-              </Text>
-            )}
-            {/* Thumbnail */}
-            <Avatar
-              src={formatStaticUrl(map.thumbnailUrl)}
-              radius='md'
-              size='lg'
-            />
-            {/* Map and author name */}
-            <div className='flex-1'>
-              <Text size='md' weight={500}>
-                {map.name}
-              </Text>
-              <Text size='sm' color='dimmed' weight={400}>
-                {map.authorName}
-              </Text>
-            </div>
-            {map.video && <Badge>Video</Badge>}
-            {/* World record time */}
-            <Text size='md' weight={400}>
-              {formatTrackmaniaTime(map.leaderboard[0].time)}
-            </Text>
-          </Group>
-        </div>
+    <Group
+      noWrap
+      p='xs'
+      className={clsx(
+        'transition-all',
+        'duration-300',
+        'hover:transition-none',
+        draggableSnapshot?.isDragging ? 'rounded-lg' : ''
       )}
-    </Draggable>
+      sx={{
+        width: width,
+        height: height,
+        '&:hover': { backgroundColor: fixedStyles.colorHover },
+        backgroundColor: draggableSnapshot?.isDragging
+          ? fixedStyles.colorHover
+          : fixedStyles.background,
+      }}
+    >
+      {/* Index */}
+      {index !== undefined && (
+        <Text size='md' color='dimmed' weight={500} w='1.4rem' align='center'>
+          #{index + 1}
+        </Text>
+      )}
+      {/* Thumbnail */}
+      <Avatar src={formatStaticUrl(map.thumbnailUrl)} radius='md' size='lg' />
+      {/* Map and author name */}
+      <div className='flex-1'>
+        <Text size='md' weight={500}>
+          {map.name}
+        </Text>
+        <Text size='sm' color='dimmed' weight={400}>
+          {map.authorName}
+        </Text>
+      </div>
+      {map.video && <Badge>Video</Badge>}
+      {/* World record time */}
+      <Text size='md' weight={400}>
+        {formatTrackmaniaTime(map.leaderboard[0].time)}
+      </Text>
+    </Group>
   )
 }
