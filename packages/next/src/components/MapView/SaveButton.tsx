@@ -2,7 +2,7 @@ import { api } from '@global/api'
 import type { ClipData, CompositionData, MapData } from '@global/types'
 import { Button } from '@mantine/core'
 
-export default function SaveActiveMapsButton({
+export default function SaveButton({
   isActive,
   setIsActive,
   mapsActive,
@@ -11,7 +11,7 @@ export default function SaveActiveMapsButton({
   setIsActive: (isActive: boolean) => void
   mapsActive: MapData[]
 }) {
-  const onClickSave = async () => {
+  async function onClickSave() {
     // Build CompositionData
     const fps = 60
     const introDuration = 5 * fps

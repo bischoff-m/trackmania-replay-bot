@@ -1,7 +1,7 @@
-import MapSelection from '@/components/MapSelection'
+import MapSelection from '@/components/MapView/MapView'
 import { Center, Flex, clsx, useMantineTheme } from '@mantine/core'
 
-export default function NextApp() {
+export default function AppRoot() {
   const theme = useMantineTheme()
   const fixedStyles = {
     background: theme.colors.dark[7],

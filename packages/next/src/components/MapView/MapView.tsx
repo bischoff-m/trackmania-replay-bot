@@ -1,7 +1,7 @@
-import AddMapInput from '@/components/AddMapInput'
-import MapList from '@/components/MapList'
-import MapListItem from '@/components/MapListItem'
-import SaveActiveMapsButton from '@/components/SaveActiveMapsButton'
+import AddMapInput from '@/components/MapView/AddMapInput'
+import MapList from '@/components/MapView/MapList'
+import MapListItem from '@/components/MapView/MapListItem'
+import SaveActiveMapsButton from '@/components/MapView/SaveButton'
 import { api } from '@global/api'
 import { MapData } from '@global/types'
 import { ActionIcon, Center, Flex, Text, useMantineTheme } from '@mantine/core'
@@ -10,7 +10,7 @@ import { IconCaretUp, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd'
 
-export default function MapSelection() {
+export default function MapView() {
   const theme = useMantineTheme()
   const [mapsCached, handlersCached] = useListState<MapData>([])
   const [mapsActive, handlersActive] = useListState<MapData>([])
@@ -68,7 +68,6 @@ export default function MapSelection() {
 
     // I think this is a false positive because eslint doesn't recognize
     // useListState as a state hook, otherwise it would not complain(?)
-    // TODO: Check if I can safely put 'reloadMaps' in the dependency array
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
