@@ -32,7 +32,7 @@ app.use(
 app.get('/', (req, res) => res.redirect('/public'))
 app.post('/setComposition', handleSetComposition)
 app.get('/mapIndex', handleMapIndex)
-app.get('/renderReplay', (req, res) => {
+app.post('/renderReplays', (req, res) => {
   // TODO: Implement render process here
 
   Object.values(clients).forEach((client) =>

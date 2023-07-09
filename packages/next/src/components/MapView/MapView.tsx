@@ -2,18 +2,12 @@ import { useCompositionFormContext } from '@/components/AppRoot'
 import AddMapInput from '@/components/MapView/AddMapInput'
 import MapList from '@/components/MapView/MapList'
 import MapListItem from '@/components/MapView/MapListItem'
+import MapViewHeader from '@/components/MapView/MapViewHeader'
 import { api } from '@global/api'
 import { ClipData, MapData } from '@global/types'
-import {
-  ActionIcon,
-  Button,
-  Center,
-  Flex,
-  Text,
-  useMantineTheme,
-} from '@mantine/core'
+import { Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
-import { IconCaretUp, IconTrash } from '@tabler/icons-react'
+import { IconCaretUp } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import {
   DragDropContext,
@@ -31,11 +25,12 @@ export default function MapView() {
   const fixedStyles = {
     width: 700,
     listItemHeight: 70,
-    headerItemHeight: 36,
+    headerHeight: 42,
     separatorHeight: 24,
     separatorColor: theme.colors.dark[4],
     borderRadius: theme.radius.md,
     background: theme.colors.dark[6],
+    itemHoverColor: theme.colors.dark[7],
   }
 
   const onDragEnd: OnDragEndResponder = ({ destination, source }) => {
@@ -142,32 +137,12 @@ export default function MapView() {
           }}
         >
           {/* Header */}
-          <Flex className='w-full p-1 gap-2 justify-end items-center'>
-            <Button
-              variant='subtle'
-              compact
-              onClick={() => {
-                // TODO
-              }}
-              style={{ height: fixedStyles.headerItemHeight }}
-            >
-              Render
-            </Button>
-            <ActionIcon
-              size={fixedStyles.headerItemHeight}
-              title='Set all inactive'
-              color='primary'
-              onClick={() => {
-                if (mapsActive.length === 0) return
-                const newCached = [...mapsActive, ...mapsCached]
-                handlersActive.setState([])
-                handlersCached.setState(newCached)
-                setDirty(true)
-              }}
-            >
-              <IconTrash size='1.1rem' />
-            </ActionIcon>
-          </Flex>
+          <MapViewHeader
+            activeState={[mapsActive, handlersActive]}
+            cachedState={[mapsCached, handlersCached]}
+            height={fixedStyles.headerHeight}
+            setDirty={setDirty}
+          />
 
           {/* Active map list */}
           <MapList
@@ -191,6 +166,8 @@ export default function MapView() {
                       width={fixedStyles.width}
                       height={fixedStyles.listItemHeight}
                       draggableSnapshot={snapshot}
+                      bgColor={fixedStyles.background}
+                      hoverColor={fixedStyles.itemHoverColor}
                     />
                   </div>
                 )}
@@ -235,6 +212,8 @@ export default function MapView() {
                       width={fixedStyles.width}
                       height={fixedStyles.listItemHeight}
                       draggableSnapshot={snapshot}
+                      bgColor={fixedStyles.background}
+                      hoverColor={fixedStyles.itemHoverColor}
                     />
                   </div>
                 )}

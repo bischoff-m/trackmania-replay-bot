@@ -46,7 +46,7 @@ export default function AppRoot() {
 
   return (
     <main
-      className={clsx('h-full', 'w-full', 'top-0', 'left-0', 'absolute')}
+      className={clsx('h-full', 'w-full', 'top-0', 'left-0', 'fixed')}
       style={{ backgroundColor: fixedStyles.background }}
     >
       <SaveButton isActive={form.isDirty()} />

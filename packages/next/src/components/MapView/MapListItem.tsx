@@ -1,14 +1,7 @@
 import { formatStaticUrl } from '@global/api'
 import { MapData } from '@global/types'
 import { formatTrackmaniaTime } from '@global/util'
-import {
-  Avatar,
-  Badge,
-  Group,
-  Text,
-  clsx,
-  useMantineTheme,
-} from '@mantine/core'
+import { Avatar, Badge, Group, Text, clsx } from '@mantine/core'
 import { DraggableStateSnapshot } from 'react-beautiful-dnd'
 
 export default function MapListItem({
@@ -17,19 +10,17 @@ export default function MapListItem({
   width,
   height,
   draggableSnapshot,
+  hoverColor,
+  bgColor,
 }: {
   map: MapData
   index?: number
   width: number
   height: number
   draggableSnapshot?: DraggableStateSnapshot
+  hoverColor?: string
+  bgColor?: string
 }) {
-  const theme = useMantineTheme()
-  const fixedStyles = {
-    background: theme.colors.dark[6],
-    colorHover: theme.colors.dark[7],
-  }
-
   return (
     <Group
       noWrap
@@ -43,10 +34,10 @@ export default function MapListItem({
       sx={{
         width: width,
         height: height,
-        '&:hover': { backgroundColor: fixedStyles.colorHover },
+        '&:hover': { backgroundColor: hoverColor || undefined },
         backgroundColor: draggableSnapshot?.isDragging
-          ? fixedStyles.colorHover
-          : fixedStyles.background,
+          ? hoverColor || undefined
+          : bgColor || undefined,
       }}
     >
       {/* Index */}

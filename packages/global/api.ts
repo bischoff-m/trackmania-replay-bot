@@ -3,6 +3,7 @@ import { CompositionData, MapData } from './types'
 const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
 export const api = {
+  // Dynamic data
   getMapIndex: (): Promise<string[]> =>
     genericGetRoute<string[]>(`http://localhost:${PORT_EXPRESS}/mapIndex`),
   setComposition: (compData: CompositionData): Promise<void> =>
@@ -10,6 +11,9 @@ export const api = {
       `http://localhost:${PORT_EXPRESS}/setComposition`,
       compData
     ),
+  renderReplays: (mapIDs: string[]): Promise<void> =>
+    genericPostRoute(`http://localhost:${PORT_EXPRESS}/renderReplays`, mapIDs),
+
   // Static data
   getComposition: (): Promise<CompositionData> =>
     genericGetRoute<CompositionData>(
@@ -19,6 +23,8 @@ export const api = {
     genericGetRoute<MapData>(
       `http://localhost:${PORT_EXPRESS}/public/maps/${mapID}/info.json`
     ),
+
+  // Server-sent events
   onMapsUpdate: (callback: (event: MessageEvent) => void) => {
     const eventSource = new EventSource(
       `http://localhost:${PORT_EXPRESS}/events`

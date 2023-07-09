@@ -66,10 +66,10 @@ export default function CompositionSettings() {
         </Flex>
       </Flex>
 
-      {/* Framerate */}
+      {/* Frame rate */}
       <Flex direction='column' gap='xs'>
         <NumberInput
-          label='Framerate'
+          label='Frame rate'
           min={1}
           hideControls
           value={form.values.framerate}
