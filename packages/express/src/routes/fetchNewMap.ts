@@ -32,7 +32,6 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
   await map.leaderboardLoadMore(10)
 
   //////////////////////////////// SIMPLE PROPS ////////////////////////////////
-  // Set simple properties
   result.id = mapID
   result.name = client.stripFormat(map.name)
   result.authorName = map.authorName
@@ -45,6 +44,16 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
   }
   result.uploadedAt = map.uploaded
   result.timestamp = new Date()
+
+  /////////////////////////////////// GHOST  ///////////////////////////////////
+  const ghostRes = await nodeFetch(map.leaderboard[0].ghost, {
+    headers: { 'User-Agent': userAgent },
+  })
+  if (!ghostRes.ok || ghostRes.body === null)
+    throw new Error(`Failed to fetch ${map.leaderboard[0].ghost}`)
+  const ghostUrl = `/maps/${mapID}/ghost.Ghost.gbx`
+  await fs.promises.writeFile(path.join(publicRoot, ghostUrl), ghostRes.body)
+  result.ghostUrl = '/public' + ghostUrl
 
   ///////////////////////////////// THUMBNAIL  /////////////////////////////////
   // Fetch thumbnail image from website

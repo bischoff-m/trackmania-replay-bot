@@ -1,0 +1,72 @@
+{
+  "id": "YP7gH0rSG4i12sqLN1GT76Lp1T0",
+  "name": " Escape",
+  "authorName": "Birne_TM",
+  "authorNation": "DEN",
+  "medals": {
+    "author": 45458,
+    "gold": 49000,
+    "silver": 55000,
+    "bronze": 69000
+  },
+  "uploadedAt": "2023-06-02T13:48:13.000Z",
+  "timestamp": "2023-07-09T20:51:26.767Z",
+  "ghostUrl": "/public/maps/YP7gH0rSG4i12sqLN1GT76Lp1T0/ghost.Ghost.gbx",
+  "thumbnailUrl": "/public/maps/YP7gH0rSG4i12sqLN1GT76Lp1T0/thumbnail.jpg",
+  "leaderboard": [
+    {
+      "name": "hobbii.",
+      "time": 44374,
+      "nation": "GER"
+    },
+    {
+      "name": "BarbosTM",
+      "time": 44428,
+      "nation": "GER"
+    },
+    {
+      "name": "JurixTM",
+      "time": 44444,
+      "nation": "FRA"
+    },
+    {
+      "name": "Magorian0212",
+      "time": 44454,
+      "nation": "POL"
+    },
+    {
+      "name": "Broly._",
+      "time": 44461,
+      "nation": "FRA"
+    },
+    {
+      "name": "keby..",
+      "time": 44466,
+      "nation": "SWE"
+    },
+    {
+      "name": "Mawi._",
+      "time": 44494,
+      "nation": "POR"
+    },
+    {
+      "name": "crispp..",
+      "time": 44498,
+      "nation": "GBR"
+    },
+    {
+      "name": "piranha..",
+      "time": 44526,
+      "nation": "GER"
+    },
+    {
+      "name": "ComplexStatics_",
+      "time": 44536,
+      "nation": "NED"
+    }
+  ],
+  "video": {
+    "url": "/public/maps/YP7gH0rSG4i12sqLN1GT76Lp1T0/replay.webm",
+    "durationInFrames": 450
+  }
+}

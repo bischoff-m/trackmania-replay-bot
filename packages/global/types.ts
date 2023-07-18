@@ -24,6 +24,7 @@ export type MapData = {
   }
   leaderboard: Ranking[]
   thumbnailUrl: string
+  ghostUrl: string
   uploadedAt: Date
   timestamp: Date
   video?: {

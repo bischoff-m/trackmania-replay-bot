@@ -1,4 +1,3 @@
-import { useCompositionFormContext } from '@/components/AppRoot'
 import RenderModal from '@/components/MapView/RenderModal'
 import { api } from '@global/api'
 import { MapData } from '@global/types'
@@ -18,10 +17,8 @@ export default function MapViewHeader({
   cachedState: UseListState<MapData>
   activeState: UseListState<MapData>
 }) {
-  // Modal to start render process
+  // Modal
   const [opened, { open, close }] = useDisclosure(false)
-
-  const form = useCompositionFormContext()
 
   const [mapsCached, handlersCached] = cachedState
   const [mapsActive, handlersActive] = activeState

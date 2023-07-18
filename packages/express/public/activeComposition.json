@@ -1,18 +1,13 @@
 {
   "clips": [
     {
-      "mapID": "EalmFJIbKqW5QMElpKj0_BXskci",
+      "mapID": "pXcDo8mc2i4RjytuJ56I1a3zYq8",
       "startFrame": 0,
       "durationInFrames": 750
     },
     {
-      "mapID": "pgufNZ2qxXQcbaI_fkm0QRqPEK7",
+      "mapID": "1AHvHDL0ms_QSdiw9ygrwRgn7qd",
       "startFrame": 750,
-      "durationInFrames": 360
-    },
-    {
-      "mapID": "T7ErD2akYso4jwK9WkmB6Y_DqN2",
-      "startFrame": 1110,
       "durationInFrames": 750
     }
   ],
