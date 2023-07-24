@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "Python: Render Replay",
+      "type": "python",
+      "request": "launch",
+      "program": "packages/render/src/main.py",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

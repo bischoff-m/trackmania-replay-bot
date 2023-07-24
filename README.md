@@ -16,17 +16,48 @@ the replay of the world record on some popular maps.
 1. Compose the replays into a video using Remotion. _(Mostly done)_
 1. Upload the video to YouTube. _(Not started yet)_
 
-## Getting Started
+## Installation
+
+Install Node.js and run
+
+```bash
+./> npm install
+```
+
+### If you want to use
+
+Install Python 3 and run
+
+```bash
+./packages/render> pip install -r requirements.txt
+```
+
+If you use Visual Studio Code you can use venv to create a virtual environment
+using
+
+```bash
+./packages/render> python -m venv .venv
+./packages/render> ./.venv/Scripts/pip install -r requirements.txt
+```
+
+For Linux and macOS, you also have to install the tessaract binaries. See [screen-ocr](https://pypi.org/project/screen-ocr/) for more information.
+
+## Usage
 
 Run the development server and open [http://localhost:3000](http://localhost:3000):
 
 ```bash
-npm run dev
+./> npm run dev
 ```
 
 The page serves as management interface for the bot. You will be able to start
 the Remotion render process from there, view the cached data, selected replays
 and other things I might find helpful.
+
+## To Consider
+
+The render process (pyautogui) was only tested on Windows with WinRT. If you are
+on Linux or macOS, you have to install the tessaract binaries yourself.
 
 ## Thanks
 
