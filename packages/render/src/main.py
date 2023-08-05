@@ -1,12 +1,15 @@
 import sys
+from pathlib import Path
 from typing import Callable
 
 from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtWidgets import (
     QApplication,
+    QHBoxLayout,
     QLabel,
     QMainWindow,
     QPushButton,
+    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
@@ -23,6 +26,9 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Trackmania Replay Bot")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        # Load stylesheet
+        with open(Path(__file__).parent / "stylesheet.qss") as f:
+            self.setStyleSheet(f.read())
         self.show()
 
     def update(self, next_step: Step):
@@ -30,32 +36,53 @@ class MainWindow(QMainWindow):
             self.close()
             return
         self.step = next_step
+        self.updateUI()
 
+    def updateUI(self):
         widget = QWidget()
         self.setCentralWidget(widget)
-        layout = QVBoxLayout(widget)
+        main_layout = QVBoxLayout(widget)
 
-        layout.addWidget(
-            QLabel(self.step.title), alignment=Qt.AlignmentFlag.AlignCenter
+        # Add title
+        main_layout.addWidget(
+            QLabel(self.step.title, objectName="title"),
+            alignment=Qt.AlignmentFlag.AlignTop,
         )
-        layout.addWidget(
-            QLabel(self.step.description), alignment=Qt.AlignmentFlag.AlignCenter
+
+        # Add description
+        label_desc = QLabel(self.step.description, objectName="description")
+        label_desc.setWordWrap(True)
+        # This prevents the content from being clipped by resizing the window.
+        label_desc.setSizePolicy(
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding
         )
+        main_layout.addWidget(
+            label_desc,
+            stretch=1,
+            alignment=Qt.AlignmentFlag.AlignTop,
+        )
+
+        btn_layout = QHBoxLayout(alignment=Qt.AlignmentFlag.AlignRight)
 
         # When the button is clicked, the action is executed in a worker thread.
-        def onButtonClick(action: Callable[[], Step]):
-            worker = Worker(action)
-            worker.signals.done.connect(self.update)
-            worker.signals.error.connect(
-                lambda msg: self.update(Controller.state_error(msg))
-            )
-            self.threadpool.start(worker)
+        def get_button_callback(action: Callable[[], Step]):
+            def callback():
+                worker = Worker(action)
+                worker.signals.done.connect(self.update)
+                worker.signals.error.connect(
+                    lambda msg: self.update(Controller.state_error(msg))
+                )
+                self.threadpool.start(worker)
 
-        # Add QPushButtons for each action.
-        for action_name, action in self.step.actions.items():
-            button = QPushButton(text=action_name)
-            button.clicked.connect(lambda: onButtonClick(action))
-            layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignCenter)
+            return callback
+
+        # Add button for each button handler
+        for btn_info in self.step.buttons:
+            button = QPushButton(text=btn_info.name, objectName=btn_info.style)
+            button.clicked.connect(get_button_callback(btn_info.action))
+            btn_layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignRight)
+
+        main_layout.addLayout(btn_layout)
 
 
 if __name__ == "__main__":

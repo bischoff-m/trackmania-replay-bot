@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Dict
+from typing import Callable, List, Literal
 
 from api import Bob, LocateImageException
 from pynput.keyboard import Key
@@ -22,17 +22,35 @@ class Step:
 
     title: str
     description: str
-    actions: Dict[str, Callable[[], "Step"]]
+    buttons: List["Button"]
+
+
+@dataclass
+class Button:
+    name: str
+    style: Literal["confirm", "cancel", None]
+    action: Callable[[], "Step"]
 
 
 # Decorator that sets the title, description and buttons of a step.
 def stepmethod(title: str = None, description: str = None):
-    def decorator(func):
+    def decorator(func: Callable[[], Step]):
         def wrapper():
             return Step(
-                title=title or func.__name__,
-                description=description or "",
-                actions={"Step": func},
+                title=title,
+                description=description,
+                buttons=[
+                    Button(
+                        name="Cancel",
+                        style="cancel",
+                        action=Controller.state_end,
+                    ),
+                    Button(
+                        name="Step",
+                        style="confirm",
+                        action=func,
+                    ),
+                ],
             )
 
         return staticmethod(wrapper)
@@ -45,10 +63,24 @@ class Controller:
     def state_end():
         return Step(
             title="Done",
-            description="",
-            actions={
-                "Again": Controller.step1,
-            },
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit.",
+            buttons=[
+                Button(
+                    name="Again5",
+                    style="cancel",
+                    action=Controller.step1,
+                ),
+                Button(
+                    name="Again3",
+                    style=None,
+                    action=Controller.step1,
+                ),
+                Button(
+                    name="Again4",
+                    style="confirm",
+                    action=Controller.step1,
+                ),
+            ],
         )
 
     @staticmethod
@@ -56,9 +88,13 @@ class Controller:
         return Step(
             title="Error",
             description=msg.replace("\n", "<br>"),
-            actions={
-                "Again": Controller.step1,
-            },
+            buttons=[
+                Button(
+                    name="Again",
+                    style="confirm",
+                    action=Controller.step1,
+                ),
+            ],
         )
 
     @stepmethod(title="Step 1", description="Description 1")

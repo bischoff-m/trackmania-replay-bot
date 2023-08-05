@@ -1,0 +1,55 @@
+
+QMainWindow {
+    background-color: #ffffff;
+    color: #000000;
+}
+QLabel {
+    font-size: 14px;
+    font-family: Segoe UI;
+    padding: 3px;
+}
+QLabel#title {
+    font-size: 20px;
+}
+QLabel#description {
+    padding-left: 5px;
+    padding-bottom: 20px;
+}
+
+/* Primary Button */
+QPushButton {
+    background-color: #25262b;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background-color: #1a1b1e;
+}
+QPushButton:pressed {
+    background-color: #3b3d44;
+}
+
+/* Confirm Button */
+QPushButton#confirm {
+    background-color: #40bf57;
+}
+QPushButton#confirm:hover {
+    background-color: #36b24d;
+}
+QPushButton#confirm:pressed {
+    background-color: #267e36;
+}
+
+/* Cancel Button */
+QPushButton#cancel {
+    background-color: #e03130;
+}
+QPushButton#cancel:hover {
+    background-color: #c92b2a;
+}
+QPushButton#cancel:pressed {
+    background-color: #95201f;
+}
