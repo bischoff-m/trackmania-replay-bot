@@ -32,8 +32,8 @@ class LocateTextException(Exception):
         return f"Could not locate text on screen: {self.args[0]}"
 
 
-# Decorator to mark a static function as chainable
 def chainable(func):
+    """Decorator to mark a static function as chainable."""
     chainable_functions.append(func.__name__)
     return staticmethod(func)
 
@@ -65,22 +65,65 @@ class Bob:
         # Otherwise, act as usual
         return attr
 
-    @chainable
-    def click(x: int, y: int):
-        pyautogui.click(x, y)
+    @staticmethod
+    def findImage(image: str, retry: str = None) -> pyautogui.Point | None:
+        """Finds the coordinates of an image on the screen.
+
+        Args:
+            image (str): The image to search for, path relative to the static directory.
+            retry (str, optional): The image to retry if the first one could not be found. Defaults to None.
+
+        Returns:
+            pyautogui.Point | None: The center of the image on the screen or None if it could not be found.
+        """
+        img_path = (STATIC_DIR / image).resolve().as_posix()
+        loc = pyautogui.locateCenterOnScreen(img_path)
+        if loc is None and retry is not None:
+            img_path = (STATIC_DIR / retry).resolve().as_posix()
+            loc = pyautogui.locateCenterOnScreen(img_path)
+        return loc
 
     @chainable
-    def clickImage(image: str):
-        img_path = (STATIC_DIR / image).resolve().as_posix()
-        location = pyautogui.locateCenterOnScreen(img_path)
+    def click(x: int, y: int):
+        """Clicks at the given coordinates and moves the mouse back to its previous position.
+
+        Args:
+            x (int): Where to click on the x-axis.
+            y (int): Where to click on the y-axis.
+        """
+        prev_pos = pyautogui.position()
+        # You could also use pyautogui.click(x, y) but Trackmania did not
+        # recognize the click sometimes
+        pyautogui.moveTo(x, y)
+        pyautogui.click()
+        pyautogui.moveTo(*prev_pos)
+
+    @chainable
+    def clickImage(image: str, retry: str = None):
+        """Clicks on an image on the screen.
+
+        Args:
+            image (str): The image to search for, path relative to the static directory.
+            retry (str, optional): The image to retry if the first one could not be found. Defaults to None.
+
+        Raises:
+            LocateImageException: If the image could not be found.
+        """
+        location = Bob.findImage(image, retry)
         if location is None:
             raise LocateImageException(image)
-        print(f"Found image {image} at {location}.")
-        pyautogui.click(location)
-        time.sleep(0.3)
+        Bob.click(*location)
 
     @chainable
     def clickText(text: str):
+        """Clicks on text on the screen.
+
+        Args:
+            text (str): The text to search for.
+
+        Raises:
+            LocateTextException: If the text could not be found.
+        """
         screen_resolution = pyautogui.size()
         contents = reader.read_screen(bounding_box=(0, 0, *screen_resolution))
 
@@ -97,8 +140,18 @@ class Bob:
 
     @chainable
     def tap(key: Key):
+        """Presses a key and releases it.
+
+        Args:
+            key (Key): The key to press.
+        """
         keyboard.tap(key)
 
     @chainable
     def wait(seconds: float):
+        """Waits for a given amount of seconds.
+
+        Args:
+            seconds (float): The amount of seconds to wait.
+        """
         time.sleep(seconds)

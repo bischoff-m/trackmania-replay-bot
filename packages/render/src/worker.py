@@ -1,3 +1,4 @@
+import traceback
 from typing import Callable
 
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
@@ -19,7 +20,7 @@ class WorkerSignals(QObject):
     """
 
     done = Signal(Step)
-    error = Signal(str)
+    error = Signal(Exception)
 
 
 class Worker(QRunnable):
@@ -46,5 +47,5 @@ class Worker(QRunnable):
             next_step = self.action()
             self.signals.done.emit(next_step)
         except Exception as e:
-            print(e)
-            self.signals.error.emit(str(e))
+            traceback.print_exc()
+            self.signals.error.emit(e)

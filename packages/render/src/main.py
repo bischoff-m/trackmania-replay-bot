@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.threadpool = QThreadPool()
-        self.update(Controller.step1())
+        self.update(Controller.state_start())
 
         self.setWindowTitle("Trackmania Replay Bot")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(f.read())
         self.show()
 
-    def update(self, next_step: Step):
+    def update(self, next_step: Step | None):
         if next_step is None:
             self.close()
             return
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
                 worker = Worker(action)
                 worker.signals.done.connect(self.update)
                 worker.signals.error.connect(
-                    lambda msg: self.update(Controller.state_error(msg))
+                    lambda err: self.update(Controller.state_error(err, self.step))
                 )
                 self.threadpool.start(worker)
 
