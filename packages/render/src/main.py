@@ -17,11 +17,13 @@ from steps import Controller, Step
 from worker import Worker
 
 
-# Subclass QMainWindow to customize your application's main window
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
         self.threadpool = QThreadPool()
+        self.is_worker_running = False
+
         self.update(Controller.state_start())
 
         self.setWindowTitle("Trackmania Replay Bot")
@@ -66,19 +68,39 @@ class MainWindow(QMainWindow):
 
         # When the button is clicked, the action is executed in a worker thread.
         def get_button_callback(action: Callable[[], Step]):
+            def on_done(next_step: Step):
+                self.is_worker_running = False
+                self.update(next_step)
+
+            def on_error(err: Exception):
+                self.is_worker_running = False
+                self.update(Controller.state_error(err, self.step))
+
             def callback():
+                if self.is_worker_running:
+                    raise RuntimeError(
+                        "Worker is already running. This should not happen."
+                    )
                 worker = Worker(action)
-                worker.signals.done.connect(self.update)
-                worker.signals.error.connect(
-                    lambda err: self.update(Controller.state_error(err, self.step))
-                )
+                worker.signals.done.connect(on_done)
+                worker.signals.error.connect(on_error)
+
+                self.is_worker_running = True
+                self.updateUI()
                 self.threadpool.start(worker)
 
             return callback
 
+        if self.is_worker_running:
+            btn_layout.addWidget(
+                QLabel("Loading..."), alignment=Qt.AlignmentFlag.AlignRight
+            )
+
         # Add button for each button handler
         for btn_info in self.step.buttons:
-            button = QPushButton(text=btn_info.name, objectName=btn_info.style)
+            style = "disabled" if self.is_worker_running else btn_info.style
+            button = QPushButton(text=btn_info.name, objectName=style)
+            button.setEnabled(not self.is_worker_running)
             button.clicked.connect(get_button_callback(btn_info.action))
             btn_layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignRight)
 

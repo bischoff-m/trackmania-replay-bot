@@ -16,20 +16,10 @@ QLabel#description {
     padding-bottom: 20px;
 }
 
-/* Primary Button */
-QPushButton {
-    background-color: #25262b;
-    color: #ffffff;
-    border-radius: 5px;
-    padding: 10px 12px;
-    font-size: 14px;
-    font-weight: 600;
-}
-QPushButton:hover {
-    background-color: #1a1b1e;
-}
-QPushButton:pressed {
-    background-color: #3b3d44;
+/* Disabled Button */
+QPushButton#disabled {
+    color: #acb5bd;
+    background-color: #e9ecef;
 }
 
 /* Confirm Button */
@@ -52,4 +42,21 @@ QPushButton#cancel:hover {
 }
 QPushButton#cancel:pressed {
     background-color: #95201f;
+}
+
+
+/* Primary Button */
+QPushButton {
+    background-color: #25262b;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background-color: #1a1b1e;
+}
+QPushButton:pressed {
+    background-color: #3b3d44;
 }
