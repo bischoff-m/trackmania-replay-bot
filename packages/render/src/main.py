@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from steps import Controller, Step
+from states import Controller, State
 from worker import Worker
 
 
@@ -33,11 +33,11 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(f.read())
         self.show()
 
-    def update(self, next_step: Step | None):
-        if next_step is None:
+    def update(self, next_state: State | None):
+        if next_state is None:
             self.close()
             return
-        self.step = next_step
+        self.state = next_state
         self.updateUI()
 
     def updateUI(self):
@@ -47,12 +47,12 @@ class MainWindow(QMainWindow):
 
         # Add title
         main_layout.addWidget(
-            QLabel(self.step.title, objectName="title"),
+            QLabel(self.state.title, objectName="title"),
             alignment=Qt.AlignmentFlag.AlignTop,
         )
 
         # Add description
-        label_desc = QLabel(self.step.description, objectName="description")
+        label_desc = QLabel(self.state.description, objectName="description")
         label_desc.setWordWrap(True)
         # This prevents the content from being clipped by resizing the window.
         label_desc.setSizePolicy(
@@ -67,14 +67,14 @@ class MainWindow(QMainWindow):
         btn_layout = QHBoxLayout(alignment=Qt.AlignmentFlag.AlignRight)
 
         # When the button is clicked, the action is executed in a worker thread.
-        def get_button_callback(action: Callable[[], Step]):
-            def on_done(next_step: Step):
+        def get_button_callback(action: Callable[[], State]):
+            def on_done(next_state: State):
                 self.is_worker_running = False
-                self.update(next_step)
+                self.update(next_state)
 
             def on_error(err: Exception):
                 self.is_worker_running = False
-                self.update(Controller.state_error(err, self.step))
+                self.update(Controller.state_error(err, self.state))
 
             def callback():
                 if self.is_worker_running:
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
             )
 
         # Add button for each button handler
-        for btn_info in self.step.buttons:
+        for btn_info in self.state.buttons:
             style = "disabled" if self.is_worker_running else btn_info.style
             button = QPushButton(text=btn_info.name, objectName=style)
             button.setEnabled(not self.is_worker_running)

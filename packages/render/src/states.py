@@ -13,18 +13,18 @@ class ControlFlowException(Exception):
 
 
 @dataclass
-class Step:
+class State:
     """
-    This represents a single step like clicking a button or entering text.
+    This represents a state of the UI.
 
     title:
-      Title shown in the UI when this step is active.
+      Title shown when this state is active.
     description:
-      Description shown in the UI when this step is active.
+      Description shown when this state is active.
     actions:
-      A dictionary of actions that can be executed in this step. Each is shown
-      as a button in the UI with the key as the button text. When the button is
-      clicked, the value is executed, which should return the next step.
+      A dictionary of actions that can be executed in this state. Each is shown
+      as a button with the key as the button text. When the button is clicked,
+      the value is executed, which should return the next state.
     """
 
     title: str
@@ -35,15 +35,15 @@ class Step:
 @dataclass
 class Button:
     name: str
-    action: Callable[[], "Step"]
+    action: Callable[[], "State"]
     style: Optional[Literal["confirm", "cancel"]] = None
 
 
 # Decorator that sets the title, description and buttons of a step.
 def stepmethod(description: str = None):
-    def decorator(func: Callable[[], Step]):
+    def decorator(func: Callable[[], State]):
         def wrapper():
-            return Step(
+            return State(
                 title="Step",
                 description=description or "",
                 buttons=[
@@ -99,7 +99,7 @@ class Controller:
             </ul>
             """
         )
-        return Step(
+        return State(
             title="Step by Step Helper",
             description=description,
             buttons=[
@@ -123,7 +123,7 @@ class Controller:
 
     @staticmethod
     def state_end():
-        return Step(
+        return State(
             title="Done",
             description="The script has finished. You can now close this window.",
             buttons=[
@@ -140,7 +140,7 @@ class Controller:
         )
 
     @staticmethod
-    def state_error(err: Exception, from_step: Step = None):
+    def state_error(err: Exception, from_state: State = None):
         buttons = [
             Button(
                 name="Cancel",
@@ -152,15 +152,15 @@ class Controller:
                 action=Controller.state_start,
             ),
         ]
-        if from_step is not None:
+        if from_state is not None:
             buttons.append(
                 Button(
                     name="Retry",
-                    action=lambda: from_step,
+                    action=lambda: from_state,
                     style="confirm",
                 ),
             )
-        return Step(
+        return State(
             title="Error",
             description=str(err).replace("\n", "<br>"),
             buttons=buttons,
@@ -241,7 +241,7 @@ class Controller:
         return Controller.step_replaypicker_confirm()
 
     @stepmethod(
-        description='Trying to click the "CONFIRM" button and then the "EDIT" button.'
+        description='Trying to click the "CONFIRM" button, click the "EDIT" button and wait for the replay editor to load.'
     )
     def step_replaypicker_confirm():
         Bob().clickImage(
