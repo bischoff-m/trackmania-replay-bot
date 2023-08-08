@@ -83,6 +83,50 @@ class Bob:
             loc = pyautogui.locateCenterOnScreen(img_path)
         return loc
 
+    @staticmethod
+    def findText(text: str) -> pyautogui.Point | None:
+        """Finds the coordinates of text on the screen.
+
+        Args:
+            text (str): The text to search for.
+
+        Returns:
+            pyautogui.Point | None: The center of the text on the screen or None if it could not be found.
+        """
+        screen_resolution = pyautogui.size()
+        contents = reader.read_screen(bounding_box=(0, 0, *screen_resolution))
+
+        matches = contents.find_matching_words(text)
+        if len(matches) == 0:
+            return None
+        elif len(matches) > 1:
+            raise LocateTextException(f"Multiple matches for {text}")
+
+        first_match = matches[0][0]
+        center = (
+            first_match.left + first_match.width / 2,
+            first_match.top + first_match.height / 2,
+        )
+        return center
+
+    @chainable
+    def tap(key: Key):
+        """Presses a key and releases it.
+
+        Args:
+            key (Key): The key to press.
+        """
+        keyboard.tap(key)
+
+    @chainable
+    def wait(seconds: float):
+        """Waits for a given amount of seconds.
+
+        Args:
+            seconds (float): The amount of seconds to wait.
+        """
+        time.sleep(seconds)
+
     @chainable
     def click(x: int, y: int):
         """Clicks at the given coordinates and moves the mouse back to its previous position.
@@ -124,34 +168,49 @@ class Bob:
         Raises:
             LocateTextException: If the text could not be found.
         """
-        screen_resolution = pyautogui.size()
-        contents = reader.read_screen(bounding_box=(0, 0, *screen_resolution))
-
-        matches = contents.find_matching_words(text)
-        if len(matches) == 0:
+        location = Bob.findText(text)
+        if location is None:
             raise LocateTextException(text)
-
-        first_match = matches[0][0]
-        center = (
-            first_match.left + first_match.width / 2,
-            first_match.top + first_match.height / 2,
-        )
-        Bob.click(*center)
+        Bob.click(*location)
 
     @chainable
-    def tap(key: Key):
-        """Presses a key and releases it.
+    def waitImage(image: str, interval: float = 0.5, timeout: float = 30):
+        """Waits for an image to appear on the screen.
 
         Args:
-            key (Key): The key to press.
+            image (str): The image to search for, path relative to the static directory.
+            interval (float, optional): In which interval to poll for the image in seconds. Defaults to 0.5.
+            timeout (float, optional): After how many seconds to stop polling. Defaults to 30.
+
+        Raises:
+            LocateImageException: If the image could not be found after the timeout.
         """
-        keyboard.tap(key)
+        found = Bob().findImage(image)
+        for _ in range(int(timeout / interval)):
+            if found:
+                break
+            Bob().wait(interval)
+            found = Bob().findImage(image)
+        if not found:
+            raise LocateImageException(image)
 
     @chainable
-    def wait(seconds: float):
-        """Waits for a given amount of seconds.
+    def waitText(text: str, interval: float = 0.5, timeout: float = 30):
+        """Waits for text to appear on the screen.
 
         Args:
-            seconds (float): The amount of seconds to wait.
+            text (str): The text to search for.
+            interval (float, optional): In which interval to poll for the text in seconds. Defaults to 0.5.
+            timeout (float, optional): After how many seconds to stop polling. Defaults to 30.
+
+        Raises:
+            LocateTextException: If the text could not be found after the timeout.
         """
-        time.sleep(seconds)
+        found = Bob().findText(text)
+        for _ in range(int(timeout / interval)):
+            if found:
+                break
+            Bob().wait(interval)
+            found = Bob().findText(text)
+        if not found:
+            raise LocateTextException(text)

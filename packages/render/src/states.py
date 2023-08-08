@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass
 from typing import Callable, List, Literal, Optional
 
@@ -39,7 +38,7 @@ class Button:
     style: Optional[Literal["confirm", "cancel"]] = None
 
 
-# Decorator that sets the title, description and buttons of a step.
+# Decorator that sets the title, description and buttons of a step
 def stepmethod(description: str = None):
     def decorator(func: Callable[[], State]):
         def wrapper():
@@ -72,7 +71,7 @@ def no_whitespace(text: str) -> str:
 class Controller:
     @staticmethod
     def state_quit():
-        # This closes the application.
+        # This closes the application
         return None
 
     @staticmethod
@@ -95,7 +94,16 @@ class Controller:
             <ul>
                 <li>Trackmania is in "Windowed Borderless" mode</li>
                 <li>Trackmania is on the main monitor (restricted by pyautogui)</li>
-                <li>Optional: HDR disabled (works for me but could cause problems)</li>
+                <li>Nothing else is on the main monitor</li>
+            </ul>
+            """
+        )
+        description += "<b>If the script fails</b>"
+        description += no_whitespace(
+            """
+            <ul>
+                <li>Check that Openplanet plugins are not blocking any UI elements</li>
+                <li>Disable HDR (works for me but could cause problems)</li>
             </ul>
             """
         )
@@ -109,9 +117,9 @@ class Controller:
                     style="cancel",
                 ),
                 Button(
-                    # TODO: Implement this.
+                    # TODO: Implement this
                     name="Run All",
-                    action=Controller.step_menu_create,
+                    action=Controller.step_replaypicker_confirm,
                 ),
                 Button(
                     name="Step by Step",
@@ -186,10 +194,10 @@ class Controller:
         description="Trying to click the up button in the replay picker (if needed) to reach the root folder."
     )
     def step_replaypicker_up():
-        # Check if we are already at the root folder.
+        # Check if we are already at the root folder
         found = Bob().findImage("ReplayPicker_EmptyPath.png") is not None
 
-        # Press up button multiple times to get to the top.
+        # Press up button multiple times to get to the top
         for _ in range(10):
             if found:
                 break
@@ -206,7 +214,7 @@ class Controller:
 
     @stepmethod(description="Trying to activate tree view, sort by name and ascending.")
     def step_replaypicker_sort():
-        # Activate tree view if not already active.
+        # Activate tree view if not already active
         if Bob().findImage("ReplayPicker_ListView.png") is not None:
             Bob().clickImage("ReplayPicker_ListView.png")
         if Bob().findImage("ReplayPicker_TreeView.png") is None:
@@ -214,7 +222,7 @@ class Controller:
                 "ReplayPicker_ListView.png or ReplayPicker_TreeView.png"
             )
 
-        # Sort by name if not already sorted by name.
+        # Sort by name if not already sorted by name
         if Bob().findImage("ReplayPicker_SortByTime.png") is not None:
             Bob().clickImage("ReplayPicker_SortByTime.png")
         if Bob().findImage("ReplayPicker_SortByName.png") is None:
@@ -222,7 +230,7 @@ class Controller:
                 "ReplayPicker_SortByTime.png or ReplayPicker_SortByName.png"
             )
 
-        # Sort ascending if not already sorted ascending.
+        # Sort ascending if not already sorted ascending
         if Bob().findImage("ReplayPicker_SortDescending.png") is not None:
             Bob().clickImage("ReplayPicker_SortDescending.png")
         if Bob().findImage("ReplayPicker_SortAscending.png") is None:
@@ -252,4 +260,7 @@ class Controller:
             "ReplayPicker_EditButton.png",
             retry="ReplayPicker_EditButton_Hover.png",
         ).wait(0.2)
+
+        Bob().waitText("Player camera", timeout=5)
+
         return Controller.state_end()
