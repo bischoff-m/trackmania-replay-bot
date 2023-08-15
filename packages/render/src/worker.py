@@ -1,8 +1,8 @@
 import traceback
 from typing import Callable
 
+from classes import Step
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
-from states import State
 
 
 class WorkerSignals(QObject):
@@ -12,14 +12,14 @@ class WorkerSignals(QObject):
     Supported signals are:
 
     done
-        state - The next state to transition to.
+        step - The next step to transition to.
 
     error
         str - Error message to display.
 
     """
 
-    done = Signal(State)
+    done = Signal(Step)
     error = Signal(Exception)
 
 
@@ -32,7 +32,7 @@ class Worker(QRunnable):
     :param action: The function callback to run on this worker thread.
     """
 
-    def __init__(self, action: Callable[[], State]):
+    def __init__(self, action: Callable[[], Step]):
         super(Worker, self).__init__()
 
         self.action = action
@@ -44,8 +44,8 @@ class Worker(QRunnable):
         Initialise the runner function and emit signals.
         """
         try:
-            next_state = self.action()
-            self.signals.done.emit(next_state)
+            next_step = self.action()
+            self.signals.done.emit(next_step)
         except Exception as e:
             traceback.print_exc()
             self.signals.error.emit(e)

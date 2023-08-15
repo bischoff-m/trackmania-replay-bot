@@ -1,7 +1,8 @@
 import sys
 from pathlib import Path
-from typing import Callable
 
+from classes import State
+from control import Control
 from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtWidgets import (
     QApplication,
@@ -13,46 +14,51 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from states import Controller, State
-from worker import Worker
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, control: Control | None = None):
         super().__init__()
 
         self.threadpool = QThreadPool()
-        self.is_worker_running = False
-
-        self.update(Controller.state_start())
 
         self.setWindowTitle("Trackmania Replay Bot")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
         # Load stylesheet
         with open(Path(__file__).parent / "stylesheet.qss") as f:
             self.setStyleSheet(f.read())
+
+        if control is None:
+            self._control = Control(
+                self.update, lambda worker: self.threadpool.start(worker)
+            )
+        else:
+            self._control = control
+            control.connect(self.update, lambda worker: self.threadpool.start(worker))
+
         self.show()
 
-    def update(self, next_state: State | None):
-        if next_state is None:
+    def update(
+        self,
+        new_state: State | None = None,
+        loading: bool = False,
+    ):
+        if new_state is None:
             self.close()
             return
-        self.state = next_state
-        self.updateUI()
 
-    def updateUI(self):
         widget = QWidget()
         self.setCentralWidget(widget)
         main_layout = QVBoxLayout(widget)
 
         # Add title
         main_layout.addWidget(
-            QLabel(self.state.title, objectName="title"),
+            QLabel(new_state.title, objectName="title"),
             alignment=Qt.AlignmentFlag.AlignTop,
         )
 
         # Add description
-        label_desc = QLabel(self.state.description, objectName="description")
+        label_desc = QLabel(new_state.description, objectName="description")
         label_desc.setWordWrap(True)
         # This prevents the content from being clipped by resizing the window.
         label_desc.setSizePolicy(
@@ -66,48 +72,29 @@ class MainWindow(QMainWindow):
 
         btn_layout = QHBoxLayout(alignment=Qt.AlignmentFlag.AlignRight)
 
-        # When the button is clicked, the action is executed in a worker thread.
-        def get_button_callback(action: Callable[[], State]):
-            def on_done(next_state: State):
-                self.is_worker_running = False
-                self.update(next_state)
-
-            def on_error(err: Exception):
-                self.is_worker_running = False
-                self.update(Controller.state_error(err, self.state))
-
-            def callback():
-                if self.is_worker_running:
-                    raise RuntimeError(
-                        "Worker is already running. This should not happen."
-                    )
-                worker = Worker(action)
-                worker.signals.done.connect(on_done)
-                worker.signals.error.connect(on_error)
-
-                self.is_worker_running = True
-                self.updateUI()
-                self.threadpool.start(worker)
-
-            return callback
-
-        if self.is_worker_running:
+        if loading:
             btn_layout.addWidget(
                 QLabel("Loading..."), alignment=Qt.AlignmentFlag.AlignRight
             )
 
         # Add button for each button handler
-        for btn_info in self.state.buttons:
-            style = "disabled" if self.is_worker_running else btn_info.style
-            button = QPushButton(text=btn_info.name, objectName=style)
-            button.setEnabled(not self.is_worker_running)
-            button.clicked.connect(get_button_callback(btn_info.action))
+        for btn_info in new_state.buttons:
+            object_name = "disabled" if loading else btn_info.style
+            button = QPushButton(text=btn_info.name, objectName=object_name)
+            button.clicked.connect(btn_info.action)
+            button.setEnabled(not loading)
             btn_layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignRight)
 
         main_layout.addLayout(btn_layout)
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    main_window = MainWindow()
-    app.exec()
+    silent = "--silent" in sys.argv
+
+    control = Control()
+    success = control.run_silent()
+
+    if not success:
+        app = QApplication(sys.argv)
+        main_window = MainWindow(control)
+        app.exec()
