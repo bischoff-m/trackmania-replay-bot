@@ -1,5 +1,6 @@
 import time
 from pathlib import Path
+from typing import List
 
 import pyautogui
 from pynput.keyboard import Controller, Key
@@ -110,13 +111,21 @@ class Bob:
         return center
 
     @chainable
-    def tap(key: Key):
-        """Presses a key and releases it.
+    def tap(key: Key, modifiers: List[Key] = None):
+        """Presses a key and releases it. Optionally, modifiers can be pressed as well.
 
         Args:
             key (Key): The key to press.
+            modifiers (List[Key], optional): The modifiers to press. Defaults to None.
         """
-        keyboard.tap(key)
+        for modifier in modifiers or []:
+            keyboard.press(modifier)
+        keyboard.press(key)
+        Bob.wait(0.05)
+        keyboard.release(key)
+        for modifier in modifiers or []:
+            keyboard.release(modifier)
+        Bob.wait(0.05)
 
     @chainable
     def wait(seconds: float):
@@ -141,6 +150,19 @@ class Bob:
         pyautogui.moveTo(x, y)
         pyautogui.click()
         pyautogui.moveTo(*prev_pos)
+
+    @chainable
+    def clickRelative(x_percent: float, y_percent: float):
+        """Clicks at the given relative coordinates and moves the mouse back to its previous position.
+
+        Args:
+            x_percent (float): Where to click on the x-axis relative to the main screen width.
+            y_percent (float): Where to click on the y-axis relative to the main screen height.
+        """
+        screen_resolution = pyautogui.size()
+        x = screen_resolution[0] * x_percent
+        y = screen_resolution[1] * y_percent
+        Bob.click(x, y)
 
     @chainable
     def clickImage(image: str, retry: str = None):

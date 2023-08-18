@@ -2,6 +2,7 @@ from typing import Callable
 
 from api import Bob, LocateImageException
 from classes import Step
+from pynput.keyboard import Key
 
 
 class ControlFlowException(Exception):
@@ -105,19 +106,95 @@ class Steps:
         return Steps.step_replaypicker_confirm()
 
     @stepmethod(
-        description='Trying to click the "CONFIRM" button, click the "EDIT" button and wait for the replay editor to load.'
+        description='Trying to click the "CONFIRM" button, click the "EDIT" button and wait for the MediaTracker to load.'
     )
     def step_replaypicker_confirm():
         Bob().clickImage(
             "ReplayPicker_ConfirmButton.png",
             retry="ReplayPicker_ConfirmButton_Hover.png",
         ).wait(0.2)
+
         Bob().clickImage(
             "ReplayPicker_EditButton.png",
             retry="ReplayPicker_EditButton_Hover.png",
         ).wait(0.2)
 
         Bob().waitText("Player camera", timeout=5)
+
+        return Steps.step_mediatracker_addghost()
+
+    @stepmethod(
+        description='Trying to click the "Import ghosts..." button, select the folder where this script saves the current ghost and select it.'
+    )
+    def step_mediatracker_addghost():
+        Bob().clickImage("MediaTracker_Import_Button.png")
+        Bob().clickText("!!! trackmania-replay-bot")
+        Bob().clickText("ycnzzu02e5.Ghost.Gbx")
+        Bob().clickImage(
+            "MediaTracker_Import_Open.png", retry="MediaTracker_Import_Open_Hover.png"
+        ).wait(0.2)
+
+        return Steps.step_mediatracker_removeghost()
+
+    @stepmethod(
+        description="Trying to remove the old ghost. Requires the game to be focused."
+    )
+    def step_mediatracker_removeghost():
+        Bob().tap(Key.down, modifiers=[Key.shift])
+        Bob().tap(Key.down, modifiers=[Key.shift])
+        Bob().clickImage("MediaTracker_DeleteBlock.png").wait(0.1)
+        Bob().tap(Key.enter).wait(0.1)
+
+        return Steps.step_mediatracker_copylength()
+
+    @stepmethod(
+        description="Trying to copy the ghost length into clipboard. Requires the game to be focused."
+    )
+    def step_mediatracker_copylength():
+        Bob().tap(Key.up, modifiers=[Key.shift])
+        Bob().tap(Key.down, modifiers=[Key.shift])
+        Bob().clickRelative(2470 / 2560, 1184 / 1440).wait(0.1)
+        Bob().tap("a", modifiers=[Key.ctrl])
+        Bob().tap("c", modifiers=[Key.ctrl])
+        Bob().tap(Key.esc)
+
+        return Steps.step_mediatracker_pastelength()
+
+    @stepmethod(
+        description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
+    )
+    def step_mediatracker_pastelength():
+        Bob().tap(Key.up, modifiers=[Key.shift])
+        Bob().clickRelative(920 / 2560, 1100 / 1440).wait(0.1)
+        Bob().tap("a", modifiers=[Key.ctrl])
+        Bob().tap("v", modifiers=[Key.ctrl])
+        Bob().tap(Key.enter)
+
+        return Steps.step_mediatracker_fitcamera()
+
+    @stepmethod(
+        description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
+    )
+    def step_mediatracker_fitcamera():
+        Bob().tap("l")
+        Bob().clickImage("MediaTracker_DeleteBlock.png").wait(0.1)
+        Bob().tap(Key.enter).wait(0.1)
+
+        return Steps.step_mediatracker_openrender()
+
+    @stepmethod(
+        description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
+    )
+    def step_mediatracker_openrender():
+        Bob().wait(3)
+        Bob().clickImage("MediaTracker_Render_Button.png").wait(0.1)
+        Bob().clickImage(
+            "MediaTracker_Render_Confirm.png",
+            retry="MediaTracker_Render_Confirm_Hover.png",
+        ).wait(0.1)
+
+        # Wait for render to finish
+        Bob().waitText("Player camera", timeout=60 * 60 * 24)
 
         # Done
         return None

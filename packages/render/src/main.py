@@ -92,7 +92,7 @@ if __name__ == "__main__":
     silent = "--silent" in sys.argv
 
     control = Control()
-    success = control.run_silent()
+    success = control.run_silent() if silent else False
 
     if not success:
         app = QApplication(sys.argv)
