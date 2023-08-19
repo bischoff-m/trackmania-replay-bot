@@ -1,6 +1,7 @@
 from typing import Callable, List
 
 from classes import Button, State, Step
+from pynput import mouse
 from steps import Steps
 from worker import Worker
 
@@ -15,7 +16,7 @@ class Control:
         on_state_change: Callable[[State, bool], None] | None = None,
         start_worker: Callable[[Worker], None] | None = None,
     ):
-        self.on_state_change = on_state_change or (lambda *args: None)
+        self.on_state_change = on_state_change or (lambda *_: None)
         self.start_worker = start_worker
 
         self._state = None
@@ -34,14 +35,21 @@ class Control:
         on_state_change(self._state, self._is_worker_running)
 
     def run_silent(self) -> bool:
+        """Run the bot without showing the GUI."""
+
+        listener = mouse.Listener(on_scroll=lambda *_: False)
+        listener.start()
+        listener.wait()
         step = Steps.get_entry()
-        while step is not None:
-            self._step_history.append(step)
-            try:
+        try:
+            while step is not None:
+                self._step_history.append(step)
+                if not listener.running:
+                    raise Exception("Stopped by user")
                 step = step.run()
-            except Exception as err:
-                self.state_error(err)
-                return False
+        except Exception as err:
+            self.state_error(err)
+            return False
 
         self.state_quit()
         return True

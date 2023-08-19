@@ -28,13 +28,11 @@ class MainWindow(QMainWindow):
         with open(Path(__file__).parent / "stylesheet.qss") as f:
             self.setStyleSheet(f.read())
 
-        if control is None:
-            self._control = Control(
-                self.update, lambda worker: self.threadpool.start(worker)
-            )
-        else:
-            self._control = control
-            control.connect(self.update, lambda worker: self.threadpool.start(worker))
+        self._control = control or Control()
+        control.connect(
+            on_state_change=self.update,
+            start_worker=self.threadpool.start,
+        )
 
         self.show()
 
