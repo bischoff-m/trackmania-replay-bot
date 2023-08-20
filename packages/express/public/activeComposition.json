@@ -6,8 +6,13 @@
       "durationInFrames": 750
     },
     {
-      "mapID": "1AHvHDL0ms_QSdiw9ygrwRgn7qd",
+      "mapID": "ekyB2JR08WWgMAbwoV7F626kfFj",
       "startFrame": 750,
+      "durationInFrames": 360
+    },
+    {
+      "mapID": "1AHvHDL0ms_QSdiw9ygrwRgn7qd",
+      "startFrame": 1110,
       "durationInFrames": 750
     }
   ],

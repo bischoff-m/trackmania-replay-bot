@@ -1,0 +1,68 @@
+{
+  "id": "ekyB2JR08WWgMAbwoV7F626kfFj",
+  "name": "Pipecicle",
+  "authorName": "Teuflum",
+  "authorNation": "GER",
+  "medals": {
+    "author": 48222,
+    "gold": 52000,
+    "silver": 58000,
+    "bronze": 73000
+  },
+  "uploadedAt": "2023-07-25T18:29:22.000Z",
+  "timestamp": "2023-08-20T17:58:55.623Z",
+  "ghostUrl": "/public/maps/ekyB2JR08WWgMAbwoV7F626kfFj/ghost.Ghost.gbx",
+  "thumbnailUrl": "/public/maps/ekyB2JR08WWgMAbwoV7F626kfFj/thumbnail.jpg",
+  "leaderboard": [
+    {
+      "name": "Teuflum",
+      "time": 47323,
+      "nation": "GER"
+    },
+    {
+      "name": "Andybaguette",
+      "time": 47411,
+      "nation": "NOR"
+    },
+    {
+      "name": "beaderella",
+      "time": 47423,
+      "nation": "FRA"
+    },
+    {
+      "name": "Ikarus.",
+      "time": 47512,
+      "nation": "AUT"
+    },
+    {
+      "name": "Richie1308",
+      "time": 47638,
+      "nation": "FRA"
+    },
+    {
+      "name": "Narbex",
+      "time": 47660,
+      "nation": "GER"
+    },
+    {
+      "name": "Tigu-TM",
+      "time": 47713,
+      "nation": "GER"
+    },
+    {
+      "name": "baiwack",
+      "time": 47767,
+      "nation": "NZL"
+    },
+    {
+      "name": "Obitom.",
+      "time": 47798,
+      "nation": "FRA"
+    },
+    {
+      "name": "henkisme",
+      "time": 47803,
+      "nation": "NED"
+    }
+  ]
+}
