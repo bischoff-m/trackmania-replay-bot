@@ -11,10 +11,16 @@ I used the following structure and conventions.
 
 <!-- > A step is a function that returns a Step object: `Callable[[], Step]` -->
 
-You define a step by using the `@stepmethod` decorator. You can provide a
+You define a step by using the
+
+```python
+@stepmethod
+```
+
+decorator. You can provide a
 **description** that is displayed in the UI. The method must **return a step
-method** that represents the next step. If it returns `None`, the exceution of
-the step chain exits.
+method** that corresponds to the next step. If it returns `None`, the exceution
+of the step chain exits.
 
 ```python
 @stepmethod(description="This is an example step")
@@ -71,7 +77,7 @@ def example1():
     return inner1()
 ```
 
-Groups can be nested as deep as you want.
+Groups can be nested multiple times.
 
 You can use this to do conditional branching. Use the `nonlocal` keyword to
 write to variables in the outer scope.

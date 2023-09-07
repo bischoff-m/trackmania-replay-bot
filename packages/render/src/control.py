@@ -60,6 +60,9 @@ class Control:
             self.show_window()
             return False
 
+        if self._window is not None:
+            self.show_window()
+
         self.state_quit()
         return True
 
@@ -181,9 +184,8 @@ class Control:
                         style="cancel",
                     ),
                     Button(
-                        # TODO: Implement this
                         name="Run Silent",
-                        action=self.step_forward,
+                        action=lambda: self.run_silent(),
                     ),
                     Button(
                         name="First Step",
