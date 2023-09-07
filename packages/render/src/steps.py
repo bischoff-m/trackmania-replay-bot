@@ -12,31 +12,32 @@ class ControlFlowException(Exception):
         )
 
 
-# Decorator that sets the title, description and buttons of a step
+# Decorator that transforms a function into a method that returns a Step object
+# with the description and the function to run for that step.
 def stepmethod(description: str = "No description provided."):
-    def decorator(func: Callable[[], Step | None]):
+    def decorator(step_func: Callable[[], Step | None]):
         def wrapper():
+            def run_step():
+                get_next = step_func()
+                return get_next and get_next()
+
             return Step(
                 description=description,
-                run=func,
+                run=run_step,
             )
 
-        return staticmethod(wrapper)
+        return wrapper
 
     return decorator
 
 
-class Steps:
-    @staticmethod
-    def get_entry() -> Step:
-        return Steps.step_menu_create()
-
+def steps_entry():
     @stepmethod(description='Trying to click the "CREATE" button in the main menu.')
     def step_menu_create():
         Bob().clickImage(
             "Menu_CreateButton.png", retry="Menu_CreateButton_Hover.png"
         ).wait(0.2)
-        return Steps.step_menu_replayeditor()
+        return step_menu_replayeditor
 
     @stepmethod(
         description='Trying to click the "REPLAY EDITOR" button at Create > Replay Editor from the menu.'
@@ -45,7 +46,7 @@ class Steps:
         Bob().clickImage(
             "Menu_ReplayEditorButton.png", retry="Menu_ReplayEditorButton_Hover.png"
         ).wait(0.2)
-        return Steps.step_replaypicker_up()
+        return step_replaypicker_up
 
     @stepmethod(
         description="Trying to click the up button in the replay picker (if needed) to reach the root folder."
@@ -67,7 +68,7 @@ class Steps:
             raise ControlFlowException(
                 "Could not direct the replay picker to the root folder."
             )
-        return Steps.step_replaypicker_sort()
+        return step_replaypicker_sort
 
     @stepmethod(description="Trying to activate tree view, sort by name and ascending.")
     def step_replaypicker_sort():
@@ -95,7 +96,7 @@ class Steps:
                 "ReplayPicker_SortDescending.png or ReplayPicker_SortAscending.png"
             )
 
-        return Steps.step_replaypicker_folder()
+        return step_replaypicker_folder
 
     @stepmethod(
         description="Trying to click the folder where this script saves the current replay and select it."
@@ -103,7 +104,7 @@ class Steps:
     def step_replaypicker_folder():
         Bob().clickText("!!! trackmania-replay-bot").wait(0.2)
         Bob().clickText("ycnzzu02e5")
-        return Steps.step_replaypicker_confirm()
+        return step_replaypicker_confirm
 
     @stepmethod(
         description='Trying to click the "CONFIRM" button, click the "EDIT" button and wait for the MediaTracker to load.'
@@ -121,7 +122,7 @@ class Steps:
 
         Bob().waitText("Player camera", timeout=5)
 
-        return Steps.step_mediatracker_addghost()
+        return step_mediatracker_addghost
 
     @stepmethod(
         description='Trying to click the "Import ghosts..." button, select the folder where this script saves the current ghost and select it.'
@@ -134,7 +135,7 @@ class Steps:
             "MediaTracker_Import_Open.png", retry="MediaTracker_Import_Open_Hover.png"
         ).wait(0.2)
 
-        return Steps.step_mediatracker_removeghost()
+        return step_mediatracker_removeghost
 
     @stepmethod(
         description="Trying to remove the old ghost. Requires the game to be focused."
@@ -145,7 +146,7 @@ class Steps:
         Bob().clickImage("MediaTracker_DeleteBlock.png").wait(0.1)
         Bob().tap(Key.enter).wait(0.1)
 
-        return Steps.step_mediatracker_copylength()
+        return step_mediatracker_copylength
 
     @stepmethod(
         description="Trying to copy the ghost length into clipboard. Requires the game to be focused."
@@ -158,7 +159,7 @@ class Steps:
         Bob().tap("c", modifiers=[Key.ctrl])
         Bob().tap(Key.esc)
 
-        return Steps.step_mediatracker_pastelength()
+        return step_mediatracker_pastelength
 
     @stepmethod(
         description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
@@ -170,7 +171,7 @@ class Steps:
         Bob().tap("v", modifiers=[Key.ctrl])
         Bob().tap(Key.enter)
 
-        return Steps.step_mediatracker_fitcamera()
+        return step_mediatracker_fitcamera
 
     @stepmethod(
         description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
@@ -180,7 +181,7 @@ class Steps:
         Bob().clickImage("MediaTracker_DeleteBlock.png").wait(0.1)
         Bob().tap(Key.enter).wait(0.1)
 
-        return Steps.step_mediatracker_openrender()
+        return step_mediatracker_openrender
 
     @stepmethod(
         description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
@@ -198,3 +199,5 @@ class Steps:
 
         # Done
         return None
+
+    return step_menu_create()

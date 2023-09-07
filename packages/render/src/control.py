@@ -2,7 +2,7 @@ from typing import Callable, List
 
 from classes import Button, State, Step
 from pynput import mouse
-from steps import Steps
+from steps import steps_entry
 from worker import Worker
 
 
@@ -40,7 +40,8 @@ class Control:
         listener = mouse.Listener(on_scroll=lambda *_: False)
         listener.start()
         listener.wait()
-        step = Steps.get_entry()
+        step = steps_entry()
+
         try:
             while step is not None:
                 self._step_history.append(step)
@@ -63,7 +64,7 @@ class Control:
         if self._is_worker_running:
             raise RuntimeError("Worker is already running. This should not happen.")
         if self._current_step is None:
-            self.state_step(Steps.get_entry())
+            self.state_step(steps_entry())
             return
 
         worker = Worker(self._current_step.run)
@@ -74,9 +75,6 @@ class Control:
         self.start_worker(worker)
 
     def step_backward(self):
-        print("Step backward")
-        print(self._step_history)
-        print(self._current_step)
         self._current_step = None
         if self._step_history:
             self.state_step(self._step_history.pop())
