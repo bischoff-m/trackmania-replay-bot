@@ -1,55 +1,63 @@
-from typing import Callable, List
+import sys
+from typing import List
 
 from classes import Button, State, Step
 from pynput import mouse
-from steps import steps_entry
+from PySide6.QtWidgets import QApplication
+from steps import no_whitespace, steps_entry
+from window import MainWindow
 from worker import Worker
 
 
-def no_whitespace(text: str) -> str:
-    return " ".join(text.split())
-
-
 class Control:
-    def __init__(
-        self,
-        on_state_change: Callable[[State, bool], None] | None = None,
-        start_worker: Callable[[Worker], None] | None = None,
-    ):
-        self.on_state_change = on_state_change or (lambda *_: None)
-        self.start_worker = start_worker
-
+    def __init__(self):
+        self._window = None
         self._state = None
         self._is_worker_running = False
         self._current_step: Step | None = None
         self._step_history: List[Step] = []
         self.state_initial()
 
-    def connect(
-        self,
-        on_state_change: Callable[[State, bool], None],
-        start_worker: Callable[[Worker], None],
-    ):
-        self.on_state_change = on_state_change
-        self.start_worker = start_worker
-        on_state_change(self._state, self._is_worker_running)
+    def init_window(self):
+        if self._window is not None:
+            return
+        app = QApplication(sys.argv)
+        self._window = MainWindow()
+        self._window.update(self._state, self._is_worker_running)
+        app.exec()
 
-    def run_silent(self) -> bool:
+    def show_window(self):
+        if self._window is None:
+            self.init_window()
+        else:
+            self._window.setUpdatesEnabled(True)
+            self._window.update(self._state, self._is_worker_running)
+            self._window.show()
+
+    def hide_window(self):
+        self._window.hide()
+        self._window.setUpdatesEnabled(False)
+
+    def run_silent(self, entry: Step | None = None) -> bool:
         """Run the bot without showing the GUI."""
+        if self._window is not None:
+            self.hide_window()
 
         listener = mouse.Listener(on_scroll=lambda *_: False)
         listener.start()
         listener.wait()
-        step = steps_entry()
+        self._current_step = entry or steps_entry()
 
         try:
-            while step is not None:
-                self._step_history.append(step)
+            while self._current_step is not None:
                 if not listener.running:
                     raise Exception("Stopped by user")
-                step = step.run()
+                prev_step = self._current_step
+                self._current_step = self._current_step.run()
+                self._step_history.append(prev_step)
         except Exception as err:
             self.state_error(err)
+            self.show_window()
             return False
 
         self.state_quit()
@@ -58,7 +66,8 @@ class Control:
     def set_state(self, new_state: State | None, loading: bool = False):
         self._state = new_state
         self._is_worker_running = loading
-        self.on_state_change(new_state, loading)
+        if self._window is not None:
+            self._window.update(new_state, loading)
 
     def step_forward(self):
         if self._is_worker_running:
@@ -72,7 +81,8 @@ class Control:
         worker.signals.error.connect(self.state_error)
 
         self.set_state(self._state, True)
-        self.start_worker(worker)
+        if self._window is not None:
+            self._window.start_worker(worker)
 
     def step_backward(self):
         self._current_step = None
@@ -97,7 +107,7 @@ class Control:
                 or "No description provided.",
                 buttons=[
                     Button(
-                        name="Cancel",
+                        name="Quit",
                         action=self.state_quit,
                         style="cancel",
                     ),
@@ -110,7 +120,11 @@ class Control:
                         action=self.step_backward,
                     ),
                     Button(
-                        name="Next",
+                        name="Continue Silent",
+                        action=lambda: self.run_silent(self._current_step),
+                    ),
+                    Button(
+                        name="Run",
                         action=self.step_forward,
                         style="confirm",
                     ),
@@ -168,7 +182,7 @@ class Control:
                     ),
                     Button(
                         # TODO: Implement this
-                        name="Run All",
+                        name="Run Silent",
                         action=self.step_forward,
                     ),
                     Button(
