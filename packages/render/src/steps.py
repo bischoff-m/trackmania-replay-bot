@@ -19,10 +19,10 @@ def no_whitespace(text: str) -> str:
 # Decorator that transforms a function into a method that returns a Step object
 # with the description and the function to run for that step.
 def stepmethod(description: str = "No description provided."):
-    def decorator(step_func: Callable[[], Step | None]):
-        def wrapper():
+    def decorator(step_func: Callable[..., Step | None]):
+        def wrapper(*args, **kwargs):
             def run_step():
-                get_next = step_func()
+                get_next = step_func(*args, **kwargs)
                 return get_next and get_next()
 
             return Step(
@@ -70,8 +70,7 @@ def steps_entry() -> Step | None:
             Bob().clickImage(
                 "Menu_ReplayEditorButton.png", retry="Menu_ReplayEditorButton_Hover.png"
             ).wait(0.2)
-            # return step_replaypicker_up
-            return None
+            return step_replaypicker_up
 
         ########################################################################
         @stepmethod(
