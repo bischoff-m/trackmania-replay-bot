@@ -43,6 +43,8 @@ def stepmethod(
     html: str = "",
     run_immediately: bool = False,
     needs_focus: bool = False,
+    # TODO: Replace "return next_step" with optional decorator parameter
+    default_next: Callable[[], Step | None] = lambda: None,
 ) -> Callable[..., Step | None]:
     """Decorator for step methods.
 
@@ -80,6 +82,7 @@ def stepmethod(
                 return Step(
                     description=html,
                     run=run_step,
+                    needs_focus=needs_focus,
                 )
 
         return wrapper

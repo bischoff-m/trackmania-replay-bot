@@ -27,6 +27,7 @@ class Step:
 
     description: str
     run: Callable[[], "Step"]
+    needs_focus: bool = False
 
 
 @dataclass

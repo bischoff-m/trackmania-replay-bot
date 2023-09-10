@@ -1,8 +1,10 @@
 import sys
 from typing import List
 
+from api import Bob
 from classes import Button, State, Step
 from pynput import mouse
+from pynput.keyboard import Key
 from PySide6.QtWidgets import QApplication
 from steps import no_whitespace, steps_entry
 from window import MainWindow
@@ -11,10 +13,10 @@ from worker import Worker
 
 class Control:
     def __init__(self):
-        self._window = None
-        self._state = None
-        self._is_worker_running = False
-        self._current_step: Step | None = None
+        self._window: MainWindow | None = None
+        self._state: State | None = None
+        self._is_worker_running: bool = False
+        self._step: Step | None = None
         self._step_history: List[Step] = []
         self.state_initial()
 
@@ -27,44 +29,53 @@ class Control:
         app.exec()
 
     def show_window(self):
-        if self._window is None:
-            self.init_window()
-        else:
+        if self._window is not None:
             self._window.setUpdatesEnabled(True)
             self._window.update(self._state, self._is_worker_running)
             self._window.show()
 
     def hide_window(self):
-        self._window.hide()
-        self._window.setUpdatesEnabled(False)
-
-    def run_silent(self, entry: Step | None = None) -> bool:
-        """Run the bot without showing the GUI."""
         if self._window is not None:
-            self.hide_window()
+            self._window.hide()
+            self._window.setUpdatesEnabled(False)
+
+    def run_silent(self, iterations: int = 0):
+        """Run the bot without showing the GUI.
+
+        Parameters
+        ----------
+        iterations : int, optional
+            How many steps to run. 0 means infinite, by default 0
+        """
+        self.hide_window()
 
         listener = mouse.Listener(on_scroll=lambda *_: False)
         listener.start()
         listener.wait()
-        self._current_step = entry or steps_entry()
 
+        if self._step is None:
+            self._step = steps_entry()
+
+        i = 0
         try:
-            while self._current_step is not None:
+            while self._step is not None and (iterations == 0 or i < iterations):
                 if not listener.running:
                     raise Exception("Stopped by user")
-                prev_step = self._current_step
-                self._current_step = self._current_step.run()
+                prev_step = self._step
+                self._step = self._step.run()
                 self._step_history.append(prev_step)
+                i += 1
+                if i == iterations:
+                    self.state_step(self._step)
+
+            if self._step is None and iterations == 0:
+                self.state_quit()
         except Exception as err:
             self.state_error(err)
+            self.init_window()
+        finally:
+            listener.stop()
             self.show_window()
-            return False
-
-        if self._window is not None:
-            self.show_window()
-
-        self.state_quit()
-        return True
 
     def set_state(self, new_state: State | None, loading: bool = False):
         self._state = new_state
@@ -75,11 +86,14 @@ class Control:
     def step_forward(self):
         if self._is_worker_running:
             raise RuntimeError("Worker is already running. This should not happen.")
-        if self._current_step is None:
+        if self._step is None:
             self.state_step(steps_entry())
             return
 
-        worker = Worker(self._current_step.run)
+        if self._step.needs_focus:
+            Bob().wait(0.3).tap(Key.tab, modifiers=[Key.alt]).wait(0.3)
+
+        worker = Worker(self._step.run)
         worker.signals.done.connect(self.state_step)
         worker.signals.error.connect(self.state_error)
 
@@ -88,26 +102,29 @@ class Control:
             self._window.start_worker(worker)
 
     def step_backward(self):
-        self._current_step = None
+        self._step = None
         if self._step_history:
             self.state_step(self._step_history.pop())
         else:
             self.state_initial()
+
+    ############################################################################
+    # States
+    ############################################################################
 
     def state_step(self, new_step: Step):
         if new_step is None:
             self.state_end()
             return
 
-        if self._current_step is not None:
-            self._step_history.append(self._current_step)
-        self._current_step = new_step
+        if self._step is not None:
+            self._step_history.append(self._step)
+        self._step = new_step
 
         self.set_state(
             State(
                 title="Step by Step Helper",
-                description=self._current_step.description
-                or "No description provided.",
+                description=self._step.description or "No description provided.",
                 buttons=[
                     Button(
                         name="Quit",
@@ -124,7 +141,7 @@ class Control:
                     ),
                     Button(
                         name="Continue Silent",
-                        action=lambda: self.run_silent(self._current_step),
+                        action=lambda: self.run_silent(),
                     ),
                     Button(
                         name="Run",
@@ -140,7 +157,7 @@ class Control:
         self.set_state(None)
 
     def state_initial(self):
-        self._current_step = None
+        self._step = None
         self._step_history = []
         description = '<font color="red">Unexpected bad things can happen if you don\'t read this!</font><br><br>'
         description += no_whitespace(
@@ -216,12 +233,11 @@ class Control:
         )
 
     def state_error(self, err: Exception):
-        print("Error")
-        print("Current step:", self._current_step)
-        print("Step history:", self._step_history)
-        if self._current_step is not None:
-            self._step_history.append(self._current_step)
-            self._current_step = None
+        print(err)
+        if self._step is not None:
+            self._step_history.append(self._step)
+            self._step = None
+
         buttons = [
             Button(
                 name="Cancel",

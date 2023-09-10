@@ -7,7 +7,7 @@ if __name__ == "__main__":
     silent = True
 
     control = Control()
-    success = control.run_silent() if silent else False
-
-    if not success:
+    if silent:
+        control.run_silent()
+    else:
         control.init_window()
