@@ -70,12 +70,19 @@ class Bob:
     def findImage(image: str, retry: str = None) -> pyautogui.Point | None:
         """Finds the coordinates of an image on the screen.
 
-        Args:
-            image (str): The image to search for, path relative to the static directory.
-            retry (str, optional): The image to retry if the first one could not be found. Defaults to None.
+        Parameters
+        ----------
+        image : str
+            The image to search for, path relative to the static directory.
+        retry : str, optional
+            The image to retry if the first one could not be found. Defaults to
+            None.
 
-        Returns:
-            pyautogui.Point | None: The center of the image on the screen or None if it could not be found.
+        Returns
+        -------
+        pyautogui.Point | None
+            The center of the image on the screen or None if it could not be
+            found.
         """
         img_path = (STATIC_DIR / image).resolve().as_posix()
         loc = pyautogui.locateCenterOnScreen(img_path)
@@ -88,11 +95,16 @@ class Bob:
     def findText(text: str) -> pyautogui.Point | None:
         """Finds the coordinates of text on the screen.
 
-        Args:
-            text (str): The text to search for.
+        Parameters
+        ----------
+        text : str
+            The text to search for.
 
-        Returns:
-            pyautogui.Point | None: The center of the text on the screen or None if it could not be found.
+        Returns
+        -------
+        pyautogui.Point | None
+            The center of the text on the screen or None if it could not be
+            found.
         """
         screen_resolution = pyautogui.size()
         contents = reader.read_screen(bounding_box=(0, 0, *screen_resolution))
@@ -114,9 +126,12 @@ class Bob:
     def tap(key: Key, modifiers: List[Key] = None):
         """Presses a key and releases it. Optionally, modifiers can be pressed as well.
 
-        Args:
-            key (Key): The key to press.
-            modifiers (List[Key], optional): The modifiers to press. Defaults to None.
+        Parameters
+        ----------
+        key : Key
+            The key to press.
+        modifiers : List[Key], optional
+            The modifiers to press. Defaults to None.
         """
         for modifier in modifiers or []:
             keyboard.press(modifier)
@@ -131,8 +146,10 @@ class Bob:
     def wait(seconds: float):
         """Waits for a given amount of seconds.
 
-        Args:
-            seconds (float): The amount of seconds to wait.
+        Parameters
+        ----------
+        seconds : float
+            How many seconds to wait.
         """
         time.sleep(seconds)
 
@@ -140,9 +157,12 @@ class Bob:
     def click(x: int, y: int):
         """Clicks at the given coordinates and moves the mouse back to its previous position.
 
-        Args:
-            x (int): Where to click on the x-axis.
-            y (int): Where to click on the y-axis.
+        Parameters
+        ----------
+        x : int
+            Where to click on the x-axis.
+        y : int
+            Where to click on the y-axis.
         """
         prev_pos = pyautogui.position()
         # You could also use pyautogui.click(x, y) but Trackmania did not
@@ -155,9 +175,12 @@ class Bob:
     def clickRelative(x_percent: float, y_percent: float):
         """Clicks at the given relative coordinates and moves the mouse back to its previous position.
 
-        Args:
-            x_percent (float): Where to click on the x-axis relative to the main screen width.
-            y_percent (float): Where to click on the y-axis relative to the main screen height.
+        Parameters
+        ----------
+        x_percent : float
+            Where to click on the x-axis relative to the main screen width.
+        y_percent : float
+            Where to click on the y-axis relative to the main screen height.
         """
         screen_resolution = pyautogui.size()
         x = screen_resolution[0] * x_percent
@@ -168,12 +191,18 @@ class Bob:
     def clickImage(image: str, retry: str = None):
         """Clicks on an image on the screen.
 
-        Args:
-            image (str): The image to search for, path relative to the static directory.
-            retry (str, optional): The image to retry if the first one could not be found. Defaults to None.
+        Parameters
+        ----------
+        image : str
+            The image to search for, path relative to the static directory.
+        retry : str, optional
+            The image to retry if the first one could not be found. Defaults to
+            None.
 
-        Raises:
-            LocateImageException: If the image could not be found.
+        Raises
+        ------
+        LocateImageException
+            If the image could not be found.
         """
         location = Bob.findImage(image, retry)
         if location is None:
@@ -184,11 +213,15 @@ class Bob:
     def clickText(text: str):
         """Clicks on text on the screen.
 
-        Args:
-            text (str): The text to search for.
+        Parameters
+        ----------
+        text : str
+            The text to search for.
 
-        Raises:
-            LocateTextException: If the text could not be found.
+        Raises
+        ------
+        LocateTextException
+            If the text could not be found.
         """
         location = Bob.findText(text)
         if location is None:
@@ -199,13 +232,19 @@ class Bob:
     def waitImage(image: str, interval: float = 0.5, timeout: float = 30):
         """Waits for an image to appear on the screen.
 
-        Args:
-            image (str): The image to search for, path relative to the static directory.
-            interval (float, optional): In which interval to poll for the image in seconds. Defaults to 0.5.
-            timeout (float, optional): After how many seconds to stop polling. Defaults to 30.
+        Parameters
+        ----------
+        image : str
+            The image to search for, path relative to the static directory.
+        interval : float, optional
+            In which interval to poll for the image in seconds. Defaults to 0.5.
+        timeout : float, optional
+            After how many seconds to stop polling. Defaults to 30.
 
-        Raises:
-            LocateImageException: If the image could not be found after the timeout.
+        Raises
+        ------
+        LocateImageException
+            If the image could not be found after the timeout.
         """
         found = Bob().findImage(image)
         for _ in range(int(timeout / interval)):
@@ -220,13 +259,19 @@ class Bob:
     def waitText(text: str, interval: float = 0.5, timeout: float = 30):
         """Waits for text to appear on the screen.
 
-        Args:
-            text (str): The text to search for.
-            interval (float, optional): In which interval to poll for the text in seconds. Defaults to 0.5.
-            timeout (float, optional): After how many seconds to stop polling. Defaults to 30.
+        Parameters
+        ----------
+        text : str
+            The text to search for.
+        interval : float, optional
+            In which interval to poll for the text in seconds. Defaults to 0.5.
+        timeout : float, optional
+            After how many seconds to stop polling. Defaults to 30.
 
-        Raises:
-            LocateTextException: If the text could not be found after the timeout.
+        Raises
+        ------
+        LocateTextException
+            If the text could not be found after the timeout.
         """
         found = Bob().findText(text)
         for _ in range(int(timeout / interval)):
