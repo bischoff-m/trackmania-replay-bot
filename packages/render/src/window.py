@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
 
         # Add description
         label_desc = QLabel(new_state.description, objectName="description")
-        label_desc.setWordWrap(True)
+        label_desc.setWordWrap(new_state.word_wrap)
         # This prevents the content from being clipped by resizing the window.
         label_desc.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding

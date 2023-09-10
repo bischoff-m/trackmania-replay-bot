@@ -1,4 +1,5 @@
 import sys
+import traceback
 from typing import List
 
 from api import Bob
@@ -155,35 +156,36 @@ class Control:
     def state_quit(self):
         # This closes the application
         self.set_state(None)
+        if self._window is not None:
+            self._window.close()
 
     def state_initial(self):
         self._step = None
         self._step_history = []
-        description = '<font color="red">Unexpected bad things can happen if you don\'t read this!</font><br><br>'
-        description += no_whitespace(
+        description = no_whitespace(
             """
+            <font color="red">
+                Unexpected bad things can happen if you don\'t read this!
+            </font>
+            <br><br>
+
             This will attempt to open Trackmania and set it up to render using
             simulated mouse and keyboard input. <b>Mouse click positions</b> are based on
             image recognition and relative coordinates and <b>may fail</b> if your system is
             not set up the same way as mine. If you are using this script for the
             first time, go through the steps one at a time and check that everything
             works. For now, you will have to dig into the code yourself to fix any
-            problems.<br><br>
-            """
-        )
-        description += "<b>Checklist</b>"
-        description += no_whitespace(
-            """
+            problems.
+            <br><br>
+
+            <b>Checklist</b>
             <ul>
                 <li>Trackmania is in "Windowed Borderless" mode</li>
                 <li>Trackmania is on the main monitor (restricted by pyautogui)</li>
                 <li>Nothing else is on the main monitor</li>
             </ul>
-            """
-        )
-        description += "<b>If the script fails</b>"
-        description += no_whitespace(
-            """
+
+            <b>If the script fails</b>
             <ul>
                 <li>Check that Openplanet plugins are not blocking any UI elements</li>
                 <li>Disable HDR (works for me but could cause problems)</li>
@@ -233,10 +235,25 @@ class Control:
         )
 
     def state_error(self, err: Exception):
+        trace = traceback.format_exc()
         print(err)
+        print(trace)
+
         if self._step is not None:
             self._step_history.append(self._step)
             self._step = None
+
+        msg = str(err).replace("\n", "<br>")
+        body = trace.replace("\n", "<br>").replace(" ", "&nbsp;")
+        description = no_whitespace(
+            f"""
+                {msg}<br>
+
+                <div style="font-family: Consolas; background-color: #c5c6c6">
+                    {body}
+                </div>
+            """
+        )
 
         buttons = [
             Button(
@@ -257,7 +274,8 @@ class Control:
         self.set_state(
             State(
                 title="Error",
-                description=str(err).replace("\n", "<br>"),
+                description=description,
                 buttons=buttons,
+                word_wrap=False,
             ),
         )
