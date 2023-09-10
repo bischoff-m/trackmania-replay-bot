@@ -115,6 +115,31 @@ def entry():
 
 ```
 
+Passing parameters to a step is supported. If you use the decorator, wrap the
+step function call in a lambda.
+
+```python
+def entry():
+    @stepmethod(description="inner1")
+    def inner1(param1: str):
+        print(param1)
+        return lambda: inner2(42)
+
+    @stepmethod(description="inner2")
+    def inner2(param2: int):
+        print(param2)
+        return None
+
+    return inner1('Hello World!')
+```
+
+This produces the output:
+
+```python
+Hello World!
+42
+```
+
 ### Example
 
 This examples shows how to use steps and groups of steps with local state.

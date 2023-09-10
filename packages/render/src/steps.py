@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, List
 
 from api import Bob, LocateImageException
 from classes import Step
@@ -16,65 +16,111 @@ def no_whitespace(text: str) -> str:
     return " ".join(text.split())
 
 
-# Decorator that transforms a function into a method that returns a Step object
-# with the description and the function to run for that step.
-def stepmethod(description: str = "No description provided."):
+def bullets(
+    *points: str | List[str], prefix: str = "Trying to do the following:"
+) -> str:
+    """Formats a list of points into a HTML list.
+
+    Parameters
+    ----------
+    points : str | List[str]
+        The points to be formatted. If a list is given, it is recursively
+        formatted.
+    prefix : str | None, optional
+        The prefix to be used for each bullet point, by default None
+
+    Returns
+    -------
+    str
+        The formatted bullet list
+    """
+    to_str = lambda p: p if isinstance(p, str) else bullets(*p, prefix="")
+    points = [to_str(p) for p in points]
+    return f"{prefix}<ul><li>{'</li><li>'.join(points)}</li></ul>"
+
+
+def stepmethod(
+    html: str = "",
+    run_immediately: bool = False,
+    needs_focus: bool = False,
+) -> Callable[..., Step | None]:
+    """Decorator for step methods.
+
+    Wraps the decorated method (step_func) into one that returns a step object.
+    The decorated method is bound to the step object's "run" method and should
+    return a step object that will be executed next. If it returns None, the
+    execution of the step chain is stopped.
+
+    Parameters
+    ----------
+    html : str, optional
+        The content that is displayed in the UI for this step, by default ""
+    run_immediately : bool, optional
+        If True, the given step method is executed immediately and the resulting
+        next step is returned instead, by default False. This is useful for
+        grouping steps together.
+
+    Returns
+    -------
+    Callable[..., Step | None]
+        The wrapped step method
+    """
+
     def decorator(step_func: Callable[..., Step | None]):
         def wrapper(*args, **kwargs):
-            def run_step():
+            def run_step() -> Step | None:
                 get_next = step_func(*args, **kwargs)
-                return get_next and get_next()
+                if get_next is None:
+                    return None
+                return get_next()
 
-            return Step(
-                description=description,
-                run=run_step,
-            )
+            if run_immediately:
+                return run_step()
+            else:
+                return Step(
+                    description=html,
+                    run=run_step,
+                )
 
         return wrapper
 
     return decorator
 
 
-def steps_entry() -> Step | None:
+def steps_entry(
+    folder="!!! trackmania-replay-bot",
+    replay="ycnzzu02e5",
+    ghost="ycnzzu02e5.Ghost.Gbx",
+) -> Step | None:
+    ############################################################################
+    ############################################################################
+    # Goto Replay Editor Step
+    ############################################################################
+
+    @stepmethod(bullets("Click CREATE", "Click REPLAY EDITOR"))
+    def step_replay_editor():
+        Bob().clickImage(
+            "Menu_CreateButton.png", retry="Menu_CreateButton_Hover.png"
+        ).wait(0.2)
+        Bob().clickImage(
+            "Menu_ReplayEditorButton.png", retry="Menu_ReplayEditorButton_Hover.png"
+        ).wait(0.2)
+        return group_select_replay
+
     ############################################################################
     ############################################################################
     # Start MediaTracker Group
     ############################################################################
+    # This groups the following steps:
+    # - Menu > Create > Replay Editor
+    # - Select the replay
+    # - Start the MediaTracker
 
-    @stepmethod(
-        description=no_whitespace(
-            """
-                This groups the following steps:
-                <ul>
-                    <li>Menu > Create > Replay Editor</li>
-                    <li>Select the replay</li>
-                    <li>Start the MediaTracker</li>
-                </ul>
-            """
-        )
-    )
-    def group_start_mediatracker():
-        ########################################################################
-        @stepmethod(description='Trying to click the "CREATE" button in the main menu.')
-        def step_menu_create():
-            Bob().clickImage(
-                "Menu_CreateButton.png", retry="Menu_CreateButton_Hover.png"
-            ).wait(0.2)
-            return step_menu_replayeditor
-
+    @stepmethod(run_immediately=True)
+    def group_select_replay():
         ########################################################################
         @stepmethod(
-            description='Trying to click the "REPLAY EDITOR" button at Create > Replay Editor from the menu.'
-        )
-        def step_menu_replayeditor():
-            Bob().clickImage(
-                "Menu_ReplayEditorButton.png", retry="Menu_ReplayEditorButton_Hover.png"
-            ).wait(0.2)
-            return step_replaypicker_up
-
-        ########################################################################
-        @stepmethod(
-            description="Trying to click the up button in the replay picker (if needed) to reach the root folder."
+            bullets("Click UP icon in the top left to navigate to the root folder")
         )
         def step_replaypicker_up():
             # Check if we are already at the root folder
@@ -97,7 +143,14 @@ def steps_entry() -> Step | None:
 
         ########################################################################
         @stepmethod(
-            description="Trying to activate tree view, sort by name and ascending."
+            bullets(
+                "Click icons in the top right to make the project folder visible",
+                [
+                    "Tree view",
+                    "Sort by name",
+                    "Sort ascending",
+                ],
+            )
         )
         def step_replaypicker_sort():
             # Activate tree view if not already active
@@ -127,17 +180,19 @@ def steps_entry() -> Step | None:
             return step_replaypicker_folder
 
         ########################################################################
-        @stepmethod(
-            description="Trying to click the folder where this script saves the current replay and select it."
-        )
+        @stepmethod(bullets("Click the project folder", "Select the replay"))
         def step_replaypicker_folder():
-            Bob().clickText("!!! trackmania-replay-bot").wait(0.2)
-            Bob().clickText("ycnzzu02e5")
+            Bob().clickText(folder).wait(0.2)
+            Bob().clickText(replay)
             return step_replaypicker_confirm
 
         ########################################################################
         @stepmethod(
-            description='Trying to click the "CONFIRM" button, click the "EDIT" button and wait for the MediaTracker to load.'
+            bullets(
+                "Click the CONFIRM button",
+                "Click the EDIT button",
+                "Wait for the MediaTracker to load",
+            ),
         )
         def step_replaypicker_confirm():
             Bob().clickImage(
@@ -154,38 +209,36 @@ def steps_entry() -> Step | None:
 
             return group_render
 
-        return step_menu_create
+        # END Start MediaTracker Group #########################################
+
+        return step_replaypicker_up
 
     ############################################################################
     ############################################################################
     # Render Group
     ############################################################################
+    # This groups the following steps:
+    # - Import ghost to render
+    # - Remove old ghost
+    # - Adjust camera track length to match ghost length
+    # - Open render dialog
 
-    @stepmethod(
-        description=no_whitespace(
-            """
-                This groups the following steps:
-                <ul>
-                    <li>Import ghost to render</li>
-                    <li>Remove old ghost</li>
-                    <li>Adjust camera track length to match ghost length</li>
-                    <li>Open render dialog</li>
-                </ul>
-            """
-        )
-    )
+    @stepmethod(run_immediately=True)
     def group_render():
         ########################################################################
         @stepmethod(
-            description=no_whitespace(
-                'Trying to click the "Import ghosts..." button, select the \
-                folder where this script saves the current ghost and select it.'
-            )
+            bullets(
+                'Click the "Import ghosts..." button',
+                "Click the project folder",
+                "Click the file of the new ghost",
+                "Click the OPEN button",
+            ),
         )
         def step_mediatracker_addghost():
             Bob().clickImage("MediaTracker_Import_Button.png")
-            Bob().clickText("!!! trackmania-replay-bot")
-            Bob().clickText("ycnzzu02e5.Ghost.Gbx")
+            # TODO: Make this configurable
+            Bob().clickText(folder)
+            Bob().clickText(ghost)
             Bob().clickImage(
                 "MediaTracker_Import_Open.png",
                 retry="MediaTracker_Import_Open_Hover.png",
@@ -195,9 +248,12 @@ def steps_entry() -> Step | None:
 
         ########################################################################
         @stepmethod(
-            description=no_whitespace(
-                "Trying to remove the old ghost. Requires the game to be focused."
-            )
+            bullets(
+                "Select the old ghost using Shift+Down",
+                "Click the DELETE button",
+                "Confirm with ENTER",
+            ),
+            needs_focus=True,
         )
         def step_mediatracker_removeghost():
             Bob().tap(Key.down, modifiers=[Key.shift])
@@ -209,10 +265,11 @@ def steps_entry() -> Step | None:
 
         ########################################################################
         @stepmethod(
-            description=no_whitespace(
-                "Trying to copy the ghost length into clipboard. Requires the \
-                game to be focused."
-            )
+            bullets(
+                "Select the new ghost using Shift+Up",
+                "Copy the ghost length into clipboard",
+            ),
+            needs_focus=True,
         )
         def step_mediatracker_copylength():
             Bob().tap(Key.up, modifiers=[Key.shift])
@@ -226,7 +283,12 @@ def steps_entry() -> Step | None:
 
         ########################################################################
         @stepmethod(
-            description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
+            bullets(
+                "Select the camera track using Shift+Up",
+                "Paste the ghost length from clipboard",
+                "Confirm with ENTER",
+            ),
+            needs_focus=True,
         )
         def step_mediatracker_pastelength():
             Bob().tap(Key.up, modifiers=[Key.shift])
@@ -239,7 +301,12 @@ def steps_entry() -> Step | None:
 
         ########################################################################
         @stepmethod(
-            description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
+            bullets(
+                "Split the camera track",
+                "Click the DELETE button",
+                "Confirm with ENTER",
+            ),
+            needs_focus=True,
         )
         def step_mediatracker_fitcamera():
             Bob().tap("l")
@@ -250,10 +317,13 @@ def steps_entry() -> Step | None:
 
         ########################################################################
         @stepmethod(
-            description="Trying to select camera track and go to timestamp that was copied before. Requires the game to be focused."
+            bullets(
+                'Click the "Render" button',
+                "Click the CONFIRM button",
+                "Wait for the render to finish",
+            ),
         )
         def step_mediatracker_openrender():
-            Bob().wait(3)
             Bob().clickImage("MediaTracker_Render_Button.png").wait(0.1)
             Bob().clickImage(
                 "MediaTracker_Render_Confirm.png",
@@ -266,11 +336,13 @@ def steps_entry() -> Step | None:
             # Done
             return None
 
+        # END Render Group #####################################################
+
         return step_mediatracker_addghost
 
-        ########################################################################
+    # END steps_entry ##########################################################
 
-    return group_start_mediatracker()
+    return step_replay_editor()
 
     ############################################################################
     ############################################################################
