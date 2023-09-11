@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Tuple
 
 from api import Bob, LocateImageException
 from classes import Step
@@ -47,7 +47,6 @@ def stepmethod(
     html: str = "",
     run_immediately: bool = False,
     needs_focus: bool = False,
-    default_next: Optional[Callable[[], Step | None]] = None,
 ) -> Callable[..., Step | None]:
     """Decorator for step methods.
 
@@ -68,10 +67,6 @@ def stepmethod(
         If True and the UI is open, Alt+Tab is simulated before the step is
         executed, by default False. This is useful for steps that use the
         keyboard.
-    default_next : Callable[[], Step | None], optional
-        If the decorated method returns None, this function is called to get the
-        next step, by default lambda: None. Use this if the step always returns
-        the same next step to make the code more readable.
 
     Returns
     -------
@@ -79,16 +74,14 @@ def stepmethod(
         The wrapped step method
     """
 
-    def decorator(step_func: Callable[..., Step | None]):
+    def decorator(step_func: Callable[[], Callable[..., Step | None]]):
         def wrapper(*args, **kwargs):
             def run_step() -> Step | None:
                 get_next = step_func(*args, **kwargs)
-                if get_next is not None:
-                    return get_next()
-                elif default_next is not None:
-                    return default_next()
-                else:
+                if get_next is None:
                     return None
+                else:
+                    return get_next()
 
             if run_immediately:
                 return run_step()
@@ -105,41 +98,52 @@ def stepmethod(
 
 
 def steps_entry(
-    folder="!!! trackmania-replay-bot",
-    replay="ycnzzu02e5",
-    ghost="ycnzzu02e5.Ghost.Gbx",
+    trackmania_root: Path = None,
+    replay_ghost_pairs: List[Tuple[Path, Path]] = None,
 ) -> Step | None:
-    ############################################################################
-    ############################################################################
-    # Goto Replay Editor Step
-    ############################################################################
+    ####### Plan:
+    # Create project folder
+    # Enter replay picker
+    # Open folder
+    # For all replays that need rendering:
+    #   Copy replay and ghost to project folder
+    #   Refresh
+    #   Select replay and start MediaTracker
+    #   Edit replay
+    #   Render replay
+    #   Return to replay picker
+    # Quit
 
-    @stepmethod(
-        bullets("Click CREATE", "Click REPLAY EDITOR"),
-        default_next=lambda: group_select_replay(),
-    )
-    def step_replay_editor():
-        bob = Bob(static_dir=STATIC_ROOT / "main_menu")
-        bob.clickImage("CreateButton").wait(0.2)
-        bob.clickImage("ReplayEditorButton").wait(0.2)
+    # TODO: Create project folder
+    project_folder = "!!! trackmania-replay-bot"
+    replay = "ycnzzu02e5"
+    ghost = "ycnzzu02e5.Ghost.Gbx"
 
     ############################################################################
     ############################################################################
-    # Start MediaTracker Group
+    # Open Replay Picker Group
     ############################################################################
     # This groups the following steps:
-    # - Select the replay
-    # - Start the MediaTracker
+    # - Open the replay picker
+    # - Navigate to the project folder
 
-    @stepmethod(run_immediately=True, default_next=lambda: group_render())
-    def group_select_replay():
-        bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
+    @stepmethod(run_immediately=True)
+    def group_open_picker():
+        bob = Bob(static_dir=STATIC_ROOT / "main_menu")
+
+        @stepmethod(
+            bullets("Click CREATE", "Click REPLAY EDITOR"),
+        )
+        def step_replay_editor():
+            bob.clickImage("CreateButton").wait(0.2)
+            bob.clickImage("ReplayEditorButton").wait(0.2)
+            return step_up
 
         ########################################################################
         @stepmethod(
             bullets("Click UP icon in the top left to navigate to the root folder")
         )
-        def step_replaypicker_up():
+        def step_up():
             # Check if we are already at the root folder
             found = bob.findImage("EmptyPath") is not None
 
@@ -154,7 +158,11 @@ def steps_entry(
                 raise ControlFlowException(
                     "Could not direct the replay picker to the root folder."
                 )
-            return step_replaypicker_sort
+
+            if bob.findText(project_folder) is None:
+                return step_sort
+            else:
+                return step_folder
 
         ########################################################################
         @stepmethod(
@@ -167,7 +175,7 @@ def steps_entry(
                 ],
             )
         )
-        def step_replaypicker_sort():
+        def step_sort():
             # Activate tree view if not already active
             if bob.findImage("ListView") is not None:
                 bob.clickImage("ListView")
@@ -186,37 +194,60 @@ def steps_entry(
             if bob.findImage("SortAscending") is None:
                 raise LocateImageException("SortDescending or SortAscending")
 
-            return step_replaypicker_folder
+            return step_folder
 
         ########################################################################
-        @stepmethod(bullets("Click the project folder", "Select the replay"))
-        def step_replaypicker_folder():
-            bob.clickText(folder).wait(0.2)
+        @stepmethod(bullets("Click the project folder"))
+        def step_folder():
+            bob.clickText(project_folder).wait(0.2)
+
+            # Done
+            return group_pick_replay
+
+        ########################################################################
+
+        return step_replay_editor
+
+    ############################################################################
+    ############################################################################
+    # Pick Replay Group
+    ############################################################################
+    # This groups the following steps:
+    # - Select the replay
+    # - Start the MediaTracker
+
+    @stepmethod(run_immediately=True)
+    def group_pick_replay():
+        bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
+
+        ########################################################################
+        @stepmethod(bullets("Select the replay", "Click the CONFIRM button"))
+        def step_select():
             bob.clickText(replay)
-            return step_replaypicker_confirm
+            bob.clickImage("ConfirmButton").wait(0.2)
+            return step_confirm
 
         ########################################################################
         @stepmethod(
             bullets(
-                "Click the CONFIRM button",
                 "Click the EDIT button",
                 "Wait for the MediaTracker to load",
             ),
         )
-        def step_replaypicker_confirm():
-            bob.clickImage("ConfirmButton").wait(0.2)
+        def step_confirm():
             bob.clickImage("EditButton").wait(0.2)
             bob.waitText("Player camera", timeout=5)
 
-            return None
+            # Done
+            return group_edit_replay
 
-        # END Start MediaTracker Group #########################################
+        ########################################################################
 
-        return step_replaypicker_up
+        return step_select
 
     ############################################################################
     ############################################################################
-    # Render Group
+    # Edit Replay Group
     ############################################################################
     # This groups the following steps:
     # - Import ghost to render
@@ -225,7 +256,7 @@ def steps_entry(
     # - Open render dialog
 
     @stepmethod(run_immediately=True)
-    def group_render():
+    def group_edit_replay():
         bob = Bob(static_dir=STATIC_ROOT / "media_tracker")
 
         ########################################################################
@@ -237,14 +268,14 @@ def steps_entry(
                 "Click the OPEN button",
             ),
         )
-        def step_mediatracker_addghost():
-            bob.clickImage("Import_Button")
+        def step_add_ghost():
+            bob.clickImage("ImportButton")
             # TODO: Make this configurable
-            bob.clickText(folder)
+            bob.clickText(project_folder)
             bob.clickText(ghost)
-            bob.clickImage("Import_Open").wait(0.2)
+            bob.clickImage("ImportOpen").wait(0.2)
 
-            return step_mediatracker_removeghost
+            return step_remove_ghost
 
         ########################################################################
         @stepmethod(
@@ -255,13 +286,13 @@ def steps_entry(
             ),
             needs_focus=True,
         )
-        def step_mediatracker_removeghost():
+        def step_remove_ghost():
             bob.tap(Key.down, modifiers=[Key.shift])
             bob.tap(Key.down, modifiers=[Key.shift])
             bob.clickImage("DeleteBlock").wait(0.1)
             bob.tap(Key.enter).wait(0.1)
 
-            return step_mediatracker_copylength
+            return step_copy_length
 
         ########################################################################
         @stepmethod(
@@ -271,7 +302,7 @@ def steps_entry(
             ),
             needs_focus=True,
         )
-        def step_mediatracker_copylength():
+        def step_copy_length():
             bob.tap(Key.up, modifiers=[Key.shift])
             bob.tap(Key.down, modifiers=[Key.shift])
             bob.clickRelative(2470 / 2560, 1184 / 1440).wait(0.1)
@@ -279,7 +310,7 @@ def steps_entry(
             bob.tap("c", modifiers=[Key.ctrl])
             bob.tap(Key.esc)
 
-            return step_mediatracker_pastelength
+            return step_paste_length
 
         ########################################################################
         @stepmethod(
@@ -290,14 +321,14 @@ def steps_entry(
             ),
             needs_focus=True,
         )
-        def step_mediatracker_pastelength():
+        def step_paste_length():
             bob.tap(Key.up, modifiers=[Key.shift])
             bob.clickRelative(920 / 2560, 1100 / 1440).wait(0.1)
             bob.tap("a", modifiers=[Key.ctrl])
             bob.tap("v", modifiers=[Key.ctrl])
             bob.tap(Key.enter)
 
-            return step_mediatracker_fitcamera
+            return step_fit_camera
 
         ########################################################################
         @stepmethod(
@@ -308,38 +339,73 @@ def steps_entry(
             ),
             needs_focus=True,
         )
-        def step_mediatracker_fitcamera():
+        def step_fit_camera():
             bob.tap("l")
             bob.clickImage("DeleteBlock").wait(0.1)
             bob.tap(Key.enter).wait(0.1)
 
-            return step_mediatracker_openrender
+            return step_open_render
+
+        ########################################################################
+        @stepmethod(bullets('Click the "Render" button'))
+        def step_open_render():
+            bob.clickImage("RenderButton").wait(0.1)
+
+            # Done
+            return group_render_replay
+
+        ########################################################################
+
+        return step_add_ghost
+
+    ############################################################################
+    ############################################################################
+    # Render Replay Group
+    ############################################################################
+    # This groups the following steps:
+    #   TODO
+
+    @stepmethod(run_immediately=True)
+    def group_render_replay():
+        bob = Bob()
 
         ########################################################################
         @stepmethod(
             bullets(
-                'Click the "Render" button',
                 "Click the CONFIRM button",
                 "Wait for the render to finish",
             ),
         )
-        def step_mediatracker_openrender():
-            bob.clickImage("Render_Button").wait(0.1)
-            bob.clickImage("Render_Confirm").wait(0.1)
-
+        def step_start_render():
+            bob.clickImage("RenderConfirm").wait(0.1)
             # Wait for render to finish
             bob.waitText("Player camera", timeout=60 * 60 * 24)
+
+            return step_return_to_replay_picker
+
+        ########################################################################
+        @stepmethod(
+            bullets(
+                "Press Escape to exit the MediaTracker",
+                "Confirm with ENTER",
+                "Press Escape to show the replay picker",
+            ),
+        )
+        def step_return_to_replay_picker():
+            bob.tap(Key.esc).wait(0.1)
+            bob.tap(Key.enter).wait(0.1)
+            bob.tap(Key.esc).wait(0.1)
 
             # Done
             return None
 
-        # END Render Group #####################################################
+        ########################################################################
 
-        return step_mediatracker_addghost
-
-    # END steps_entry ##########################################################
-
-    return step_replay_editor()
+        return step_start_render
 
     ############################################################################
+    ############################################################################
+
+    return group_open_picker()
+
     ############################################################################
