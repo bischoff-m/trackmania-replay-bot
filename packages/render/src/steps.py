@@ -129,7 +129,7 @@ def steps_entry(
 
     @stepmethod(run_immediately=True)
     def group_open_picker():
-        bob = Bob(static_dir=STATIC_ROOT / "main_menu")
+        bob = Bob(static_dir=STATIC_ROOT / "open_picker")
 
         @stepmethod(
             bullets("Click CREATE", "Click REPLAY EDITOR"),
@@ -218,7 +218,7 @@ def steps_entry(
 
     @stepmethod(run_immediately=True)
     def group_pick_replay():
-        bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
+        bob = Bob(static_dir=STATIC_ROOT / "pick_replay")
 
         ########################################################################
         @stepmethod(bullets("Select the replay", "Click the CONFIRM button"))
@@ -257,7 +257,7 @@ def steps_entry(
 
     @stepmethod(run_immediately=True)
     def group_edit_replay():
-        bob = Bob(static_dir=STATIC_ROOT / "media_tracker")
+        bob = Bob(static_dir=STATIC_ROOT / "edit_replay")
 
         ########################################################################
         @stepmethod(
@@ -367,7 +367,7 @@ def steps_entry(
 
     @stepmethod(run_immediately=True)
     def group_render_replay():
-        bob = Bob()
+        bob = Bob(static_dir=STATIC_ROOT / "render_replay")
 
         ########################################################################
         @stepmethod(

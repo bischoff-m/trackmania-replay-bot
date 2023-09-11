@@ -29,7 +29,7 @@ class Step:
     """A Step is a special type of State."""
 
     description: str
-    run: Callable[[], "Step"]
+    run: Callable[[], "Step | None"]
     needs_focus: bool = False
 
 

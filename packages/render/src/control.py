@@ -113,7 +113,7 @@ class Control:
     # States
     ############################################################################
 
-    def state_step(self, new_step: Step):
+    def state_step(self, new_step: Step | None):
         if new_step is None:
             self.state_end()
             return

@@ -32,7 +32,7 @@ class Worker(QRunnable):
     :param action: The function callback to run on this worker thread.
     """
 
-    def __init__(self, action: Callable[[], Step]):
+    def __init__(self, action: Callable[[], Step | None]):
         super(Worker, self).__init__()
 
         self.action = action

@@ -17,10 +17,9 @@ You define a step by using the
 @stepmethod
 ```
 
-decorator. You can provide a
-**description** that is displayed in the UI. The method must **return a step
-method** that corresponds to the next step. If it returns `None`, the exceution
-of the step chain exits.
+decorator. You can provide a **description** that is displayed in the UI. The
+method must **return a step method** that corresponds to the next step. If it
+returns `None`, the exceution of the step chain exits.
 
 ```python
 @stepmethod(description="This is an example step")
@@ -80,7 +79,9 @@ def example1():
 Groups can be nested multiple times.
 
 You can use this to do conditional branching. Use the `nonlocal` keyword to
-write to variables in the outer scope.
+write to variables in the outer scope. Keep in mind that the steps can be
+executed independently in the UI, so ideally they should depend only on the
+state of the game to simplify debugging.
 
 ```python
 import random

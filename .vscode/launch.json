@@ -6,7 +6,7 @@
       "type": "python",
       "request": "launch",
       "program": "packages/render/src/main.py",
-      "console": "integratedTerminal",
+      "console": "externalTerminal",
       "justMyCode": true
     }
   ]
