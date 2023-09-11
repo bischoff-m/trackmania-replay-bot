@@ -47,8 +47,7 @@ def stepmethod(
     html: str = "",
     run_immediately: bool = False,
     needs_focus: bool = False,
-    # TODO: Replace "return next_step" with optional decorator parameter
-    default_next: Callable[[], Step | None] = lambda: None,
+    default_next: Optional[Callable[[], Step | None]] = None,
 ) -> Callable[..., Step | None]:
     """Decorator for step methods.
 
@@ -65,6 +64,14 @@ def stepmethod(
         If True, the given step method is executed immediately and the resulting
         next step is returned instead, by default False. This is useful for
         grouping steps together.
+    needs_focus : bool, optional
+        If True and the UI is open, Alt+Tab is simulated before the step is
+        executed, by default False. This is useful for steps that use the
+        keyboard.
+    default_next : Callable[[], Step | None], optional
+        If the decorated method returns None, this function is called to get the
+        next step, by default lambda: None. Use this if the step always returns
+        the same next step to make the code more readable.
 
     Returns
     -------
@@ -76,9 +83,12 @@ def stepmethod(
         def wrapper(*args, **kwargs):
             def run_step() -> Step | None:
                 get_next = step_func(*args, **kwargs)
-                if get_next is None:
+                if get_next is not None:
+                    return get_next()
+                elif default_next is not None:
+                    return default_next()
+                else:
                     return None
-                return get_next()
 
             if run_immediately:
                 return run_step()
@@ -104,12 +114,14 @@ def steps_entry(
     # Goto Replay Editor Step
     ############################################################################
 
-    @stepmethod(bullets("Click CREATE", "Click REPLAY EDITOR"))
+    @stepmethod(
+        bullets("Click CREATE", "Click REPLAY EDITOR"),
+        default_next=lambda: group_select_replay(),
+    )
     def step_replay_editor():
         bob = Bob(static_dir=STATIC_ROOT / "main_menu")
         bob.clickImage("CreateButton").wait(0.2)
         bob.clickImage("ReplayEditorButton").wait(0.2)
-        return group_select_replay
 
     ############################################################################
     ############################################################################
@@ -119,7 +131,7 @@ def steps_entry(
     # - Select the replay
     # - Start the MediaTracker
 
-    @stepmethod(run_immediately=True)
+    @stepmethod(run_immediately=True, default_next=lambda: group_render())
     def group_select_replay():
         bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
 
@@ -196,7 +208,7 @@ def steps_entry(
             bob.clickImage("EditButton").wait(0.2)
             bob.waitText("Player camera", timeout=5)
 
-            return group_render
+            return None
 
         # END Start MediaTracker Group #########################################
 
