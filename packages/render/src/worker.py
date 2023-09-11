@@ -20,7 +20,7 @@ class WorkerSignals(QObject):
     """
 
     done = Signal(Step)
-    error = Signal(Exception)
+    error = Signal(Exception, str)
 
 
 class Worker(QRunnable):
@@ -47,5 +47,5 @@ class Worker(QRunnable):
             next_step = self.action()
             self.signals.done.emit(next_step)
         except Exception as e:
-            traceback.print_exc()
-            self.signals.error.emit(e)
+            trace = traceback.format_exc()
+            self.signals.error.emit(e, trace)

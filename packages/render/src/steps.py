@@ -1,8 +1,12 @@
-from typing import Callable, List
+from pathlib import Path
+from typing import Callable, List, Optional
 
 from api import Bob, LocateImageException
 from classes import Step
 from pynput.keyboard import Key
+
+# This should point to /packages/render/static
+STATIC_ROOT = Path(__file__).parent.parent / "static"
 
 
 class ControlFlowException(Exception):
@@ -17,7 +21,7 @@ def no_whitespace(text: str) -> str:
 
 
 def bullets(
-    *points: str | List[str], prefix: str = "Trying to do the following:"
+    *points: str | List[str], prefix: Optional[str] = "Trying to do the following:"
 ) -> str:
     """Formats a list of points into a HTML list.
 
@@ -26,7 +30,7 @@ def bullets(
     points : str | List[str]
         The points to be formatted. If a list is given, it is recursively
         formatted.
-    prefix : str | None, optional
+    prefix : str, optional
         The prefix to be used for each bullet point, by default None
 
     Returns
@@ -102,12 +106,9 @@ def steps_entry(
 
     @stepmethod(bullets("Click CREATE", "Click REPLAY EDITOR"))
     def step_replay_editor():
-        Bob().clickImage(
-            "Menu_CreateButton.png", retry="Menu_CreateButton_Hover.png"
-        ).wait(0.2)
-        Bob().clickImage(
-            "Menu_ReplayEditorButton.png", retry="Menu_ReplayEditorButton_Hover.png"
-        ).wait(0.2)
+        bob = Bob(static_dir=STATIC_ROOT / "main_menu")
+        bob.clickImage("CreateButton").wait(0.2)
+        bob.clickImage("ReplayEditorButton").wait(0.2)
         return group_select_replay
 
     ############################################################################
@@ -115,28 +116,27 @@ def steps_entry(
     # Start MediaTracker Group
     ############################################################################
     # This groups the following steps:
-    # - Menu > Create > Replay Editor
     # - Select the replay
     # - Start the MediaTracker
 
     @stepmethod(run_immediately=True)
     def group_select_replay():
+        bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
+
         ########################################################################
         @stepmethod(
             bullets("Click UP icon in the top left to navigate to the root folder")
         )
         def step_replaypicker_up():
             # Check if we are already at the root folder
-            found = Bob().findImage("ReplayPicker_EmptyPath.png") is not None
+            found = bob.findImage("EmptyPath") is not None
 
             # Press up button multiple times to get to the top
             for _ in range(10):
                 if found:
                     break
-                Bob().clickImage(
-                    "ReplayPicker_UpButton.png", retry="ReplayPicker_UpButton_Hover.png"
-                )
-                found = Bob().findImage("ReplayPicker_EmptyPath.png") is not None
+                bob.clickImage("UpButton")
+                found = bob.findImage("EmptyPath") is not None
 
             if not found:
                 raise ControlFlowException(
@@ -157,36 +157,30 @@ def steps_entry(
         )
         def step_replaypicker_sort():
             # Activate tree view if not already active
-            if Bob().findImage("ReplayPicker_ListView.png") is not None:
-                Bob().clickImage("ReplayPicker_ListView.png")
-            if Bob().findImage("ReplayPicker_TreeView.png") is None:
-                raise LocateImageException(
-                    "ReplayPicker_ListView.png or ReplayPicker_TreeView.png"
-                )
+            if bob.findImage("ListView") is not None:
+                bob.clickImage("ListView")
+            if bob.findImage("TreeView") is None:
+                raise LocateImageException("ListView or TreeView")
 
             # Sort by name if not already sorted by name
-            if Bob().findImage("ReplayPicker_SortByTime.png") is not None:
-                Bob().clickImage("ReplayPicker_SortByTime.png")
-            if Bob().findImage("ReplayPicker_SortByName.png") is None:
-                raise LocateImageException(
-                    "ReplayPicker_SortByTime.png or ReplayPicker_SortByName.png"
-                )
+            if bob.findImage("SortByTime") is not None:
+                bob.clickImage("SortByTime")
+            if bob.findImage("SortByName") is None:
+                raise LocateImageException("SortByTime or SortByName")
 
             # Sort ascending if not already sorted ascending
-            if Bob().findImage("ReplayPicker_SortDescending.png") is not None:
-                Bob().clickImage("ReplayPicker_SortDescending.png")
-            if Bob().findImage("ReplayPicker_SortAscending.png") is None:
-                raise LocateImageException(
-                    "ReplayPicker_SortDescending.png or ReplayPicker_SortAscending.png"
-                )
+            if bob.findImage("SortDescending") is not None:
+                bob.clickImage("SortDescending")
+            if bob.findImage("SortAscending") is None:
+                raise LocateImageException("SortDescending or SortAscending")
 
             return step_replaypicker_folder
 
         ########################################################################
         @stepmethod(bullets("Click the project folder", "Select the replay"))
         def step_replaypicker_folder():
-            Bob().clickText(folder).wait(0.2)
-            Bob().clickText(replay)
+            bob.clickText(folder).wait(0.2)
+            bob.clickText(replay)
             return step_replaypicker_confirm
 
         ########################################################################
@@ -198,17 +192,9 @@ def steps_entry(
             ),
         )
         def step_replaypicker_confirm():
-            Bob().clickImage(
-                "ReplayPicker_ConfirmButton.png",
-                retry="ReplayPicker_ConfirmButton_Hover.png",
-            ).wait(0.2)
-
-            Bob().clickImage(
-                "ReplayPicker_EditButton.png",
-                retry="ReplayPicker_EditButton_Hover.png",
-            ).wait(0.2)
-
-            Bob().waitText("Player camera", timeout=5)
+            bob.clickImage("ConfirmButton").wait(0.2)
+            bob.clickImage("EditButton").wait(0.2)
+            bob.waitText("Player camera", timeout=5)
 
             return group_render
 
@@ -228,6 +214,8 @@ def steps_entry(
 
     @stepmethod(run_immediately=True)
     def group_render():
+        bob = Bob(static_dir=STATIC_ROOT / "media_tracker")
+
         ########################################################################
         @stepmethod(
             bullets(
@@ -238,14 +226,11 @@ def steps_entry(
             ),
         )
         def step_mediatracker_addghost():
-            Bob().clickImage("MediaTracker_Import_Button.png")
+            bob.clickImage("Import_Button")
             # TODO: Make this configurable
-            Bob().clickText(folder)
-            Bob().clickText(ghost)
-            Bob().clickImage(
-                "MediaTracker_Import_Open.png",
-                retry="MediaTracker_Import_Open_Hover.png",
-            ).wait(0.2)
+            bob.clickText(folder)
+            bob.clickText(ghost)
+            bob.clickImage("Import_Open").wait(0.2)
 
             return step_mediatracker_removeghost
 
@@ -259,10 +244,10 @@ def steps_entry(
             needs_focus=True,
         )
         def step_mediatracker_removeghost():
-            Bob().tap(Key.down, modifiers=[Key.shift])
-            Bob().tap(Key.down, modifiers=[Key.shift])
-            Bob().clickImage("MediaTracker_DeleteBlock.png").wait(0.1)
-            Bob().tap(Key.enter).wait(0.1)
+            bob.tap(Key.down, modifiers=[Key.shift])
+            bob.tap(Key.down, modifiers=[Key.shift])
+            bob.clickImage("DeleteBlock").wait(0.1)
+            bob.tap(Key.enter).wait(0.1)
 
             return step_mediatracker_copylength
 
@@ -275,12 +260,12 @@ def steps_entry(
             needs_focus=True,
         )
         def step_mediatracker_copylength():
-            Bob().tap(Key.up, modifiers=[Key.shift])
-            Bob().tap(Key.down, modifiers=[Key.shift])
-            Bob().clickRelative(2470 / 2560, 1184 / 1440).wait(0.1)
-            Bob().tap("a", modifiers=[Key.ctrl])
-            Bob().tap("c", modifiers=[Key.ctrl])
-            Bob().tap(Key.esc)
+            bob.tap(Key.up, modifiers=[Key.shift])
+            bob.tap(Key.down, modifiers=[Key.shift])
+            bob.clickRelative(2470 / 2560, 1184 / 1440).wait(0.1)
+            bob.tap("a", modifiers=[Key.ctrl])
+            bob.tap("c", modifiers=[Key.ctrl])
+            bob.tap(Key.esc)
 
             return step_mediatracker_pastelength
 
@@ -294,11 +279,11 @@ def steps_entry(
             needs_focus=True,
         )
         def step_mediatracker_pastelength():
-            Bob().tap(Key.up, modifiers=[Key.shift])
-            Bob().clickRelative(920 / 2560, 1100 / 1440).wait(0.1)
-            Bob().tap("a", modifiers=[Key.ctrl])
-            Bob().tap("v", modifiers=[Key.ctrl])
-            Bob().tap(Key.enter)
+            bob.tap(Key.up, modifiers=[Key.shift])
+            bob.clickRelative(920 / 2560, 1100 / 1440).wait(0.1)
+            bob.tap("a", modifiers=[Key.ctrl])
+            bob.tap("v", modifiers=[Key.ctrl])
+            bob.tap(Key.enter)
 
             return step_mediatracker_fitcamera
 
@@ -312,9 +297,9 @@ def steps_entry(
             needs_focus=True,
         )
         def step_mediatracker_fitcamera():
-            Bob().tap("l")
-            Bob().clickImage("MediaTracker_DeleteBlock.png").wait(0.1)
-            Bob().tap(Key.enter).wait(0.1)
+            bob.tap("l")
+            bob.clickImage("DeleteBlock").wait(0.1)
+            bob.tap(Key.enter).wait(0.1)
 
             return step_mediatracker_openrender
 
@@ -327,14 +312,11 @@ def steps_entry(
             ),
         )
         def step_mediatracker_openrender():
-            Bob().clickImage("MediaTracker_Render_Button.png").wait(0.1)
-            Bob().clickImage(
-                "MediaTracker_Render_Confirm.png",
-                retry="MediaTracker_Render_Confirm_Hover.png",
-            ).wait(0.1)
+            bob.clickImage("Render_Button").wait(0.1)
+            bob.clickImage("Render_Confirm").wait(0.1)
 
             # Wait for render to finish
-            Bob().waitText("Player camera", timeout=60 * 60 * 24)
+            bob.waitText("Player camera", timeout=60 * 60 * 24)
 
             # Done
             return None

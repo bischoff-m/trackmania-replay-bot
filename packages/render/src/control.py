@@ -1,6 +1,6 @@
 import sys
 import traceback
-from typing import List
+from typing import List, Optional
 
 from api import Bob
 from classes import Button, State, Step
@@ -234,8 +234,9 @@ class Control:
             )
         )
 
-    def state_error(self, err: Exception):
-        trace = traceback.format_exc()
+    def state_error(self, err: Exception, trace: Optional[str] = None):
+        if trace is None:
+            trace = traceback.format_exc()
         print(err)
         print(trace)
 

@@ -1,6 +1,6 @@
 import time
 from pathlib import Path
-from typing import List
+from typing import Callable, List, Optional
 
 import pyautogui
 from pynput.keyboard import Controller, Key
@@ -15,12 +15,8 @@ from screen_ocr import Reader
 #
 ################################################################################
 
-# This should point to /packages/render/static
-STATIC_DIR = Path(__file__).parent.parent / "static"
-
 reader = Reader.create_reader(backend="winrt")  # screen_ocr
 keyboard = Controller()  # pynput
-chainable_functions = []
 
 
 class LocateImageException(Exception):
@@ -33,10 +29,14 @@ class LocateTextException(Exception):
         return f"Could not locate text on screen: {self.args[0]}"
 
 
-def chainable(func):
-    """Decorator to mark a static function as chainable."""
-    chainable_functions.append(func.__name__)
-    return staticmethod(func)
+def chainable(func: Callable[..., None]):
+    """Decorator to make a function chainable."""
+
+    def wrapper(self, *args, **kwargs):
+        func(self, *args, **kwargs)
+        return self
+
+    return wrapper
 
 
 class Bob:
@@ -44,39 +44,20 @@ class Bob:
 
     Example:
     `Bob().tap(Key.up).wait(0.3).clickImage("MenuCreateButton.png")`
-
-    If you only want to execute one function, you can also do:
-    `Bob.clickImage("MenuCreateButton.png")`
-    (Notice the missing parentheses)
     """
 
-    def __getattribute__(self, name):
-        attr = super().__getattribute__(name)
+    def __init__(self, static_dir: Optional[Path] = None):
+        self._static_dir = static_dir.resolve() if static_dir else None
 
-        # If the attribute is a function that is marked as chainable
-        if name in chainable_functions:
-            # Wrap the method in a function that waits for the method to finish
-            # and returns Bob afterwards so that more methods can be chained
-            def _chainable(*args, **kwargs):
-                attr(*args, **kwargs)
-                return self
-
-            return _chainable
-
-        # Otherwise, act as usual
-        return attr
-
-    @staticmethod
-    def findImage(image: str, retry: str = None) -> pyautogui.Point | None:
+    def findImage(self, name: str, extension: str = "png") -> pyautogui.Point | None:
         """Finds the coordinates of an image on the screen.
 
         Parameters
         ----------
         image : str
             The image to search for, path relative to the static directory.
-        retry : str, optional
-            The image to retry if the first one could not be found. Defaults to
-            None.
+        extension : str, optional
+            The extension of the image. Defaults to "png".
 
         Returns
         -------
@@ -84,15 +65,18 @@ class Bob:
             The center of the image on the screen or None if it could not be
             found.
         """
-        img_path = (STATIC_DIR / image).resolve().as_posix()
-        loc = pyautogui.locateCenterOnScreen(img_path)
-        if loc is None and retry is not None:
-            img_path = (STATIC_DIR / retry).resolve().as_posix()
-            loc = pyautogui.locateCenterOnScreen(img_path)
+        if self._static_dir is None:
+            raise ValueError("static_dir must be set when using findImage")
+
+        image_path = self._static_dir / f"{name}.{extension}"
+        retry_path = self._static_dir / f"{name}_HOVER.{extension}"
+
+        loc = pyautogui.locateCenterOnScreen(image_path.as_posix())
+        if loc is None and retry_path.exists():
+            loc = pyautogui.locateCenterOnScreen(retry_path.as_posix())
         return loc
 
-    @staticmethod
-    def findText(text: str) -> pyautogui.Point | None:
+    def findText(self, text: str) -> pyautogui.Point | None:
         """Finds the coordinates of text on the screen.
 
         Parameters
@@ -123,7 +107,7 @@ class Bob:
         return center
 
     @chainable
-    def tap(key: Key, modifiers: List[Key] = None):
+    def tap(self, key: Key, modifiers: Optional[List[Key]] = None) -> "Bob":
         """Presses a key and releases it. Optionally, modifiers can be pressed as well.
 
         Parameters
@@ -136,14 +120,14 @@ class Bob:
         for modifier in modifiers or []:
             keyboard.press(modifier)
         keyboard.press(key)
-        Bob.wait(0.05)
+        self.wait(0.05)
         keyboard.release(key)
         for modifier in modifiers or []:
             keyboard.release(modifier)
-        Bob.wait(0.05)
+        self.wait(0.05)
 
     @chainable
-    def wait(seconds: float):
+    def wait(self, seconds: float) -> "Bob":
         """Waits for a given amount of seconds.
 
         Parameters
@@ -154,7 +138,7 @@ class Bob:
         time.sleep(seconds)
 
     @chainable
-    def click(x: int, y: int):
+    def click(self, x: int, y: int) -> "Bob":
         """Clicks at the given coordinates and moves the mouse back to its previous position.
 
         Parameters
@@ -172,7 +156,7 @@ class Bob:
         pyautogui.moveTo(*prev_pos)
 
     @chainable
-    def clickRelative(x_percent: float, y_percent: float):
+    def clickRelative(self, x_percent: float, y_percent: float) -> "Bob":
         """Clicks at the given relative coordinates and moves the mouse back to its previous position.
 
         Parameters
@@ -185,32 +169,31 @@ class Bob:
         screen_resolution = pyautogui.size()
         x = screen_resolution[0] * x_percent
         y = screen_resolution[1] * y_percent
-        Bob.click(x, y)
+        self.click(x, y)
 
     @chainable
-    def clickImage(image: str, retry: str = None):
+    def clickImage(self, image: str, extension: str = "png") -> "Bob":
         """Clicks on an image on the screen.
 
         Parameters
         ----------
         image : str
             The image to search for, path relative to the static directory.
-        retry : str, optional
-            The image to retry if the first one could not be found. Defaults to
-            None.
+        extension : str, optional
+            The extension of the image. Defaults to "png".
 
         Raises
         ------
         LocateImageException
             If the image could not be found.
         """
-        location = Bob.findImage(image, retry)
+        location = self.findImage(image, extension)
         if location is None:
             raise LocateImageException(image)
-        Bob.click(*location)
+        self.click(*location)
 
     @chainable
-    def clickText(text: str):
+    def clickText(self, text: str) -> "Bob":
         """Clicks on text on the screen.
 
         Parameters
@@ -223,13 +206,15 @@ class Bob:
         LocateTextException
             If the text could not be found.
         """
-        location = Bob.findText(text)
+        location = self.findText(text)
         if location is None:
             raise LocateTextException(text)
-        Bob.click(*location)
+        self.click(*location)
 
     @chainable
-    def waitImage(image: str, interval: float = 0.5, timeout: float = 30):
+    def waitImage(
+        self, image: str, interval: float = 0.5, timeout: float = 30
+    ) -> "Bob":
         """Waits for an image to appear on the screen.
 
         Parameters
@@ -246,17 +231,17 @@ class Bob:
         LocateImageException
             If the image could not be found after the timeout.
         """
-        found = Bob().findImage(image)
+        found = self.findImage(image)
         for _ in range(int(timeout / interval)):
             if found:
                 break
-            Bob().wait(interval)
-            found = Bob().findImage(image)
+            self.wait(interval)
+            found = self.findImage(image)
         if not found:
             raise LocateImageException(image)
 
     @chainable
-    def waitText(text: str, interval: float = 0.5, timeout: float = 30):
+    def waitText(self, text: str, interval: float = 0.5, timeout: float = 30) -> "Bob":
         """Waits for text to appear on the screen.
 
         Parameters
@@ -273,11 +258,11 @@ class Bob:
         LocateTextException
             If the text could not be found after the timeout.
         """
-        found = Bob().findText(text)
+        found = self.findText(text)
         for _ in range(int(timeout / interval)):
             if found:
                 break
-            Bob().wait(interval)
-            found = Bob().findText(text)
+            self.wait(interval)
+            found = self.findText(text)
         if not found:
             raise LocateTextException(text)
