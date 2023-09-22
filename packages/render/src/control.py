@@ -1,6 +1,6 @@
 import sys
 import traceback
-from typing import List, Optional
+from typing import Generator, List, Optional
 
 from api import Bob
 from classes import Button, State, Step
@@ -17,78 +17,128 @@ class Control:
         self._window: MainWindow | None = None
         self._state: State | None = None
         self._is_worker_running: bool = False
+
+        # If the step is not None, the program is in the "step" state.
         self._step: Step | None = None
         self._step_history: List[Step] = []
+
+        # If the step generator is None, the program is done.
+        self._step_generator: Generator[Step] | None = steps_entry()
+
         self.state_initial()
 
-    def init_window(self):
+    def run_window(self):
         if self._window is not None:
-            return
+            raise RuntimeError("Window already initialized.")
         app = QApplication(sys.argv)
         self._window = MainWindow()
         self._window.update(self._state, self._is_worker_running)
         app.exec()
 
     def show_window(self):
-        if self._window is not None:
-            self._window.setUpdatesEnabled(True)
-            self._window.update(self._state, self._is_worker_running)
-            self._window.show()
+        if self._window is None:
+            raise RuntimeError("Window not initialized.")
+        self._window.setUpdatesEnabled(True)
+        self._window.update(self._state, self._is_worker_running)
+        self._window.show()
 
     def hide_window(self):
-        if self._window is not None:
-            self._window.hide()
-            self._window.setUpdatesEnabled(False)
-
-    def run_silent(self, iterations: int = 0):
-        """Run the bot without showing the GUI.
-
-        Parameters
-        ----------
-        iterations : int, optional
-            How many steps to run. 0 means infinite, by default 0
-        """
-        self.hide_window()
-
-        listener = mouse.Listener(on_scroll=lambda *_: False)
-        listener.start()
-        listener.wait()
-
-        if self._step is None:
-            self._step = steps_entry()
-
-        i = 0
-        try:
-            while self._step is not None and (iterations == 0 or i < iterations):
-                if not listener.running:
-                    raise Exception("Stopped by user")
-                prev_step = self._step
-                self._step = self._step.run()
-                self._step_history.append(prev_step)
-                i += 1
-                if i == iterations:
-                    self.state_step(self._step)
-
-            if self._step is None and iterations == 0:
-                self.state_quit()
-        except Exception as err:
-            self.state_error(err)
-            self.init_window()
-        finally:
-            listener.stop()
-            self.show_window()
+        if self._window is None:
+            raise RuntimeError("Window not initialized.")
+        self._window.hide()
+        self._window.setUpdatesEnabled(False)
 
     def set_state(self, new_state: State | None, loading: bool = False):
         self._state = new_state
         self._is_worker_running = loading
         if self._window is not None:
+            # Closes the window if new_state is None
             self._window.update(new_state, loading)
+
+    def next_generated_step(self) -> Step | None:
+        if self._step_generator is None:
+            raise RuntimeError("Program already finished.")
+
+        try:
+            next_step = next(self._step_generator)
+        except StopIteration:
+            next_step = None
+
+        self._step_history = []
+        if next_step is None:
+            self._step_generator = None
+        return next_step
+
+    def run_silent(self, limit: int = 0):
+        """Run the bot without showing the GUI.
+
+        Parameters
+        ----------
+        limit : int, optional
+            After how many steps to stop, by default 0 (run until _step.run()
+            returns None)
+
+        Returns
+        -------
+        bool
+            True if the program finished successfully, False if the run_window()
+            method should be called. This is not done by this method itself
+            because it halts the execution.
+        """
+        if self._step_generator is None:
+            return
+
+        if self._window is not None:
+            self.hide_window()
+
+        # Stop the program when the user scrolls the mouse wheel
+        listener = mouse.Listener(on_scroll=lambda *_: False)
+        listener.start()
+        listener.wait()
+
+        if self._step is None:
+            self.state_step(None)
+
+        i = 0
+        try:
+            while self._step is not None and (limit == 0 or i < limit):
+                if not listener.running:
+                    raise Exception("Stopped by user")
+
+                next_step = self._step.run()
+                self.state_step(next_step)
+                i += 1
+        except Exception as err:
+            self.state_error(err)
+            if self._window is None:
+                return False
+            else:
+                self.show_window()
+                return True
+        finally:
+            listener.stop()
+
+        # Program finished successfully
+
+        if self._window is not None:
+            if self._step is None and limit == 0:
+                # If end state is reached and no limit was set
+                self.state_quit()
+            else:
+                self.show_window()
+
+        return True
 
     def step_forward(self):
         if self._is_worker_running:
-            raise RuntimeError("Worker is already running. This should not happen.")
+            raise RuntimeError(
+                "Worker is already running. This should be prevented by disabling the buttons."
+            )
+        if self._step_generator is None:
+            raise RuntimeError("Program already finished.")
+
         if self._step is None:
-            self.state_step(steps_entry())
+            self.state_step(None)
             return
 
         if self._step.needs_focus:
@@ -103,8 +153,8 @@ class Control:
             self._window.start_worker(worker)
 
     def step_backward(self):
-        self._step = None
         if self._step_history:
+            self._step = None
             self.state_step(self._step_history.pop())
         else:
             self.state_initial()
@@ -114,13 +164,23 @@ class Control:
     ############################################################################
 
     def state_step(self, new_step: Step | None):
-        if new_step is None:
-            self.state_end()
-            return
-
         if self._step is not None:
             self._step_history.append(self._step)
+
         self._step = new_step
+
+        if self._step is None:
+            if (
+                self._step_generator is not None
+                and (step := self.next_generated_step()) is not None
+            ):
+                self._step = step
+            else:
+                if self._window is None:
+                    self.state_quit()
+                else:
+                    self.state_end()
+                return
 
         self.set_state(
             State(
@@ -156,12 +216,11 @@ class Control:
     def state_quit(self):
         # This closes the application
         self.set_state(None)
-        if self._window is not None:
-            self._window.close()
 
     def state_initial(self):
         self._step = None
         self._step_history = []
+        self._step_generator = steps_entry()
         description = no_whitespace(
             """
             <font color="red">
@@ -204,7 +263,7 @@ class Control:
                     ),
                     Button(
                         name="Run Silent",
-                        action=lambda: self.run_silent(),
+                        action=self.run_silent,
                     ),
                     Button(
                         name="First Step",

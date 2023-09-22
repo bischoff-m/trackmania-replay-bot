@@ -39,8 +39,7 @@ class MainWindow(QMainWindow):
         loading: bool = False,
     ):
         if new_state is None:
-            self.close()
-            return
+            exit(0)
 
         widget = QWidget()
         self.setCentralWidget(widget)
