@@ -203,6 +203,7 @@ class Control:
                     Button(
                         name="Back",
                         action=self.step_backward,
+                        disabled=len(self._step_history) == 0,
                     ),
                     Button(
                         name="Continue Silent",
@@ -333,6 +334,7 @@ class Control:
                 name="Back",
                 action=self.step_backward,
                 style="confirm",
+                disabled=len(self._step_history) == 0,
             ),
         ]
         self.set_state(

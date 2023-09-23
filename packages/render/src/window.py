@@ -73,10 +73,10 @@ class MainWindow(QMainWindow):
 
         # Add button for each button handler
         for btn_info in new_state.buttons:
-            object_name = "disabled" if loading else btn_info.style
+            object_name = "disabled" if loading or btn_info.disabled else btn_info.style
             button = QPushButton(text=btn_info.name, objectName=object_name)
             button.clicked.connect(btn_info.action)
-            button.setEnabled(not loading)
+            button.setEnabled(not loading and not btn_info.disabled)
             btn_layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignRight)
 
         main_layout.addLayout(btn_layout)

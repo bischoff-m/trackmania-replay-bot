@@ -44,4 +44,5 @@ class Step:
 class Button:
     name: str
     action: Callable[[], None]
-    style: Optional[Literal["confirm", "cancel"]] = None
+    style: Optional[Literal["confirm", "cancel", "disabled"]] = None
+    disabled: bool = False
