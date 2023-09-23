@@ -2,12 +2,22 @@
   "version": "0.1.0",
   "configurations": [
     {
-      "name": "Python: Render Replay",
+      "name": "Python: Render Replay Debug",
       "type": "python",
       "request": "launch",
       "program": "packages/render/src/main.py",
       "console": "integratedTerminal",
-      "justMyCode": true
+      "justMyCode": true,
+      "args": ["--debug"]
+    },
+    {
+      "name": "Python: Render Replay Debug Silent",
+      "type": "python",
+      "request": "launch",
+      "program": "packages/render/src/main.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["--debug", "--silent"]
     }
   ]
 }

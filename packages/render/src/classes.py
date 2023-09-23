@@ -1,5 +1,12 @@
 from dataclasses import dataclass
-from typing import Callable, List, Literal, Optional
+from pathlib import Path
+from typing import Callable, List, Literal, Optional, Tuple
+
+
+@dataclass
+class Config:
+    trackmania_root: Path
+    replay_ghost_pairs: List[Tuple[Path, Path]]
 
 
 @dataclass

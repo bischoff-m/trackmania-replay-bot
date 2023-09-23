@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "trackmania_root": { "type": "string" },
+    "replay_ghost_pairs": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["trackmania_root", "replay_ghost_pairs"],
+  "additionalProperties": false
+}

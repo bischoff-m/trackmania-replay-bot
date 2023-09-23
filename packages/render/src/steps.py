@@ -1,9 +1,12 @@
+import random
+import shutil
+import string
 from collections.abc import Generator
 from pathlib import Path
 from typing import Callable, List, Optional
 
 from api import Bob, LocateImageException
-from classes import Step
+from classes import Config, Step
 from pynput.keyboard import Key
 
 # This should point to /packages/render/static
@@ -15,10 +18,6 @@ class ControlFlowException(Exception):
         return (
             f"There was a general problem with controlling Trackmania: {self.args[0]}"
         )
-
-
-def no_whitespace(text: str) -> str:
-    return " ".join(text.split())
 
 
 def bullets(
@@ -98,30 +97,44 @@ def stepmethod(
     return decorator
 
 
-def steps_entry() -> Generator[Step | None]:
+def steps_entry(config: Config) -> Generator[Step]:
     """
     Step history is cleared between each yield.
     """
-    ####### Plan:
     # Create project folder
-    # Enter replay picker
-    # Open folder
-    # For all replays that need rendering:
-    #   Copy replay and ghost to project folder
-    #   Refresh
-    #   Select replay and start MediaTracker
-    #   Edit replay
-    #   Render replay
-    #   Return to replay picker
-    # Quit
-
     project_folder = "!!!!!! trackmania-replay-bot"
-    replay_name = "IPEYETYTZ7"
+    root_path = (config.trackmania_root / "Replays" / project_folder).resolve()
+    if not root_path.exists():
+        root_path.mkdir()
 
+    # Open project folder in replay picker
     yield group_open_picker(project_folder)
-    yield group_pick_replay(replay_name)
-    yield group_edit_replay(project_folder, replay_name + ".Ghost.Gbx")
-    yield group_render_replay(replay_name)
+
+    for replay_path, ghost_path in config.replay_ghost_pairs:
+        # Clear project folder
+        for file in root_path.iterdir():
+            if file.name.endswith(".Replay.Gbx") or file.name.endswith(".Ghost.Gbx"):
+                file.unlink()
+
+        # Generate random name for replay and ghost to avoid conflicts
+        alphabet = string.digits.replace("1", "")
+        copy_name = "".join(random.choices(alphabet, k=16))
+
+        # Create replay and ghost copies
+        replay_copy = root_path / f"{copy_name}.Replay.Gbx"
+        ghost_copy = root_path / f"{copy_name}.Ghost.Gbx"
+        shutil.copy(replay_path, replay_copy)
+        shutil.copy(ghost_path, ghost_copy)
+
+        yield group_pick_replay(copy_name)
+        yield group_edit_replay(project_folder, ghost_copy.name)
+        yield group_render_replay(copy_name)
+
+        # Should now be back in replay picker
+
+        # Delete replay and ghost copies
+        replay_copy.unlink()
+        ghost_copy.unlink()
 
 
 ################################################################################
@@ -135,12 +148,10 @@ def steps_entry() -> Generator[Step | None]:
 
 @stepmethod(run_immediately=True)
 def group_open_picker(folder_name: str):
-    bob = Bob(static_dir=STATIC_ROOT / "open_picker")
+    bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
 
     ############################################################################
-    @stepmethod(
-        bullets("Click CREATE", "Click REPLAY EDITOR"),
-    )
+    @stepmethod(bullets("Click CREATE", "Click REPLAY EDITOR"))
     def step_replay_editor():
         bob.clickImage("CreateButton").wait(0.2)
         bob.clickImage("ReplayEditorButton").wait(0.2)
@@ -172,6 +183,7 @@ def group_open_picker(folder_name: str):
     ############################################################################
     @stepmethod(
         bullets(
+            "Click the refresh button",
             "Click icons in the top right to make the project folder visible",
             [
                 "Tree view",
@@ -181,6 +193,8 @@ def group_open_picker(folder_name: str):
         )
     )
     def step_sort():
+        bob.clickImage("RefreshButton").wait(0.5)
+
         # Activate tree view if not already active
         if bob.findImage("ListView") is not None:
             bob.clickImage("ListView")
@@ -225,11 +239,18 @@ def group_open_picker(folder_name: str):
 
 @stepmethod(run_immediately=True)
 def group_pick_replay(replay_name: str):
-    bob = Bob(static_dir=STATIC_ROOT / "pick_replay")
+    bob = Bob(static_dir=STATIC_ROOT / "replay_picker")
 
     ############################################################################
-    @stepmethod(bullets("Select the replay", "Click the CONFIRM button"))
+    @stepmethod(
+        bullets(
+            "Click the refresh button",
+            "Select the replay",
+            "Click the CONFIRM button",
+        )
+    )
     def step_select():
+        bob.clickImage("RefreshButton").wait(0.5)
         bob.clickText(replay_name)
         bob.clickImage("ConfirmButton").wait(0.2)
         return step_confirm

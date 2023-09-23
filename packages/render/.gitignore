@@ -1,0 +1,7 @@
+
+# python
+.venv
+__pycache__
+
+# VS Code Debug Config
+debug_config.json

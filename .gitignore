@@ -27,7 +27,3 @@ dist
 
 # express public files
 **/public/maps/*/*.webm
-
-# python
-.venv
-__pycache__

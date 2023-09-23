@@ -1,19 +1,22 @@
 import sys
 import traceback
-from typing import Generator, List, Optional
+from typing import Callable, Generator, List, Optional
 
 from api import Bob
 from classes import Button, State, Step
 from pynput import mouse
 from pynput.keyboard import Key
 from PySide6.QtWidgets import QApplication
-from steps import no_whitespace, steps_entry
 from window import MainWindow
 from worker import Worker
 
 
+def no_whitespace(text: str) -> str:
+    return " ".join(text.split())
+
+
 class Control:
-    def __init__(self):
+    def __init__(self, get_entry: Callable[[], Generator[Step, None, None]]):
         self._window: MainWindow | None = None
         self._state: State | None = None
         self._is_worker_running: bool = False
@@ -22,8 +25,9 @@ class Control:
         self._step: Step | None = None
         self._step_history: List[Step] = []
 
+        self._get_entry = get_entry
         # If the step generator is None, the program is done.
-        self._step_generator: Generator[Step] | None = steps_entry()
+        self._step_generator: Generator[Step] | None = self._get_entry()
 
         self.state_initial()
 
@@ -220,7 +224,7 @@ class Control:
     def state_initial(self):
         self._step = None
         self._step_history = []
-        self._step_generator = steps_entry()
+        self._step_generator = self._get_entry()
         description = no_whitespace(
             """
             <font color="red">
