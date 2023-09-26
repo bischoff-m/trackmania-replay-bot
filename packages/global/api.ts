@@ -1,4 +1,4 @@
-import { CompositionData, MapData } from './types'
+import { CompositionData, MapData, Settings } from './types'
 
 const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
 
@@ -11,6 +11,8 @@ export const api = {
       `http://localhost:${PORT_EXPRESS}/setComposition`,
       compData
     ),
+  setSettings: (settings: Settings): Promise<void> =>
+    genericPostRoute(`http://localhost:${PORT_EXPRESS}/setSettings`, settings),
   renderReplays: (mapIDs: string[]): Promise<void> =>
     genericPostRoute(`http://localhost:${PORT_EXPRESS}/renderReplays`, mapIDs),
 
@@ -18,6 +20,10 @@ export const api = {
   getComposition: (): Promise<CompositionData> =>
     genericGetRoute<CompositionData>(
       `http://localhost:${PORT_EXPRESS}/public/activeComposition.json`
+    ),
+  getSettings: (): Promise<Settings> =>
+    genericGetRoute<Settings>(
+      `http://localhost:${PORT_EXPRESS}/public/settings.json`
     ),
   getMap: (mapID: string): Promise<MapData> =>
     genericGetRoute<MapData>(

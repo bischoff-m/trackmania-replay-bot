@@ -1,20 +1,22 @@
 {
   "type": "object",
   "properties": {
-    "trackmania_root": { "type": "string" },
-    "replay_ghost_pairs": {
+    "trackmaniaRoot": { "type": "string" },
+    "renderTasks": {
       "type": "array",
       "items": {
-        "type": "array",
-        "items": {
-          "type": "string"
+        "type": "object",
+        "properties": {
+          "ghostPath": { "type": "string" },
+          "replayPath": { "type": "string" },
+          "outputPath": { "type": "string" }
         },
-        "minItems": 2,
-        "maxItems": 2
+        "required": ["ghostPath", "replayPath", "outputPath"],
+        "additionalProperties": false
       },
       "minItems": 1
     }
   },
-  "required": ["trackmania_root", "replay_ghost_pairs"],
+  "required": ["trackmaniaRoot", "renderTasks"],
   "additionalProperties": false
 }

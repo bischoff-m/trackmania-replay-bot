@@ -127,6 +127,18 @@ class Bob:
         self.wait(0.05)
 
     @chainable
+    def type(self, text: str) -> "Bob":
+        """Types text.
+
+        Parameters
+        ----------
+        text : str
+            The text to type.
+        """
+        keyboard.type(text)
+        self.wait(0.05)
+
+    @chainable
     def wait(self, seconds: float) -> "Bob":
         """Waits for a given amount of seconds.
 

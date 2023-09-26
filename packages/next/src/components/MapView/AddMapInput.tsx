@@ -38,7 +38,6 @@ export default function AddMapInput({
       <TextInput
         {...form.getInputProps('search')}
         placeholder='Map ID (for example bqADnHDhKOfimntdyJnyu_ltVhj)'
-        className='flex-1'
         classNames={{
           rightSection: 'justify-end',
         }}

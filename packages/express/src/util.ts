@@ -1,9 +1,12 @@
 import type { Request, Response } from 'express'
 import path from 'path'
 
-export const publicRoot = path.join(process.cwd(), '/public')
+// Expects a url like '/public/flags/GER.jpg' and returns the absolute path
+export function resolvePublic(url: string) {
+  return path.join(process.cwd(), url).replace(/\\/g, '/')
+}
 
-// TODO: Add this to local .env file
+// TODO: Add this to local .env file (or cookies)
 export const userAgent = `
 trackmania-replay-bot
 https://github.com/bischoff-m/trackmania-replay-bot

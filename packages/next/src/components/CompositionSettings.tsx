@@ -1,4 +1,5 @@
 import { useCompositionFormContext } from '@/components/AppRoot'
+import AppSettings from '@/components/AppSettings'
 import { Button, Flex, NumberInput, Title } from '@mantine/core'
 
 const resolutionPresets = [
@@ -120,6 +121,8 @@ export default function CompositionSettings() {
           form.setDirty({ introDurationFrames: true })
         }}
       />
+
+      <AppSettings />
     </Flex>
   )
 }

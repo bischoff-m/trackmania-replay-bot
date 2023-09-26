@@ -1,10 +1,9 @@
-import { publicRoot } from '@/util'
+import { resolvePublic } from '@/util'
 import { Request, Response } from 'express'
 import fs from 'fs'
-import path from 'path'
 
 export async function handleMapIndex(req: Request, res: Response) {
-  const mapsDir = path.join(publicRoot, `/maps`)
+  const mapsDir = resolvePublic(`/public/maps`)
 
   try {
     let subDirs = fs.readdirSync(mapsDir, { withFileTypes: true })

@@ -1,13 +1,17 @@
+import { initPublic } from '@/initPublic'
 import { handleFetchNewFlag } from '@/routes/fetchNewFlag'
 import { handleFetchNewMap } from '@/routes/fetchNewMap'
 import { handleMapIndex } from '@/routes/mapIndex'
 import { onEvent } from '@/routes/onEvent'
+import { handleRenderReplays } from '@/routes/renderReplays'
 import { handleSetComposition } from '@/routes/setComposition'
+import { handleSetSettings } from '@/routes/setSettings'
 import cors from 'cors'
 import express, { Response } from 'express'
 import serveIndex from 'serve-index'
 
 const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
+initPublic()
 
 const app = express()
 app.use(cors())
@@ -31,16 +35,9 @@ app.use(
 // Routes
 app.get('/', (req, res) => res.redirect('/public'))
 app.post('/setComposition', handleSetComposition)
+app.post('/setSettings', handleSetSettings)
 app.get('/mapIndex', handleMapIndex)
-app.post('/renderReplays', (req, res) => {
-  // TODO: Implement render process here
-
-  Object.values(clients).forEach((client) =>
-    client.write(`data: MAPUPDATE\n\n`)
-  )
-  res.setHeader('Content-Type', 'text/plain')
-  res.status(200).send('OK')
-})
+app.post('/renderReplays', (req, res) => handleRenderReplays(req, res, clients))
 
 // Fall-through if static data is not available
 app.get('/public/flags/:flagID.jpg', handleFetchNewFlag)

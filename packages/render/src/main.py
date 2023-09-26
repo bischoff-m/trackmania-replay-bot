@@ -2,7 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
-from classes import Config
+from classes import Config, RenderTask
 from control import Control
 from jsonschema import validate
 from steps import steps_entry
@@ -15,7 +15,6 @@ def parse_args() -> argparse.Namespace:
         "--json",
         default=None,
         action="store",
-        nargs=1,
         type=str,
         help="config JSON payload with local file paths",
     )
@@ -61,9 +60,14 @@ def parse_config(args: argparse.Namespace) -> Config:
         raise Exception("JSON payload does not match schema")
 
     return Config(
-        trackmania_root=Path(config["trackmania_root"]),
-        replay_ghost_pairs=[
-            (Path(p[0]), Path(p[1])) for p in config["replay_ghost_pairs"]
+        trackmania_root=Path(config["trackmaniaRoot"]),
+        render_tasks=[
+            RenderTask(
+                ghost_path=Path(task["ghostPath"]),
+                replay_path=Path(task["replayPath"]),
+                output_path=Path(task["outputPath"]),
+            )
+            for task in config["renderTasks"]
         ],
     )
 

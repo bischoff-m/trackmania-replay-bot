@@ -24,9 +24,11 @@ export type MapData = {
   }
   leaderboard: Ranking[]
   thumbnailUrl: string
-  ghostUrl: string
   uploadedAt: Date
   timestamp: Date
+  exchangeID?: string
+  ghostUrl?: string
+  replayUrl?: string
   video?: {
     url: string
     durationInFrames: number
@@ -38,4 +40,8 @@ export type Ranking = {
   name: string
   time: number
   nation: string
+}
+
+export type Settings = {
+  trackmaniaRoot: string
 }

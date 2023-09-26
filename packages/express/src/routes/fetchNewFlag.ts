@@ -1,15 +1,13 @@
-import { publicRoot, userAgent, validateFlagID } from '@/util'
+import { resolvePublic, userAgent, validateFlagID } from '@/util'
 import { Request, Response } from 'express'
 import fs from 'fs/promises'
 import nodeFetch from 'node-fetch'
-import path from 'path'
 
 export async function handleFetchNewFlag(req: Request, res: Response) {
   if (!validateFlagID(req.params, res)) return
 
   const { flagID } = req.params
   const url = `https://trackmania.io/img/flags/${flagID}.jpg`
-  const filePath = path.join(publicRoot, `/flags/${flagID}.jpg`)
 
   try {
     // Fetch flag image from trackmania.io website
@@ -21,6 +19,7 @@ export async function handleFetchNewFlag(req: Request, res: Response) {
       throw new Error(`Failed to fetch ${url}`)
 
     // Write to cache
+    const filePath = resolvePublic(`/public/flags/${flagID}.jpg`)
     await fs.writeFile(filePath, response.body)
     // Send file
     res.status(200).sendFile(filePath)

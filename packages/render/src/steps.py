@@ -5,7 +5,7 @@ from collections.abc import Generator
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from api import Bob, LocateImageException
+from api import Bob, LocateImageException, LocateTextException
 from classes import Config, Step
 from pynput.keyboard import Key
 
@@ -107,10 +107,8 @@ def steps_entry(config: Config) -> Generator[Step]:
     if not root_path.exists():
         root_path.mkdir()
 
-    # Open project folder in replay picker
-    yield group_open_picker(project_folder)
-
-    for replay_path, ghost_path in config.replay_ghost_pairs:
+    rootDirSelected = False
+    for task in config.render_tasks:
         # Clear project folder
         for file in root_path.iterdir():
             if file.name.endswith(".Replay.Gbx") or file.name.endswith(".Ghost.Gbx"):
@@ -123,14 +121,24 @@ def steps_entry(config: Config) -> Generator[Step]:
         # Create replay and ghost copies
         replay_copy = root_path / f"{copy_name}.Replay.Gbx"
         ghost_copy = root_path / f"{copy_name}.Ghost.Gbx"
-        shutil.copy(replay_path, replay_copy)
-        shutil.copy(ghost_path, ghost_copy)
+        shutil.copy(task.replay_path, replay_copy)
+        shutil.copy(task.ghost_path, ghost_copy)
+
+        # Open project folder in replay picker. Is done after the first files
+        # were copied else the root folder does not show up.
+        if not rootDirSelected:
+            yield group_open_picker(project_folder)
+            rootDirSelected = True
 
         yield group_pick_replay(copy_name)
         yield group_edit_replay(project_folder, ghost_copy.name)
         yield group_render_replay(copy_name)
 
         # Should now be back in replay picker
+
+        # Copy rendered replay to output path
+        local_path = config.trackmania_root / f"ScreenShots/{copy_name}.webm"
+        shutil.copy(local_path, task.output_path)
 
         # Delete replay and ghost copies
         replay_copy.unlink()
@@ -158,7 +166,12 @@ def group_open_picker(folder_name: str):
         return step_up
 
     ############################################################################
-    @stepmethod(bullets("Click UP icon in the top left to navigate to the root folder"))
+    @stepmethod(
+        bullets(
+            "Click UP icon in the top left to navigate to the root folder",
+            "Click the refresh button",
+        )
+    )
     def step_up():
         # Check if we are already at the root folder
         found = bob.findImage("EmptyPath") is not None
@@ -175,6 +188,7 @@ def group_open_picker(folder_name: str):
                 "Could not direct the replay picker to the root folder."
             )
 
+        bob.clickImage("RefreshButton").wait(0.5)
         if bob.findText(folder_name) is None:
             return step_sort
         else:
@@ -183,7 +197,6 @@ def group_open_picker(folder_name: str):
     ############################################################################
     @stepmethod(
         bullets(
-            "Click the refresh button",
             "Click icons in the top right to make the project folder visible",
             [
                 "Tree view",
@@ -193,8 +206,6 @@ def group_open_picker(folder_name: str):
         )
     )
     def step_sort():
-        bob.clickImage("RefreshButton").wait(0.5)
-
         # Activate tree view if not already active
         if bob.findImage("ListView") is not None:
             bob.clickImage("ListView")
@@ -373,13 +384,6 @@ def group_edit_replay(folder_name: str, ghost_name: str):
         bob.clickImage("DeleteBlock").wait(0.1)
         bob.tap(Key.enter).wait(0.1)
 
-        return step_open_render
-
-    ############################################################################
-    @stepmethod(bullets('Click the "Render" button'))
-    def step_open_render():
-        bob.clickImage("RenderButton").wait(0.1)
-
         # Done
         return None
 
@@ -403,9 +407,37 @@ def group_render_replay(replay_name: str):
     bob = Bob(static_dir=STATIC_ROOT / "render_replay")
 
     ############################################################################
+    @stepmethod(bullets('Click the "Render" button'))
+    def step_open_render():
+        bob.clickImage("RenderButton").wait(0.1)
+
+        return step_set_values
+
+    ############################################################################
     @stepmethod(
         bullets(
-            "Click the CONFIRM button",
+            'Click on the "Shoot Name" text field',
+            "Insert the output file name",
+            "Ensure WEBM is selected",
+        ),
+        needs_focus=True,
+    )
+    def step_set_values():
+        bob.clickRelative(1150 / 2560, 400 / 1440)
+        bob.tap("a", modifiers=[Key.ctrl])
+        bob.tap(Key.backspace)
+        bob.type(replay_name)
+        bob.tap(Key.enter).wait(0.1)
+
+        if bob.findText("Webm") is None:
+            raise LocateTextException("Webm")
+
+        return step_start_render
+
+    ############################################################################
+    @stepmethod(
+        bullets(
+            "Click the OK button",
             "Wait for the render to finish",
         ),
     )
@@ -436,7 +468,7 @@ def group_render_replay(replay_name: str):
 
     ############################################################################
 
-    return step_start_render
+    return step_open_render
 
 
 ################################################################################

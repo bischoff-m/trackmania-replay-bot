@@ -1,4 +1,5 @@
-import { publicRoot, userAgent, validateMapID } from '@/util'
+import { TmxApi } from '@/tmxApi'
+import { resolvePublic, userAgent, validateMapID } from '@/util'
 import type { MapData, Ranking } from '@global/types'
 import type { Request, Response } from 'express'
 import fs from 'fs'
@@ -44,6 +45,7 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
   }
   result.uploadedAt = map.uploaded
   result.timestamp = new Date()
+  if (map.exchangeId) result.exchangeID = map.exchangeId
 
   /////////////////////////////////// GHOST  ///////////////////////////////////
   const ghostRes = await nodeFetch(map.leaderboard[0].ghost, {
@@ -51,9 +53,21 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
   })
   if (!ghostRes.ok || ghostRes.body === null)
     throw new Error(`Failed to fetch ${map.leaderboard[0].ghost}`)
-  const ghostUrl = `/maps/${mapID}/ghost.Ghost.gbx`
-  await fs.promises.writeFile(path.join(publicRoot, ghostUrl), ghostRes.body)
-  result.ghostUrl = '/public' + ghostUrl
+  result.ghostUrl = `/public/maps/${mapID}/ghost.Ghost.gbx`
+  await fs.promises.writeFile(resolvePublic(result.ghostUrl), ghostRes.body)
+
+  /////////////////////////////////// REPLAY ///////////////////////////////////
+  const tmxID = Number(result.exchangeID)
+  if (isNaN(tmxID)) {
+    console.log(`Map not uploaded to trackmania.exchange: ${result.exchangeID}`)
+  } else {
+    const replays = await TmxApi.getReplays(tmxID, 1)
+    const replayID = replays[0].ReplayID
+    const replayBody = await TmxApi.downloadReplay(replayID)
+
+    result.replayUrl = `/public/maps/${mapID}/replay${replayID}.Replay.Gbx`
+    await fs.promises.writeFile(resolvePublic(result.replayUrl), replayBody)
+  }
 
   ///////////////////////////////// THUMBNAIL  /////////////////////////////////
   // Fetch thumbnail image from website
@@ -64,12 +78,13 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
     throw new Error(`Failed to fetch ${map.thumbnail}`)
 
   // Write thumbnail to cache
-  const thumbUrl = `/maps/${mapID}/thumbnail${path.extname(map.thumbnail)}`
+  result.thumbnailUrl = `/public/maps/${mapID}/thumbnail${path.extname(
+    map.thumbnail
+  )}`
   await fs.promises.writeFile(
-    path.join(publicRoot, thumbUrl),
+    resolvePublic(result.thumbnailUrl),
     thumbnailRes.body
   )
-  result.thumbnailUrl = '/public' + thumbUrl
 
   //////////////////////////////// LEADERBOARD  ////////////////////////////////
   // Fetch leaderboard
@@ -97,7 +112,7 @@ export async function handleFetchNewMap(req: Request, res: Response) {
   // Try to load map data
   try {
     // Create cache directory if it doesn't exist
-    const cacheDir = path.join(publicRoot, `/maps/${mapID}`)
+    const cacheDir = resolvePublic(`/public/maps/${mapID}`)
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir)
 
     // Fetch new data
@@ -106,7 +121,7 @@ export async function handleFetchNewMap(req: Request, res: Response) {
     console.log('Fetch successful')
 
     // Write map data to cache directory
-    const filePath = path.join(publicRoot, `/maps/${mapData.id}/info.json`)
+    const filePath = resolvePublic(`/public/maps/${mapData.id}/info.json`)
     fs.writeFileSync(filePath, JSON.stringify(mapData, null, 2))
 
     // Send map data to client
