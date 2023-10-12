@@ -1,7 +1,7 @@
 import RenderModal from '@/components/MapView/RenderModal'
 import { api } from '@global/api'
 import { MapData } from '@global/types'
-import { ActionIcon, Button, Flex } from '@mantine/core'
+import { ActionIcon, Button, Flex, Tooltip } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { UseListState } from '@mantine/hooks/lib/use-list-state/use-list-state'
 import { IconTrash } from '@tabler/icons-react'
@@ -39,9 +39,6 @@ export default function MapViewHeader({
               // TODO: Replace this with a proper notification
               console.log('Started rendering')
             })
-            .catch((err) => {
-              console.error(err)
-            })
         }
       />
 
@@ -50,28 +47,35 @@ export default function MapViewHeader({
         className='w-full p-1 gap-2 justify-end items-center'
         style={{ height: height }}
       >
-        <Button
-          variant='subtle'
-          compact
-          onClick={open}
-          style={{ height: height * 0.8 }}
+        <Tooltip
+          label='Batch render all active clips without video in remotion'
+          withinPortal
+          multiline
         >
-          Render
-        </Button>
-        <ActionIcon
-          size={height * 0.8}
-          title='Set all inactive'
-          color='primary'
-          onClick={() => {
-            if (mapsActive.length === 0) return
-            const newCached = [...mapsActive, ...mapsCached]
-            handlersActive.setState([])
-            handlersCached.setState(newCached)
-            setDirty(true)
-          }}
-        >
-          <IconTrash size='1.1rem' />
-        </ActionIcon>
+          <Button
+            variant='subtle'
+            compact
+            onClick={open}
+            style={{ height: height * 0.8 }}
+          >
+            Render
+          </Button>
+        </Tooltip>
+        <Tooltip label='Set all inactive' withinPortal>
+          <ActionIcon
+            size={height * 0.8}
+            color='primary'
+            onClick={() => {
+              if (mapsActive.length === 0) return
+              const newCached = [...mapsActive, ...mapsCached]
+              handlersActive.setState([])
+              handlersCached.setState(newCached)
+              setDirty(true)
+            }}
+          >
+            <IconTrash size='1.1rem' />
+          </ActionIcon>
+        </Tooltip>
       </Flex>
     </>
   )

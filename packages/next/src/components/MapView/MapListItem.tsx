@@ -7,7 +7,6 @@ import { DraggableStateSnapshot } from 'react-beautiful-dnd'
 export default function MapListItem({
   map,
   index,
-  width,
   height,
   draggableSnapshot,
   hoverColor,
@@ -15,7 +14,6 @@ export default function MapListItem({
 }: {
   map: MapData
   index?: number
-  width: number
   height: number
   draggableSnapshot?: DraggableStateSnapshot
   hoverColor?: string
@@ -32,7 +30,6 @@ export default function MapListItem({
         draggableSnapshot?.isDragging ? 'rounded-lg' : ''
       )}
       sx={{
-        width: width,
         height: height,
         '&:hover': { backgroundColor: hoverColor || undefined },
         backgroundColor: draggableSnapshot?.isDragging
@@ -58,6 +55,8 @@ export default function MapListItem({
         </Text>
       </div>
       {map.video && <Badge>Video</Badge>}
+      {!map.replayUrl && <Badge color='red'>No Replay</Badge>}
+      {!map.ghostUrl && <Badge color='red'>No Ghost</Badge>}
       {/* World record time */}
       <Text size='md' weight={400}>
         {formatTrackmaniaTime(map.leaderboard[0].time)}
