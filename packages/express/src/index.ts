@@ -10,7 +10,8 @@ import cors from 'cors'
 import express, { Response } from 'express'
 import serveIndex from 'serve-index'
 
-const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
+const PORT = Number(process.env.PORT_EXPRESS?.replace(/;/g, ''))
+if (isNaN(PORT)) throw new Error('Invalid port number')
 initPublic()
 
 const app = express()

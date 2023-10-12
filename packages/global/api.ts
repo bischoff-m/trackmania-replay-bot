@@ -1,6 +1,7 @@
 import { CompositionData, MapData, Settings } from './types'
 
-const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, '')) || 4000
+const PORT_EXPRESS = Number(process.env.PORT_EXPRESS?.replace(/;/g, ''))
+if (isNaN(PORT_EXPRESS)) throw new Error('Invalid port number')
 
 export const api = {
   // Dynamic data
