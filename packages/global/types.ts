@@ -1,14 +1,12 @@
 export type CompositionData = {
   clips: ClipData[]
-  introDurationFrames: number
-  framerate: number
+  introDurationSeconds: number
   resolution: [number, number]
+  framerate: number
 }
 
 export type ClipData = {
   mapID: string
-  startFrame: number
-  durationInFrames: number
 }
 
 export type MapData = {
@@ -32,6 +30,8 @@ export type MapData = {
   video?: {
     url: string
     durationInFrames: number
+    resolution: [number, number]
+    framerate: number
   }
   // playerCount: number | [number, number] // TODO: Where to get this from?
 }

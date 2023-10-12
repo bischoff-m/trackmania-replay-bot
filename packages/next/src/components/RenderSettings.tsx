@@ -1,4 +1,4 @@
-import { useCompositionFormContext } from '@/components/AppRoot'
+import { useRenderFormContext } from '@/components/AppRoot'
 import AppSettings from '@/components/AppSettings'
 import { Button, Flex, NumberInput, Title } from '@mantine/core'
 
@@ -11,12 +11,12 @@ const resolutionPresets = [
 
 const frameratePresets = [120, 60, 30, 24]
 
-export default function CompositionSettings() {
-  const form = useCompositionFormContext()
+export default function RenderSettings() {
+  const form = useRenderFormContext()
 
   return (
     <Flex direction='column' className='h-full gap-6 justify-center'>
-      <Title order={2}>Composition Settings</Title>
+      <Title order={2}>Render Settings</Title>
 
       {/* Resolution */}
       <Flex direction='column' gap='xs'>
@@ -76,10 +76,6 @@ export default function CompositionSettings() {
           value={form.values.framerate}
           onChange={(num) => {
             if (num === '') return
-            form.setFieldValue(
-              'introDurationFrames',
-              (form.values.introDurationFrames / form.values.framerate) * num
-            )
             form.setFieldValue('framerate', num)
             form.setDirty({ framerate: true })
           }}
@@ -93,11 +89,6 @@ export default function CompositionSettings() {
               variant={form.values.framerate === framerate ? 'filled' : 'light'}
               compact
               onClick={() => {
-                form.setFieldValue(
-                  'introDurationFrames',
-                  (form.values.introDurationFrames / form.values.framerate) *
-                    framerate
-                )
                 form.setFieldValue('framerate', framerate)
                 form.setDirty({ framerate: true })
               }}
@@ -112,13 +103,10 @@ export default function CompositionSettings() {
       <NumberInput
         label='Intro Duration (seconds)'
         min={0}
-        value={form.values.introDurationFrames / form.values.framerate}
+        value={form.values.introDurationSeconds}
         onChange={(num) => {
-          form.setFieldValue(
-            'introDurationFrames',
-            (num !== '' ? num : 1) * form.values.framerate
-          )
-          form.setDirty({ introDurationFrames: true })
+          form.setFieldValue('introDurationSeconds', num !== '' ? num : 1)
+          form.setDirty({ introDurationSeconds: true })
         }}
       />
 

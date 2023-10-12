@@ -4,18 +4,19 @@ import { ReplayVideo } from '@/components/ReplayVideo'
 import { AbsoluteFill, Sequence } from 'remotion'
 
 export const Clip: React.FC = () => {
-  const { composition, clip, map } = useClipContext()
+  const { composition, map } = useClipContext()
+  const introDurationFrames =
+    composition.introDurationSeconds * composition.framerate
 
   return (
     <AbsoluteFill>
       <Sequence
         name={'Intro ' + map.name}
-        from={clip.startFrame}
-        durationInFrames={composition.introDurationFrames}
+        durationInFrames={introDurationFrames}
       >
         <Intro />
       </Sequence>
-      <ReplayVideo />
+      <ReplayVideo from={introDurationFrames} />
     </AbsoluteFill>
   )
 }

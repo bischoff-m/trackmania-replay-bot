@@ -2,7 +2,7 @@ import { Clip } from '@/components/Clip'
 import { api } from '@global/api'
 import type { ClipData, CompositionData, MapData } from '@global/types'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { AbsoluteFill, continueRender, delayRender } from 'remotion'
+import { AbsoluteFill, Sequence, continueRender, delayRender } from 'remotion'
 
 export const ClipContext = createContext<ClipContextType | null>(null)
 
@@ -22,13 +22,15 @@ export const useClipContext = () => {
 
 export const MainComposition: React.FC<{
   data: CompositionData | null
-}> = ({ data }) => {
+}> = ({ data: compData }) => {
   const [maps, setMaps] = useState<MapData[] | null>(null) // One map per clip
   const [handle] = useState(() => delayRender())
 
   useEffect(() => {
-    if (data === null) return
-    const mapIDs = Object.values(data.clips).map((clipData) => clipData.mapID)
+    if (compData === null) return
+    const mapIDs = Object.values(compData.clips).map(
+      (clipData) => clipData.mapID
+    )
     Promise.all(mapIDs.map((id) => api.getMap(id)))
       .then((maps) => {
         setMaps(maps)
@@ -37,24 +39,45 @@ export const MainComposition: React.FC<{
       .catch((err) => {
         console.error(err)
       })
-  }, [data])
+  }, [compData])
+
+  if (compData === null || maps === null) return <></>
+
+  let currentFrame = 0
 
   return (
     <AbsoluteFill>
-      {data !== null && maps !== null
-        ? Object.values(data.clips).map((clipData, index) => (
-            <ClipContext.Provider
-              key={index}
-              value={{
-                composition: data,
-                clip: clipData,
-                map: maps[index],
-              }}
+      {Object.values(compData.clips).map((clipData, index) => {
+        const video = maps[index].video
+        const videoDuration = video
+          ? Math.ceil(
+              (video.durationInFrames * compData.framerate) / video.framerate
+            )
+          : compData.framerate
+        const currentDuration =
+          videoDuration + compData.introDurationSeconds * compData.framerate
+        const currentFrom = currentFrame
+        currentFrame += currentDuration
+
+        return (
+          <ClipContext.Provider
+            key={index}
+            value={{
+              composition: compData,
+              clip: clipData,
+              map: maps[index],
+            }}
+          >
+            <Sequence
+              name={'Clip ' + clipData.mapID}
+              from={currentFrom}
+              durationInFrames={currentDuration}
             >
               <Clip />
-            </ClipContext.Provider>
-          ))
-        : null}
+            </Sequence>
+          </ClipContext.Provider>
+        )
+      })}
     </AbsoluteFill>
   )
 }

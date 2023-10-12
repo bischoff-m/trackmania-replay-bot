@@ -62,11 +62,15 @@ async function fetchNewMapData(mapID: string): Promise<MapData> {
     console.log(`Map not uploaded to trackmania.exchange: ${result.exchangeID}`)
   } else {
     const replays = await TmxApi.getReplays(tmxID, 1)
-    const replayID = replays[0].ReplayID
-    const replayBody = await TmxApi.downloadReplay(replayID)
+    if (replays.length === 0) {
+      console.log(`No replays found for map ${result.exchangeID}`)
+    } else {
+      const replayID = replays[0].ReplayID
+      const replayBody = await TmxApi.downloadReplay(replayID)
 
-    result.replayUrl = `/public/maps/${mapID}/replay${replayID}.Replay.Gbx`
-    await fs.promises.writeFile(resolvePublic(result.replayUrl), replayBody)
+      result.replayUrl = `/public/maps/${mapID}/replay${replayID}.Replay.Gbx`
+      await fs.promises.writeFile(resolvePublic(result.replayUrl), replayBody)
+    }
   }
 
   ///////////////////////////////// THUMBNAIL  /////////////////////////////////
@@ -129,6 +133,7 @@ export async function handleFetchNewMap(req: Request, res: Response) {
     res.status(200).send(mapData)
   } catch (error) {
     console.log('Fetch failed')
+    console.error(error)
     res.setHeader('Content-Type', 'text/plain')
     res.status(500).send(String(error))
   }

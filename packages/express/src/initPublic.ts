@@ -2,16 +2,18 @@ import { resolvePublic } from '@/util'
 import { CompositionData, Settings } from '@global/types'
 import fs from 'fs'
 
-const fileTemplates = {
+const fileTemplates: {
+  [key: string]: CompositionData | Settings
+} = {
   'activeComposition.json': {
     clips: [],
-    framerate: 60,
+    introDurationSeconds: 5,
     resolution: [2560, 1440],
-    introDurationFrames: 300,
-  } as CompositionData,
+    framerate: 60,
+  },
   'settings.json': {
     trackmaniaRoot: '',
-  } as Settings,
+  },
 }
 const requiredDirs = ['maps', 'flags']
 

@@ -3,14 +3,18 @@ import { colors } from '@/theme'
 import { formatStaticUrl } from '@global/api'
 import { AbsoluteFill, Sequence, Video } from 'remotion'
 
-export const ReplayVideo: React.FC = () => {
-  const { composition, clip, map } = useClipContext()
+export const ReplayVideo: React.FC<{ from: number }> = (props) => {
+  const { composition, map } = useClipContext()
 
-  if (!map.video)
+  if (
+    !map.video ||
+    map.video.durationInFrames === 0 ||
+    composition.framerate === 0
+  )
     return (
       <Sequence
         name={'Video ' + map.name}
-        from={clip.startFrame + composition.introDurationFrames}
+        from={props.from}
         durationInFrames={composition.framerate} // 1 second
       >
         <AbsoluteFill
@@ -23,14 +27,17 @@ export const ReplayVideo: React.FC = () => {
         </AbsoluteFill>
       </Sequence>
     )
-
-  return (
-    <Sequence
-      name={'Video ' + map.name}
-      from={clip.startFrame + composition.introDurationFrames}
-      durationInFrames={map.video.durationInFrames}
-    >
-      <Video src={formatStaticUrl(map.video.url)} className='z-0' />
-    </Sequence>
-  )
+  else
+    return (
+      <Sequence
+        name={'Video ' + map.name}
+        from={props.from}
+        durationInFrames={Math.ceil(
+          (map.video.durationInFrames * composition.framerate) /
+            map.video.framerate
+        )}
+      >
+        <Video src={formatStaticUrl(map.video.url)} className='z-0' />
+      </Sequence>
+    )
 }

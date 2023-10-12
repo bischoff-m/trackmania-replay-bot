@@ -1,4 +1,4 @@
-import { useCompositionFormContext } from '@/components/AppRoot'
+import { MapsContext, useRenderFormContext } from '@/components/AppRoot'
 import AddMapInput from '@/components/MapView/AddMapInput'
 import MapList from '@/components/MapView/MapList'
 import MapListItem from '@/components/MapView/MapListItem'
@@ -8,7 +8,7 @@ import { ClipData, MapData } from '@global/types'
 import { Center, Flex, Text, useMantineTheme } from '@mantine/core'
 import { useListState } from '@mantine/hooks'
 import { IconCaretUp } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import {
   DragDropContext,
   Draggable,
@@ -17,8 +17,9 @@ import {
 
 export default function MapView() {
   const theme = useMantineTheme()
-  const form = useCompositionFormContext()
+  const form = useRenderFormContext()
   const [isDirty, setDirty] = useState(false)
+  const { maps, reloadMaps } = useContext(MapsContext)
   const [mapsCached, handlersCached] = useListState<MapData>([])
   const [mapsActive, handlersActive] = useListState<MapData>([])
 
@@ -54,48 +55,28 @@ export default function MapView() {
   }
 
   async function updateForm(setDirty = true) {
-    // Calculate clips from activeMaps
-    let curFrame = 0
-    const introDuration = form.values.introDurationFrames
-    const selectedClips = mapsActive.map((mapData) => {
-      const fps = form.values.framerate
-      const replayDuration = mapData.video?.durationInFrames ?? fps // 1 second
-      const clipData: ClipData = {
-        mapID: mapData.id,
-        startFrame: curFrame,
-        durationInFrames: introDuration + replayDuration,
-      }
-      curFrame += introDuration + replayDuration
-      return clipData
-    })
+    const clips = mapsActive.map<ClipData>((map) => ({
+      mapID: map.id,
+    }))
 
     // Compare clips from form with clips from activeMaps
-    if (JSON.stringify(form.values.clips) !== JSON.stringify(selectedClips)) {
-      form.setFieldValue('clips', selectedClips)
+    if (JSON.stringify(form.values.clips) !== JSON.stringify(clips)) {
+      form.setFieldValue('clips', clips)
       form.setDirty({ clips: setDirty })
     }
   }
 
-  async function reloadMaps() {
-    try {
-      // Fetch map index
-      const mapIDs = await api.getMapIndex()
-      // Get MapData for all maps
-      const maps = await Promise.all(mapIDs.map((id) => api.getMap(id)))
-      // Get CompositionData for active maps
-      const compData = await api.getComposition()
-      const activeIDs = compData.clips.map((clip) => clip.mapID)
-      // Preserve order of active maps saved in composition
-      const activeMaps = activeIDs.map((id) =>
-        maps.find((map) => map.id === id)
-      )
-      // Update state
-      handlersCached.setState(maps.filter((map) => !activeIDs.includes(map.id)))
-      handlersActive.setState(activeMaps as MapData[])
-    } catch (err) {
-      console.error('Failed to load maps')
-      console.error(err)
-    }
+  function updateState() {
+    // Get mapIDs of active maps
+    const activeIDs = form.values.clips
+      .map((clip) => clip.mapID)
+      .filter((mapID) => mapID in maps)
+
+    // Update state
+    handlersCached.setState(
+      Object.values(maps).filter((map) => !activeIDs.includes(map.id))
+    )
+    handlersActive.setState(form.values.clips.map((clip) => maps[clip.mapID]))
   }
 
   useEffect(() => {
@@ -112,7 +93,17 @@ export default function MapView() {
   }, [])
 
   useEffect(() => {
-    // Update form to reflect changes
+    updateState()
+    // Update form to remove invalid clips
+    updateForm(false)
+  }, [maps])
+
+  useEffect(() => {
+    updateState()
+  }, [form.values.clips])
+
+  useEffect(() => {
+    // Update form to reflect changes in active maps
     if (isDirty) {
       updateForm()
       setDirty(false)
@@ -163,7 +154,6 @@ export default function MapView() {
                       key={map.id}
                       map={map}
                       index={index}
-                      width={fixedStyles.width}
                       height={fixedStyles.listItemHeight}
                       draggableSnapshot={snapshot}
                       bgColor={fixedStyles.background}
@@ -209,7 +199,6 @@ export default function MapView() {
                     <MapListItem
                       key={map.id}
                       map={map}
-                      width={fixedStyles.width}
                       height={fixedStyles.listItemHeight}
                       draggableSnapshot={snapshot}
                       bgColor={fixedStyles.background}
