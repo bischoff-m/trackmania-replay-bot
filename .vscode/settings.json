@@ -8,10 +8,10 @@
   "editor.formatOnType": true,
   "editor.rulers": [80],
   "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.organizeImports": true,
-    "source.fixAll.eslint": true,
-    "source.addMissingImports": true
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.addMissingImports": "explicit"
   },
   "eslint.validate": [
     "javascript",
@@ -21,6 +21,5 @@
   ],
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-  "python.formatting.provider": "none"
+  }
 }
